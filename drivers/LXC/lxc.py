@@ -38,8 +38,6 @@ def ToCsv(path, file_name, read_data):
     else:
         df.to_csv(path + file_name, index=False, mode='a', encoding='utf-8-sig', header=False)
 
-def 
-
 class Setup():
     def __init__(self, port, address, mode):
         
