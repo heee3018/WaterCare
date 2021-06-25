@@ -77,7 +77,7 @@ class Setup():
                 sleep(1)
                 response = self.ser.read(1)
                 if response == b'\xe5':
-                    print('%s has been added !' %Flip(addr))
+                    print('%s has been added !' %Flip(address))
                     self.commands['select'] = selection
                     break
                 
