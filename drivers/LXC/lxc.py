@@ -50,6 +50,8 @@ class Setup():
         self.ser.stopbits = serial_info['stopbits']
         self.ser.parity   = serial_info['parity']
         self.ser.timeout  = serial_info['timeout']
+        self.ser.open()
+        self.com.open()
         self.mode = mode
         
         self.address = '00000000'
@@ -57,7 +59,6 @@ class Setup():
             'select': None,
             'read'  : '107BFD7816'
         }
-        
         
         self.AddressCheck(Flip(address))
         self.Threading()
