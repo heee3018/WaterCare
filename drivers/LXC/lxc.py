@@ -15,9 +15,13 @@ def Flip(address):
     result = list()
     if type(address) != list:
         address = [address]
+        
     for addr in address:
         flip = addr[6:8] + addr[4:6] + addr[2:4] + addr[0:2]
         result.append(flip)
+        
+    if len(result) == 1:
+        result =  str(result)[2:-2]
         
     return result
 
