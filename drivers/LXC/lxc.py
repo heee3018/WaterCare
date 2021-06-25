@@ -15,14 +15,11 @@ def Flip(address):
     result = list()
     if type(address) != list:
         address = [address]
-        
     for addr in address:
         flip = addr[6:8] + addr[4:6] + addr[2:4] + addr[0:2]
         result.append(flip)
-        
     if len(result) == 1:
-        result =  str(result)[2:-2]
-        
+        result = str(result)[2:-2]
     return result
 
 def CRC(address):
@@ -63,6 +60,7 @@ class Setup():
         
         self.mode = mode
         
+        self.running = True
         self.address = '00000000'
         self.commands = {
             'select': None,
@@ -90,22 +88,18 @@ class Setup():
                     continue
                 
             if self.commands['select'] != None:
-                    ## Success ##
-                self.is_thread = True
                 break
-            else:
-                    ## Failure ##
-                self.is_thread = False
             
+            else:
+                self.running = False
+                
     def Threading(self):
-        if self.is_thread is True:
-            self.running = True
-            self.thread  = Thread(target=self.run)
-            self.thread.daemon = False
-            self.thread.start()
-        
+        self.thread  = Thread(target=self.run)
+        self.thread.daemon = False
+        self.thread.start()
+    
     def run(self):
-        while self.running is True:
+        while self.running:
             self.ser.write(str2hex(self.commands['select']))
             sleep(0.5)
             read_check = self.ser.read(1)
