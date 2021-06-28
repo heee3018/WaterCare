@@ -12,6 +12,8 @@ lxc_05 = LXC.Setup(port='/dev/ttyUSB4', address=Address, mode=Mode)
 lxc_06 = LXC.Setup(port='/dev/ttyUSB5', address=Address, mode=Mode)
 lxc_07 = LXC.Setup(port='/dev/ttyUSB6', address=Address, mode=Mode)
 
+sleep(5)
+
 while True:
     sleep(1)
     if Mode == 'master':
@@ -23,10 +25,10 @@ while True:
         print(f"06  {lxc_06.read}")
         print(f"07  {lxc_07.read}")
         
-        print(f"08  {lxc_01.read_2}")
-        print(f"09  {lxc_02.read_2}")
-        print(f"10  {lxc_03.read_2}")
-        print(f"11  {lxc_04.read_2}")
-        print(f"12  {lxc_05.read_2}")
-        print(f"13  {lxc_06.read_2}")
-        print(f"14  {lxc_07.read_2}")
+        # print(f"08  {lxc_01.read_2}")
+        # print(f"09  {lxc_02.read_2}")
+        # print(f"10  {lxc_03.read_2}")
+        # print(f"11  {lxc_04.read_2}")
+        # print(f"12  {lxc_05.read_2}")
+        # print(f"13  {lxc_06.read_2}")
+        # print(f"14  {lxc_07.read_2}")

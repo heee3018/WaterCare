@@ -1,30 +1,34 @@
 # -*- coding: utf-8 -*-
 import os
 import pandas as pd
-from time import sleep
-from serial import Serial
-from struct import unpack
-from binascii import hexlify as hex2str
-from binascii import unhexlify as str2hex
-from threading import Thread
-from datetime import timedelta, datetime as dt
-from config import serial_info
+from time      import sleep
+from serial    import Serial
+from struct    import unpack
+from binascii  import hexlify as hex2str
+from binascii  import unhexlify as str2hex
+from threading import Thread, Lock
+from datetime  import timedelta, datetime as dt
+from config    import serial_info
 
 def Flip(address):
     result = list()
+    
     if type(address) != list:
         address = [address]
+        
     for addr in address:
         flip = addr[6:8] + addr[4:6] + addr[2:4] + addr[0:2]
         result.append(flip)
+        
     if len(result) == 1:
         result = str(result)[2:-2]
+        
     return result
 
 def CRC(address):
     return ('%x' %sum(str2hex('73FD52' + address + 'FFFFFFFF')))[-2:]
 
-def Preprocessing(read_data, from_start, to_end):
+def DataRead(read_data, from_start, to_end):
     return str(hex2str(str2hex(read_data)[from_start:to_end]))[2:-1]
 
 def ToCsv(path, file_name, read_data):
@@ -41,6 +45,8 @@ def ToCsv(path, file_name, read_data):
 class Setup(): 
     def __init__(self, port, address, mode):
         
+        self.lock         = Lock()
+        self.lock.acquire()
         # Serial communication parameter passing
         self.com          = Serial(port='/dev/ttyAMA0')
         self.ser          = Serial()
@@ -50,12 +56,10 @@ class Setup():
         self.ser.stopbits = serial_info['stopbits']
         self.ser.parity   = serial_info['parity']
         self.ser.timeout  = serial_info['timeout']
-        try:
-            self.ser.open()
-            self.com.open()
-            
-        except:
-            pass
+        self.ser.close()
+        self.com.close()
+        self.ser.open()
+        self.com.open()
         
         self.mode = mode
         
@@ -67,6 +71,8 @@ class Setup():
         }
         
         self.AddressCheck(Flip(address))
+        self.lock.release()
+        
         self.Threading()
         
     def AddressCheck(self, addresses):
@@ -93,7 +99,7 @@ class Setup():
                 self.running = False
                 
     def Threading(self):
-        self.thread  = Thread(target=self.run)
+        self.thread        = Thread(target=self.run)
         self.thread.daemon = False
         self.thread.start()
     
@@ -114,13 +120,13 @@ class Setup():
                     continue
 
                 self.time = dt.now() # .strftime('%Y.%m.%d %H:%M:%S') 
-                self.address = Preprocessing(read_data, 7, 11)
+                self.address = DataRead(read_data, 7, 11)
                 self.address = Flip(self.address)
-                self.total_volume = Preprocessing(read_data, 21, 25)
+                self.total_volume = DataRead(read_data, 21, 25)
                 self.total_volume = Flip(self.total_volume)
                 self.total_volume = str2hex(self.total_volume)
                 self.total_volume = int(hex2str(self.total_volume), 16) / 1000
-                self.flow_rate = Preprocessing(read_data, 27, 31)
+                self.flow_rate = DataRead(read_data, 27, 31)
                 self.flow_rate = Flip(self.flow_rate[6:8])
                 self.flow_rate = str2hex(self.flow_rate)
                 self.flow_rate = unpack("!f", self.flow_rate)[0]
