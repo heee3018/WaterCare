@@ -62,7 +62,8 @@ class Setup():
             self.ser.open()
             self.com.open()
         finally:
-            
+            pass
+        
         self.mode = mode
         
         self.running = True
