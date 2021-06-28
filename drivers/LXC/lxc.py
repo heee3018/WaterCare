@@ -8,7 +8,6 @@ from binascii import hexlify as hex2str
 from binascii import unhexlify as str2hex
 from threading import Thread
 from datetime import timedelta, datetime as dt
-
 from config import serial_info
 
 def Flip(address):
