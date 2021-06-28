@@ -56,11 +56,13 @@ class Setup():
         self.ser.stopbits = serial_info['stopbits']
         self.ser.parity   = serial_info['parity']
         self.ser.timeout  = serial_info['timeout']
-        self.ser.close()
-        self.com.close()
-        self.ser.open()
-        self.com.open()
-        
+        print(self.com)
+        print(self.ser)
+        try:
+            self.ser.open()
+            self.com.open()
+        finally:
+            
         self.mode = mode
         
         self.running = True
