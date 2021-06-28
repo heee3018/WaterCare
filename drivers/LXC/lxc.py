@@ -61,7 +61,7 @@ class Setup():
         try:
             self.ser.open()
             self.com.open()
-        finally:
+        except:
             pass
         
         self.mode = mode
