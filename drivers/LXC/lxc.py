@@ -64,10 +64,10 @@ class Setup():
                 self.ser.open()
                 
         self.buf = {
-            'time'         = None,
-            'address'      = None,
-            'flow_rate'    = None,
-            'total_volume' = None
+            'time'         : None,
+            'address'      : None,
+            'flow_rate'    : None,
+            'total_volume' : None
         }
 
         self.mode        = mode
