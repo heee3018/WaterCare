@@ -178,7 +178,7 @@ class Setup():
                         ]
                         
                         file_name = current_time.strftime('%Y_%m_%d') + '.csv'
-                        toCSV(path='gathering/', file_name=file_name, save_data=save_data)
+                        toCSV(path='gathering\', file_name=file_name, save_data=save_data)
                     
                     if send_to_db is True:
                         pass                    
