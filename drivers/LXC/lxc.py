@@ -8,8 +8,8 @@ from binascii  import hexlify as hex2str
 from binascii  import unhexlify as str2hex
 from threading import Thread, Lock
 from datetime  import timedelta, datetime as dt
-from config    import serial_info
-
+from config    import serial_info, send_to_db, save_as_csv, detected_addresses
+        
 def Flip(address):
     result = list()
     
@@ -28,13 +28,13 @@ def Flip(address):
 def CRC(address):
     return ('%x' %sum(str2hex('73FD52' + address + 'FFFFFFFF')))[-2:]
 
-def DataRead(read_data, from_start, to_end):
+def ReadData(read_data, from_start, to_end):
     return str(hex2str(str2hex(read_data)[from_start:to_end]))[2:-1]
 
-def ToCsv(path, file_name, read_data):
+def toCSV(path, file_name, save_data):
     file_name = self.time.strftime('%Y%m%d') + '_' + file_name
     
-    df = pd.DataFrame([read_data], columns=['datetime', 'address', 'flow_rate', 'total_volume'])
+    df = pd.DataFrame([save_data], columns=['datetime', 'address', 'flow_rate', 'total_volume'])
     
     if not os.path.exists(path + file_name):
         df.to_csv(path + file_name, index=False, mode='w', encoding='utf-8-sig')
@@ -42,115 +42,138 @@ def ToCsv(path, file_name, read_data):
     else:
         df.to_csv(path + file_name, index=False, mode='a', encoding='utf-8-sig', header=False)
 
+def SelectCommand(addresses):
+    result = list()
+    for address in addresses:
+        result.append('680B0B6873FD52' + address + 'FFFFFFFF' + CRC(address) + '16')
+    
+    return result
+
+
 class Setup(): 
-    def __init__(self, port, address, mode):
-        
-        self.lock         = Lock()
-        self.lock.acquire()
-        # Serial communication parameter passing
-        self.com          = Serial(port='/dev/ttyAMA0')
+    def __init__(self, port, addresses, mode):
         self.ser          = Serial()
-        self.ser.port     = port
-        self.ser.baudrate = serial_info['baudrate']
-        self.ser.bytesize = serial_info['bytesize']
-        self.ser.stopbits = serial_info['stopbits']
-        self.ser.parity   = serial_info['parity']
-        self.ser.timeout  = serial_info['timeout']
-        try:
-            self.com.open()
-            print(self.com)
-            print(self.ser) 
-        except:
-            pass
+        self.ser.port     = port                    # Default : '/dev/ttyUSB*'
+        self.ser.baudrate = serial_info['baudrate'] # Default : 2400
+        self.ser.bytesize = serial_info['bytesize'] # Default : 8
+        self.ser.stopbits = serial_info['stopbits'] # Default : 1
+        self.ser.parity   = serial_info['parity']   # Default : 'E'
+        self.ser.timeout  = serial_info['timeout']  # Default : 1
         
-        self.mode = mode
-        
-        self.running = True
-        self.address = '00000000'
-        self.commands = {
-            'select': None,
-            'read'  : '107BFD7816'
+        if not self.ser.is_open:
+                self.ser.open()
+                
+        self.buf = {
+            'time'         = None,
+            'address'      = None,
+            'flow_rate'    = None,
+            'total_volume' = None
         }
+
+        self.mode        = mode
+        self.address     = self.SelectAddress(addresses)
+        self.select_cmd  = '680B0B6873FD52' + Flip(self.address) + 'FFFFFFFF' + CRC(Flip(self.address)) + '16'
+        self.read_cmd    = '107BFD7816'
         
-        self.AddressCheck(Flip(address))
-        self.lock.release()
+        self.StartThreading() 
         
-        self.Threading()
+    def SelectAddress(self, addresses):
+        inverted_addresses = Flip(addresses)
+        selected_address   = None
+        repeat             = True
         
-    def AddressCheck(self, addresses):
-        for address in addresses: 
-            selection = '680B0B6873FD52' + address + 'FFFFFFFF' + CRC(address) + '16'
-        
-            for _ in range(3):
-                self.ser.write(str2hex(selection))
-                sleep(1)
-                response = self.ser.read(1)
-                if response == b'\xe5':
-                    print('%s has been added !' %Flip(address))
-                    self.commands['select'] = selection
-                    break
+        while repeat:
+            for inverted_address in inverted_addresses: 
+                for detected_address in detected_addresses:
+                    if Flip(inverted_address) == detected_address:
+                        print("The address is already connected.")
+                        break
+                    elif Flip(inverted_address) != detected_address:
+                        pass
                 
-                else:
-                    print('Can not find the address..')
-                    continue
-                
-            if self.commands['select'] != None:
-                break
+                    select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
+                    self.ser.write(str2hex(select_command))
+                    response = self.ser.read(1)
+                    if response == b'\xe5':
+                        print('%s has been added !' %Flip(inverted_address))
+                        self.select_cmd  = select_command
+                        selected_address = Flip(inverted_address)
+                        detected_addresses.append(inverted_address)
+                        repeat = False
+                        break
+                    
+                    elif response != b'\xe5': 
+                        print('%d is not found...' %Flip(inverted_address))
+                        continue
+                    
+            if selected_address == None:
+                print('Address not found, Try again.')
             
-            else:
-                self.running = False
-                
-    def Threading(self):
+        return selected_address
+     
+    def StartThreading(self):        
+        self.running       = True
         self.thread        = Thread(target=self.run)
         self.thread.daemon = False
         self.thread.start()
     
     def run(self):
         while self.running:
-            self.ser.write(str2hex(self.commands['select']))
-            sleep(0.5)
-            read_check = self.ser.read(1)
-
-            if read_check == b'\xe5':
-                self.ser.write(str2hex(self.commands['read']))
-                sleep(0.5)
+            self.ser.write(str2hex(self.select_cmd))
+            response = self.ser.read(1)
+            if response != b'\xe5'
+                self.buf['time']         = dt.now()
+                self.buf['address']      = None
+                self.buf['flow_rate']    = None
+                self.buf['total_volume'] = None
                 
-                read_raw = self.ser.read(39)
-                read_data = hex2str(read_raw)
-                if len(read_data) != 78:
-                    ## Failure ##
-                    continue
-
-                self.time = dt.now() # .strftime('%Y.%m.%d %H:%M:%S') 
-                self.address = DataRead(read_data, 7, 11)
-                self.address = Flip(self.address)
-                self.total_volume = DataRead(read_data, 21, 25)
-                self.total_volume = Flip(self.total_volume)
-                self.total_volume = str2hex(self.total_volume)
-                self.total_volume = int(hex2str(self.total_volume), 16) / 1000
-                self.flow_rate = DataRead(read_data, 27, 31)
-                self.flow_rate = Flip(self.flow_rate[6:8])
-                self.flow_rate = str2hex(self.flow_rate)
-                self.flow_rate = unpack("!f", self.flow_rate)[0]
-
-                self.read = [self.time, self.address, self.flow_rate, self.total_volume]
-                
-                ToCSV(path='gatering/', file_name='lxc.csv', read_data=self.read)
-                             
-                if self.mode == 'master': 
-                    self.read_2 = self.com.read(39)
+            elif response == b'\xe5':
+                for _ in range(10):
+                    self.ser.write(str2hex(self.read_cmd))
+                    read_raw_data = self.ser.read(39)
+                    read_data = hex2str(read_raw_data)
                     
-                elif self.mode == 'slave':
-                    self.com.write(read_raw)
+                    if len(read_data)/2 != 39:
+                        continue # ==> Skip the code below and move on to the next one.
+
+                    current_time = dt.now()# .strftime('%Y.%m.%d %H:%M:%S') 
+                    self.buf['time'] = current_time 
+                    address = ReadData(read_data, 7, 11)
+                    self.buf['address'] = Flip(address)
+                    flow_rate = ReadData(read_data, 27, 31)
+                    flow_rate = Flip(flow_rate[6:8])
+                    flow_rate = str2hex(flow_rate)
+                    self.buf['flow_rate'] = unpack("!f", flow_rate)[0]
+                    total_volume = ReadData(read_data, 21, 25)
+                    total_volume = Flip(total_volume)
+                    total_volume = str2hex(total_volume)
+                    self.buf['total_volume'] = int(hex2str(total_volume), 16) / 1000
                     
-                # print(f'{self.time}  Address: {self.return_address}  Flow Rate: {self.flow_rate:11.6f}㎥/h  Total Volume: {self.total_volume:11.6f}㎥')
-
-                # # DB Sender
-                # sql = "INSERT INTO `%s` VALUES ('%s', '%s', '%f', '%f')" %('ufm-lxc', self.time, self.return_address, self.flow_rate, self.total_volume)
-                # self.lxc_db.send(sql)
-
-            else:
-                # 날짜 및 시간 기록
-                self.time = dt.now().strftime('%Y.%m.%d %H:%M:%S') 
-                # print('%s   Address = %s   LXC Error' %(self.time, self.return_address))
-                pass    
+                    if save_as_csv is True:
+                        save_data = [
+                            self.buf['time'], 
+                            self.buf['address'], 
+                            self.buf['flow_rate'],
+                            self.buf['total_volume'] 
+                        ]
+                        
+                        file_name = current_time.strftime('%Y_%m_%d') + '.csv'
+                        toCSV(path='gatering/', file_name=file_name, save_data=save_data)
+                    
+                    if send_to_db is True:
+                        pass                    
+                        sql = "INSERT INTO `%s` VALUES ('%s', '%s', '%f', '%f')" %(
+                            'ufm-lxc', 
+                            self.buf['time'], 
+                            self.buf['address'], 
+                            self.buf['flow_rate'], 
+                            self.buf['total_volume'])
+                        # self.lxc_db.send(sql)
+                    
+                    # if self.mode == 'master': 
+                    #     self.read_2 = self.com.read(39)
+                        
+                    # elif self.mode == 'slave':
+                    #     self.com.write(read_raw)
+                        
+                    # print(f'{self.time}  Address: {self.return_address}  Flow Rate: {self.flow_rate:11.6f}㎥/h  Total Volume: {self.total_volume:11.6f}㎥')
