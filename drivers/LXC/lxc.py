@@ -117,9 +117,11 @@ class Setup():
                             continue
                         
                     send_and_receive = True
-                    
+            
                 if selected_address == None:
                     print('Address not found, Try again.')
+            
+            repeat = False    
             
         return selected_address
      
