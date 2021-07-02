@@ -121,7 +121,7 @@ class Setup():
         while self.running:
             self.ser.write(str2hex(self.select_cmd))
             response = self.ser.read(1)
-            if response != b'\xe5'
+            if response != b'\xe5':
                 self.buf['time']         = dt.now()
                 self.buf['address']      = None
                 self.buf['flow_rate']    = None
