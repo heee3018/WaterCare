@@ -12,7 +12,8 @@ from config    import serial_info, send_to_db, save_as_csv, detected_addresses
         
 def Flip(address):
     result = list()
-    
+    if address == None:
+        return '00000000'
     if type(address) != list:
         address = [address]
         
