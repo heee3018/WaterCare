@@ -161,13 +161,15 @@ class Setup():
                     flow_rate = str2hex(flow_rate)
                     if flow_rate == b'\x00':
                         self.buf['flow_rate'] = 0.0
-                    self.buf['flow_rate'] = unpack("!f", flow_rate)[0]
+                    else:
+                        self.buf['flow_rate'] = unpack("!f", flow_rate)[0]
                     total_volume = ReadData(read_data, 21, 25)
                     total_volume = Flip(total_volume)
                     total_volume = str2hex(total_volume)
                     if total_volume == b'\x00':
                         self.buf['total_volume'] = 0.0
-                    self.buf['total_volume'] = int(hex2str(total_volume), 16) / 1000
+                    else:
+                        self.buf['total_volume'] = int(hex2str(total_volume), 16) / 1000
                     
                     if save_as_csv is True:
                         save_data = [
