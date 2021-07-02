@@ -62,7 +62,7 @@ class Setup():
         self.ser.timeout  = serial_info['timeout']  # Default : 1
         
         if not self.ser.is_open:
-                self.ser.open()
+            self.ser.open()
                 
         self.buf = {
             'time'         : None,
@@ -80,6 +80,7 @@ class Setup():
             self.StartThreading() 
             
         elif self.address == None:
+            self.ser.close()
             print("Threading could not start because the address could not be found.")
             
     def SelectAddress(self, addresses):
@@ -158,10 +159,14 @@ class Setup():
                     flow_rate = ReadData(read_data, 27, 31)
                     flow_rate = Flip(flow_rate[6:8])
                     flow_rate = str2hex(flow_rate)
+                    if flow_rate == b'\x00':
+                        self.buf['flow_rate'] = 0.0
                     self.buf['flow_rate'] = unpack("!f", flow_rate)[0]
                     total_volume = ReadData(read_data, 21, 25)
                     total_volume = Flip(total_volume)
                     total_volume = str2hex(total_volume)
+                    if total_volume == b'\x00':
+                        self.buf['total_volume'] = 0.0
                     self.buf['total_volume'] = int(hex2str(total_volume), 16) / 1000
                     
                     if save_as_csv is True:
