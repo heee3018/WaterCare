@@ -1,4 +1,4 @@
-Mode = 'slave'
+Mode = 'master'
 Address = ['20201315', '20201307']
 detected_addresses = list()
 

@@ -48,6 +48,14 @@ def SelectCommand(addresses):
     
     return result
 
+def PrintData(buf):
+    time         = buf['time'] 
+    address      = buf['address']
+    flow_rate    = buf['flow_rate']
+    total_volume = buf['total_volume']
+    
+    print(f'{time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
+
 
 class Setup(): 
     def __init__(self, port, addresses, mode):
@@ -61,6 +69,13 @@ class Setup():
         
         if not self.ser.is_open:
             self.ser.open()
+        
+        self.communicate         = Serial()
+        self.communicate.port    = '/dev/ttyAMA0'
+        self.communicate.timeout = 1
+        
+        if not self.communicate.is_open:
+            self.communicate.open()
                 
         self.buf = {
             'time'         : None,
@@ -127,11 +142,21 @@ class Setup():
      
     def StartThreading(self):        
         self.running       = True
-        self.thread        = Thread(target=self.run)
+        self.thread        = Thread(target=self.CommonThread)
         self.thread.daemon = False
         self.thread.start()
-    
-    def run(self):
+                        
+        if self.mode == 'master': 
+            self.master_thread        = Thread(target=self.MasterThread)
+            self.master_thread.daemon = False
+            self.master_thread.start()
+            
+        elif self.mode == 'slave':
+            self.slave_thread        = Thread(target=self.SlaveThread)
+            self.slave_thread.daemon = False
+            self.slave_thread.start()
+            
+    def CommonThread(self):
         while self.running:
             self.ser.write(str2hex(self.select_cmd))
             response = self.ser.read(1)
@@ -169,6 +194,8 @@ class Setup():
                     else:
                         self.buf['total_volume'] = int(hex2str(total_volume), 16) / 1000
                     
+                    PrintData(self.buf)
+                    
                     if save_as_csv is True:
                         save_data = [
                             self.buf['time'], 
@@ -178,7 +205,7 @@ class Setup():
                         ]
                         
                         file_name = current_time.strftime('%Y_%m_%d') + '.csv'
-                        toCSV(path='gathering\', file_name=file_name, save_data=save_data)
+                        toCSV(path='gathering\\', file_name=file_name, save_data=save_data)
                     
                     if send_to_db is True:
                         pass                    
@@ -189,11 +216,36 @@ class Setup():
                             self.buf['flow_rate'], 
                             self.buf['total_volume'])
                         # self.lxc_db.send(sql)
-                    
-                    # if self.mode == 'master': 
-                    #     self.read_2 = self.com.read(39)
-                        
-                    # elif self.mode == 'slave':
-                    #     self.com.write(read_raw)
-                        
-                    # print(f'{self.time}  Address: {self.return_address}  Flow Rate: {self.flow_rate:11.6f}㎥/h  Total Volume: {self.total_volume:11.6f}㎥')
+
+
+    def MasterThread(self):
+        # Recive #
+        while self.running:
+            interval = 1
+            received_by_slave = self.communicate.readline()
+            print(f"[Recive] {received_by_slave}")
+            
+            received_buf = str(received_by_slave)[2:-1].split('/')
+            time         = received_buf[0]
+            address      = received_buf[1]
+            flow_rate    = received_buf[2]
+            total_volume = received_buf[3]
+            print(f'[Recive] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
+            
+            sleep(interval)
+            
+    def SlaveThread(self):
+        # Transmit #  
+        while self.running:
+            interval     = 1
+            time         = self.buf['time']
+            address      = self.buf['address']
+            flow_rate    = self.buf['flow_rate']
+            total_volume = self.buf['total_volume']
+            
+            send_data = str(time) + '/' + address + '/' + str(flow_rate) + '/' + str(total_volume)
+            send_data = send_data.encode(encoding='utf-8')
+            send_to_master = self.communicate.write(send_data)
+            print(f"[Transmit] Send: {send_data} [length {send_to_master}]")
+            
+            sleep(interval)
