@@ -81,16 +81,20 @@ class Setup():
         inverted_addresses = Flip(addresses)
         selected_address   = None
         repeat             = True
+        send_and_receive   = True
         
         while repeat:
             for inverted_address in inverted_addresses: 
                 for detected_address in detected_addresses:
-                    if Flip(inverted_address) == detected_address:
+                    if inverted_address == detected_address:
                         print("The address is already connected.")
+                        send_and_receive = False
                         break
-                    elif Flip(inverted_address) != detected_address:
+                    elif inverted_address != detected_address:
+                        send_and_receive = True
                         pass
-                
+                    
+                if send_and_receive is True:
                     select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
                     self.ser.write(str2hex(select_command))
                     response = self.ser.read(1)
@@ -106,6 +110,8 @@ class Setup():
                         print('%d is not found...' %Flip(inverted_address))
                         continue
                     
+                send_and_receive = True
+                
             if selected_address == None:
                 print('Address not found, Try again.')
             
