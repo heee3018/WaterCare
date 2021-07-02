@@ -80,7 +80,7 @@ class Setup():
             self.StartThreading() 
             
         elif self.address == None:
-            self.ser.close()
+            self.ser.close() 
             print("Threading could not start because the address could not be found.")
             
     def SelectAddress(self, addresses):
