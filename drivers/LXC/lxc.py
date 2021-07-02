@@ -75,45 +75,51 @@ class Setup():
         self.select_cmd  = '680B0B6873FD52' + Flip(self.address) + 'FFFFFFFF' + CRC(Flip(self.address)) + '16'
         self.read_cmd    = '107BFD7816'
         
-        self.StartThreading() 
-        
+        if self.address != None:
+            self.StartThreading() 
+            
+        elif self.address == None:
+            print("Threading could not start because the address could not be found.")
+            
     def SelectAddress(self, addresses):
         inverted_addresses = Flip(addresses)
         selected_address   = None
         repeat             = True
+        repeat_count       = 3
         send_and_receive   = True
         
         while repeat:
-            for inverted_address in inverted_addresses: 
-                for detected_address in detected_addresses:
-                    if inverted_address == detected_address:
-                        print("The address is already connected.")
-                        send_and_receive = False
-                        break
-                    elif inverted_address != detected_address:
-                        send_and_receive = True
-                        pass
+            for _ in range(repeat_count):
+                for inverted_address in inverted_addresses: 
+                    for detected_address in detected_addresses:
+                        if inverted_address == detected_address:
+                            print("The address is already connected.")
+                            send_and_receive = False
+                            break
+                        elif inverted_address != detected_address:
+                            send_and_receive = True
+                            pass
+                        
+                    if send_and_receive is True:
+                        select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
+                        self.ser.write(str2hex(select_command))
+                        response = self.ser.read(1)
+                        if response == b'\xe5':
+                            print('%s has been added !' %Flip(inverted_address))
+                            self.select_cmd  = select_command
+                            selected_address = Flip(inverted_address)
+                            detected_addresses.append(inverted_address)
+                            repeat = False
+                            break
+                        
+                        elif response != b'\xe5': 
+                            print('%s is not found...' %Flip(inverted_address))
+                            continue
+                        
+                    send_and_receive = True
                     
-                if send_and_receive is True:
-                    select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
-                    self.ser.write(str2hex(select_command))
-                    response = self.ser.read(1)
-                    if response == b'\xe5':
-                        print('%s has been added !' %Flip(inverted_address))
-                        self.select_cmd  = select_command
-                        selected_address = Flip(inverted_address)
-                        detected_addresses.append(inverted_address)
-                        repeat = False
-                        break
-                    
-                    elif response != b'\xe5': 
-                        print('%d is not found...' %Flip(inverted_address))
-                        continue
-                    
-                send_and_receive = True
-                
-            if selected_address == None:
-                print('Address not found, Try again.')
+                if selected_address == None:
+                    print('Address not found, Try again.')
             
         return selected_address
      
