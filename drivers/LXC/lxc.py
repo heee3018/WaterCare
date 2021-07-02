@@ -32,9 +32,7 @@ def CRC(address):
 def ReadData(read_data, from_start, to_end):
     return str(hex2str(str2hex(read_data)[from_start:to_end]))[2:-1]
 
-def toCSV(path, file_name, save_data):
-    file_name = self.time.strftime('%Y%m%d') + '_' + file_name
-    
+def toCSV(path, file_name, save_data):    
     df = pd.DataFrame([save_data], columns=['datetime', 'address', 'flow_rate', 'total_volume'])
     
     if not os.path.exists(path + file_name):
@@ -87,7 +85,7 @@ class Setup():
         inverted_addresses = Flip(addresses)
         selected_address   = None
         repeat             = True
-        repeat_count       = 3
+        repeat_count       = 1
         send_and_receive   = True
         
         while repeat:
@@ -180,7 +178,7 @@ class Setup():
                         ]
                         
                         file_name = current_time.strftime('%Y_%m_%d') + '.csv'
-                        toCSV(path='gatering/', file_name=file_name, save_data=save_data)
+                        toCSV(path='gathering/', file_name=file_name, save_data=save_data)
                     
                     if send_to_db is True:
                         pass                    
