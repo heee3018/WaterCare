@@ -19,6 +19,7 @@ sleep(5)
 while True:
     sleep(1)
     if Mode == 'master':
-
+        pass
+    
     elif Mode == 'slave':
         pass

@@ -59,8 +59,9 @@ class Setup():
         self.ser.parity   = serial_info['parity']   # Default : 'E'
         self.ser.timeout  = serial_info['timeout']  # Default : 1
         
-        if not self.ser.is_open:
-            self.ser.open()
+        try:
+            if not self.ser.is_open:
+                self.ser.open()
         
         self.communicate         = Serial()
         self.communicate.port    = '/dev/ttyAMA0'
@@ -73,7 +74,11 @@ class Setup():
             'time'         : None,
             'address'      : None,
             'flow_rate'    : None,
-            'total_volume' : None
+            'total_volume' : None,    
+            'slave_time'         : None,
+            'slave_address'      : None,
+            'slave_flow_rate'    : None,
+            'slave_total_volume' : None
         }
 
         self.mode        = mode
