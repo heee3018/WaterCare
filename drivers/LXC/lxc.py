@@ -273,10 +273,10 @@ class Setup():
             except:
                 print('[Slave] Print Error')
                 
-        elif self.mode == 'slave':
-            time         = self.buf['time'] 
-            address      = self.buf['address']
-            flow_rate    = self.buf['flow_rate']
-            total_volume = self.buf['total_volume']
-            print(f'[Slave] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
+        # elif self.mode == 'slave':
+        #     time         = self.buf['time'] 
+        #     address      = self.buf['address']
+        #     flow_rate    = self.buf['flow_rate']
+        #     total_volume = self.buf['total_volume']
+        #     print(f'[Slave] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
             
