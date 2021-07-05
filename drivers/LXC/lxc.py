@@ -74,6 +74,10 @@ class Setup():
             'address'      : None,
             'flow_rate'    : None,
             'total_volume' : None,    
+            'slave_time'         : None,
+            'slave_address'      : None,
+            'slave_flow_rate'    : None,
+            'slave_total_volume' : None
         }
 
         self.mode        = mode
@@ -137,7 +141,7 @@ class Setup():
         self.thread        = Thread(target=self.CommonThread)
         self.thread.daemon = False
         self.thread.start()
-                        
+        
         if self.mode == 'master': 
             self.master_thread        = Thread(target=self.MasterThread)
             self.master_thread.daemon = False
@@ -157,10 +161,6 @@ class Setup():
                 self.buf['address']      = None
                 self.buf['flow_rate']    = None
                 self.buf['total_volume'] = None
-                self.buf['slave_time']         = dt.now()
-                self.buf['slave_address']      = None
-                self.buf['slave_flow_rate']    = None
-                self.buf['slave_total_volume'] = None
                 
             elif response == b'\xe5':
                 for _ in range(10):
@@ -218,13 +218,14 @@ class Setup():
     def MasterThread(self):
         # Recive #
         while self.running:
-            interval = 1
+            interval = 0.4
             received_by_slave = self.communicate.readline()
             # print(f"[Recive] {received_by_slave}")
             
             if received_by_slave == b'':
-                received_by_slave = "b'error/99999999/9.999999/9.999999'"
-                
+                # received_by_slave = "b'error/99999999/9.999999/9.999999'"
+                continue
+            
             received_buf = str(received_by_slave)[2:-1].split('/')
             
             self.buf['slave_time']         = str(received_buf[0])
@@ -244,10 +245,14 @@ class Setup():
             flow_rate    = self.buf['flow_rate']
             total_volume = self.buf['total_volume']
             
-            send_data = str(time) + '/' + address + '/' + str(flow_rate) + '/' + str(total_volume)
-            send_data = send_data.encode(encoding='utf-8')
-            send_to_master = self.communicate.write(send_data)
-            print(f"[Transmit] Send: {send_data} [length {send_to_master}]")
+            try:
+                send_data = str(time) + '/' + address + '/' + str(flow_rate) + '/' + str(total_volume)
+                send_data = send_data.encode(encoding='utf-8')
+                send_to_master = self.communicate.write(send_data)
+                print(f"[Transmit] Send: {send_data} [length {send_to_master}]")
+                
+            except:
+                continue
             
             sleep(interval)
             
@@ -259,12 +264,15 @@ class Setup():
             total_volume = self.buf['total_volume']
             print(f'[Master] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
             
-            time         = self.buf['slave_time'] 
-            address      = self.buf['slave_address']
-            flow_rate    = self.buf['slave_flow_rate']
-            total_volume = self.buf['slave_total_volume']
-            print(f'[Slave]  {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
-        
+            try:
+                time         = self.buf['slave_time'] 
+                address      = self.buf['slave_address']
+                flow_rate    = self.buf['slave_flow_rate']
+                total_volume = self.buf['slave_total_volume']
+                print(f'[Slave]  {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
+            except:
+                print('[Slave] Print Error')
+                
         elif self.mode == 'slave':
             time         = self.buf['time'] 
             address      = self.buf['address']
