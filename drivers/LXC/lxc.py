@@ -74,10 +74,6 @@ class Setup():
             'address'      : None,
             'flow_rate'    : None,
             'total_volume' : None,    
-            'slave_time'         : None,
-            'slave_address'      : None,
-            'slave_flow_rate'    : None,
-            'slave_total_volume' : None
         }
 
         self.mode        = mode
@@ -161,6 +157,10 @@ class Setup():
                 self.buf['address']      = None
                 self.buf['flow_rate']    = None
                 self.buf['total_volume'] = None
+                self.buf['slave_time']         = dt.now()
+                self.buf['slave_address']      = None
+                self.buf['slave_flow_rate']    = None
+                self.buf['slave_total_volume'] = None
                 
             elif response == b'\xe5':
                 for _ in range(10):
