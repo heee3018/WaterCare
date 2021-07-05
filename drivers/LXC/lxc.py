@@ -223,7 +223,7 @@ class Setup():
         while self.running:
             interval = 1
             received_by_slave = self.communicate.readline()
-            print(f"[Recive] {received_by_slave}")
+            print(f"[Recive {received_by_slave}")
             
             received_buf = str(received_by_slave)[2:-1].split('/')
             time         = received_buf[0]
