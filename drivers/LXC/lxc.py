@@ -59,10 +59,9 @@ class Setup():
         self.ser.parity   = serial_info['parity']   # Default : 'E'
         self.ser.timeout  = serial_info['timeout']  # Default : 1
         
-        try:
-            if not self.ser.is_open:
-                self.ser.open()
-        
+        if not self.ser.is_open:
+            self.ser.open()
+            
         self.communicate         = Serial()
         self.communicate.port    = '/dev/ttyAMA0'
         self.communicate.timeout = 1
