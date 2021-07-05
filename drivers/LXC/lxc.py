@@ -61,13 +61,6 @@ class Setup():
         
         if not self.ser.is_open:
             self.ser.open()
-            
-        self.communicate         = Serial()
-        self.communicate.port    = '/dev/ttyAMA0'
-        self.communicate.timeout = 1
-        
-        if not self.communicate.is_open:
-            self.communicate.open()
                 
         self.buf = {
             'time'         : None,
@@ -90,7 +83,7 @@ class Setup():
             
         elif self.address == None:
             self.ser.close() 
-            print("Threading could not start because the address could not be found.")
+            print("Threading could not start because the address not be found.")
             
     def SelectAddress(self, addresses):
         inverted_addresses = Flip(addresses)
@@ -142,15 +135,15 @@ class Setup():
         self.thread.daemon = False
         self.thread.start()
         
-        if self.mode == 'master': 
-            self.master_thread        = Thread(target=self.MasterThread)
-            self.master_thread.daemon = False
-            self.master_thread.start()
+        # if self.mode == 'master': 
+        #     self.master_thread        = Thread(target=self.MasterThread)
+        #     self.master_thread.daemon = False
+        #     self.master_thread.start()
             
-        elif self.mode == 'slave':
-            self.slave_thread        = Thread(target=self.SlaveThread)
-            self.slave_thread.daemon = False
-            self.slave_thread.start()
+        # elif self.mode == 'slave':
+        #     self.slave_thread        = Thread(target=self.SlaveThread)
+        #     self.slave_thread.daemon = False
+        #     self.slave_thread.start()
             
     def CommonThread(self):
         while self.running:
@@ -191,7 +184,7 @@ class Setup():
                         self.buf['total_volume'] = int(hex2str(total_volume), 16) / 1000
                     
                     # Print Data
-                    self.PrintData()
+                    # self.PrintData()
                     
                     if save_as_csv is True:
                         save_data = [
@@ -214,48 +207,61 @@ class Setup():
                             self.buf['total_volume'])
                         # self.lxc_db.send(sql)
 
-
-    def MasterThread(self):
-        # Recive #
-        while self.running:
-            interval = 0.4
-            received_by_slave = self.communicate.readline()
-            # print(f"[Recive] {received_by_slave}")
+#
+    # def MasterThread(self):
+    #     # Recive #
+    #     while self.running:
+    #         interval = 0.4
+    #         received_by_slave = self.communicate.readline()
+    #         # print(f"[Recive] {received_by_slave}")
             
-            if received_by_slave == b'':
-                # received_by_slave = "b'error/99999999/9.999999/9.999999'"
-                continue
+    #         if received_by_slave == b'':
+    #             # received_by_slave = "b'error/99999999/9.999999/9.999999'"
+    #             continue
             
-            received_buf = str(received_by_slave)[2:-1].split('/')
+    #         received_buf = str(received_by_slave)[2:-1].split('/')
             
-            self.buf['slave_time']         = str(received_buf[0])
-            self.buf['slave_address']      = str(received_buf[1])
-            self.buf['slave_flow_rate']    = float(received_buf[2])
-            self.buf['slave_total_volume'] = float(received_buf[3])
-            # print(f"[Recive] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥")
+    #         self.buf['slave_time']         = str(received_buf[0])
+    #         self.buf['slave_address']      = str(received_buf[1])
+    #         self.buf['slave_flow_rate']    = float(received_buf[2])
+    #         self.buf['slave_total_volume'] = float(received_buf[3])
+    #         # print(f"[Recive] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥")
             
-            sleep(interval)
+    #         sleep(interval)
             
-    def SlaveThread(self):
-        # Transmit #  
-        while self.running:
-            interval     = 0.4
-            time         = self.buf['time']
-            address      = self.buf['address']
-            flow_rate    = self.buf['flow_rate']
-            total_volume = self.buf['total_volume']
+    # def SlaveThread(self):
+    #     # Transmit #  
+    #     while self.running:
+    #         interval     = 0.4
+    #         time         = self.buf['time']
+    #         address      = self.buf['address']
+    #         flow_rate    = self.buf['flow_rate']
+    #         total_volume = self.buf['total_volume']
             
-            try:
-                send_data = str(time) + '/' + address + '/' + str(flow_rate) + '/' + str(total_volume)
-                send_data = send_data.encode(encoding='utf-8')
-                send_to_master = self.communicate.write(send_data)
-                print(f"[Transmit] Send: {send_data} [length {send_to_master}]")
+    #         try:
+    #             send_data = str(time) + '/' + address + '/' + str(flow_rate) + '/' + str(total_volume)
+    #             send_data = send_data.encode(encoding='utf-8')
+    #             send_to_master = self.communicate.write(send_data)
+    #             print(f"[Transmit] Send: {send_data} [length {send_to_master}]")
                 
-            except:
-                continue
+    #         except:
+    #             continue
             
-            sleep(interval)
-            
+    #         sleep(interval)
+#           
+    def ReturnData(self):
+        time         = self.buf['time']
+        address      = self.buf['address']
+        flow_rate    = self.buf['flow_rate']
+        total_volume = self.buf['total_volume']
+        
+        try:
+            send_data = str(time) + '/' + address + '/' + str(flow_rate) + '/' + str(total_volume)
+        except:
+            send_data = 'Error' + '/' + '99999999' + '/' + '9.999999' + '/' + '9.999999'
+           
+        return send_data
+        
     def PrintData(self):
         if self.mode == 'master': 
             time         = self.buf['time'] 
