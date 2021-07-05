@@ -19,12 +19,6 @@ sleep(5)
 while True:
     sleep(1)
     if Mode == 'master':
-        print(f"00  {usb_0.read}")
-        print(f"01  {usb_1.read}")
-        print(f"02  {usb_2.read}")
-        print(f"03  {usb_3.read}")
-        print(f"04  {usb_4.read}")
-        print(f"05  {usb_5.read}")
-        print(f"06  {usb_6.read}")
+
     elif Mode == 'slave':
         pass

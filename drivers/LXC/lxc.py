@@ -48,14 +48,6 @@ def SelectCommand(addresses):
     
     return result
 
-def PrintData(buf):
-    time         = buf['time'] 
-    address      = buf['address']
-    flow_rate    = buf['flow_rate']
-    total_volume = buf['total_volume']
-    
-    print(f'{time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
-
 
 class Setup(): 
     def __init__(self, port, addresses, mode):
@@ -194,7 +186,8 @@ class Setup():
                     else:
                         self.buf['total_volume'] = int(hex2str(total_volume), 16) / 1000
                     
-                    PrintData(self.buf)
+                    # Print Data
+                    self.PrintData()
                     
                     if save_as_csv is True:
                         save_data = [
@@ -223,21 +216,25 @@ class Setup():
         while self.running:
             interval = 1
             received_by_slave = self.communicate.readline()
-            print(f"[Recive {received_by_slave}")
+            # print(f"[Recive] {received_by_slave}")
             
+            if received_by_slave == b'':
+                received_by_slave = "b'error/99999999/9.999999/9.999999'"
+                
             received_buf = str(received_by_slave)[2:-1].split('/')
-            time         = received_buf[0]
-            address      = received_buf[1]
-            flow_rate    = received_buf[2]
-            total_volume = received_buf[3]
-            print(f'[Recive] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
+            
+            self.buf['slave_time']         = str(received_buf[0])
+            self.buf['slave_address']      = str(received_buf[1])
+            self.buf['slave_flow_rate']    = float(received_buf[2])
+            self.buf['slave_total_volume'] = float(received_buf[3])
+            # print(f"[Recive] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥")
             
             sleep(interval)
             
     def SlaveThread(self):
         # Transmit #  
         while self.running:
-            interval     = 1
+            interval     = 0.4
             time         = self.buf['time']
             address      = self.buf['address']
             flow_rate    = self.buf['flow_rate']
@@ -249,3 +246,25 @@ class Setup():
             print(f"[Transmit] Send: {send_data} [length {send_to_master}]")
             
             sleep(interval)
+            
+    def PrintData(self):
+        if self.mode == 'master': 
+            time         = self.buf['time'] 
+            address      = self.buf['address']
+            flow_rate    = self.buf['flow_rate']
+            total_volume = self.buf['total_volume']
+            print(f'[Master] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
+            
+            time         = self.buf['slave_time'] 
+            address      = self.buf['slave_address']
+            flow_rate    = self.buf['slave_flow_rate']
+            total_volume = self.buf['slave_total_volume']
+            print(f'[Slave]  {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
+        
+        elif self.mode == 'slave':
+            time         = self.buf['time'] 
+            address      = self.buf['address']
+            flow_rate    = self.buf['flow_rate']
+            total_volume = self.buf['total_volume']
+            print(f'[Slave] {time}  Address: {address}  Flow Rate: {flow_rate:11.6f}㎥/h  Total Volume: {total_volume:11.6f}㎥')
+            
