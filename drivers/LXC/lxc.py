@@ -61,13 +61,11 @@ class Setup():
         
         while not self.ser.is_open:
             try:
-                self.ser.close()
-                sleep(0.5)
                 self.ser.open()
-                sleep(0.5)
             except:
-                print('ser.oepn Error')
                 pass
+            
+        self.usb_num = name
             
         self.buf = {
             'time'               : 'Error',
@@ -79,11 +77,10 @@ class Setup():
         self.read_cmd    = '107BFD7816'
         self.select_cmd  = 'No address selected yet'
         
-        os.system('sudo /etc/init.d/udev restart')  
         self.mode        = mode     # 'master', 'slave'
         self.address     = self.SelectAddress(addresses)
         
-        print(f"{name} / {self.mode} / {self.address}")
+        print(f"{self.usb_num} / {self.mode} / {self.address}")
         
         if self.address != '99999999':
             self.StartThreading() 
@@ -112,12 +109,7 @@ class Setup():
                 try:
                     self.ser.write(str2hex(select_command))
                 except:
-                    print("ser.write Error")
-                    self.ser.close()
-                    sleep(0.5)
-                    self.ser.open()
-                    sleep(0.5)
-                    self.ser.write(str2hex(select_command))
+                    print(f"{self.usb_num} ser.write Error")
                     continue
                     
                 response = self.ser.read(1)
