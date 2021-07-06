@@ -51,13 +51,14 @@ def SelectCommand(addresses):
 
 class Setup(): 
     def __init__(self, name, port, addresses, mode):
-        self.ser          = Serial()
-        self.ser.port     = port                     # Default : '/dev/ttyUSB*'
-        self.ser.baudrate = serial_info['baudrate']  # Default : 2400
-        self.ser.bytesize = serial_info['bytesize']  # Default : 8
-        self.ser.stopbits = serial_info['stopbits']  # Default : 1
-        self.ser.parity   = serial_info['parity']    # Default : 'E'
-        self.ser.timeout  = serial_info['timeout']   # Default : 1
+        self.ser              = Serial()
+        self.ser.port         = port                     # Default : '/dev/ttyUSB*'
+        self.ser.baudrate     = serial_info['baudrate']  # Default : 2400
+        self.ser.bytesize     = serial_info['bytesize']  # Default : 8
+        self.ser.stopbits     = serial_info['stopbits']  # Default : 1
+        self.ser.parity       = serial_info['parity']    # Default : 'E'
+        self.ser.timeout      = serial_info['timeout']   # Default : 1
+        self.ser.write_timout = 1
         
         while not self.ser.is_open:
             try:
