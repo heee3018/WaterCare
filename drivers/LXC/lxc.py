@@ -109,6 +109,8 @@ class Setup():
                         break
                     except:
                         print('select_command Write Error')
+                        self.ser.close()
+                        self.ser.open()
                         pass 
                 
                 response = self.ser.read(1)
