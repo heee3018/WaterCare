@@ -109,7 +109,6 @@ class Setup():
                         self.ser.write(str2hex(select_command))
                         break
                     except:
-                        sleep(0.2)
                         pass 
                 
                 response = self.ser.read(1)
