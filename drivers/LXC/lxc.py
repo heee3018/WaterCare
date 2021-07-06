@@ -51,6 +51,8 @@ def SelectCommand(addresses):
 
 class Setup(): 
     def __init__(self, name, port, addresses, mode):
+        self.usb_num = name
+        
         self.ser              = Serial()
         self.ser.port         = port                     # Default : '/dev/ttyUSB*'
         self.ser.baudrate     = serial_info['baudrate']  # Default : 2400
@@ -63,9 +65,9 @@ class Setup():
             try:
                 self.ser.open()
             except:
+                print(f"{self.usb_num} ser.open() Error")
                 pass
             
-        self.usb_num = name
             
         self.buf = {
             'time'               : 'Error',
