@@ -44,7 +44,11 @@ while True:
             
             
         received_by_slave = communicate.readline(377)
-        received_by_slave = received_by_slave.[2:-1].split('#')
+        
+        if received_by_slave == b'':
+            continue
+        
+        received_by_slave = str(received_by_slave)[2:-1].split('#')
         
         while '' in received_by_slave:
             received_by_slave.remove('')
