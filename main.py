@@ -4,11 +4,8 @@ from serial  import Serial
 from drivers import LXC
 from config  import Address, Mode
 
-communicate         = Serial()
-communicate.port    = '/dev/ttyAMA0'
-communicate.timeout = 1
-communicate.xonxoff = True
-interval            = 0.4
+communicate = Serial(port='/dev/ttyAMA0', timeout=1, xonxoff=True)
+interval    = 0.4
 
 if not communicate.is_open:
     communicate.open()
@@ -36,7 +33,7 @@ while True:
         master_data_4 = usb_4.ReturnData()
         master_data_5 = usb_5.ReturnData()
         master_data_6 = usb_6.ReturnData()
-        master_buf    = list()
+        master_buf    = []
         master_buf.append(master_data_0)
         master_buf.append(master_data_1)
         master_buf.append(master_data_2)
@@ -45,29 +42,33 @@ while True:
         master_buf.append(master_data_5)
         master_buf.append(master_data_6)
         
-        received_by_slave = communicate.readline(53)
-        print(received_by_slave)
-        
-        if received_by_slave == b'':
-            continue
-        
-        received_buf = str(received_by_slave)[2:-1].split('#')
-        print(received_buf)
-        
-        slave_data_0  = received_buf[0].split('/')
-        slave_data_1  = received_buf[1].split('/')
-        slave_data_2  = received_buf[2].split('/')
-        slave_data_3  = received_buf[3].split('/')
-        slave_data_4  = received_buf[4].split('/')
-        slave_data_5  = received_buf[5].split('/')
-        slave_data_6  = received_buf[6].split('/')
-        
         for i, data in enumerate(master_buf):
             print(f"[Master_{i}] {data}")
             
-        for i, data in enumerate(received_buf):
-            print(f"[Slave_{i}]  {data}")
+            
+        received_by_slave = communicate.readline()
+        print(received_by_slave)
+        received = str(received_by_slave)[2:-1]
+        print(f"[Slave] {received}")
         
+        # if received_by_slave == b'':
+        #     continue
+        
+        # received_buf = str(received_by_slave)[2:-1].split('#')
+        # print(received_buf)
+        
+        # slave_data_0  = received_buf[0].split('/')
+        # slave_data_1  = received_buf[1].split('/')
+        # slave_data_2  = received_buf[2].split('/')
+        # slave_data_3  = received_buf[3].split('/')
+        # slave_data_4  = received_buf[4].split('/')
+        # slave_data_5  = received_buf[5].split('/')
+        # slave_data_6  = received_buf[6].split('/')
+        
+        # for i, data in enumerate(received_buf):
+        #     print(f"[Slave_{i}]  {data}")
+            
+            
     elif Mode == 'slave':
         slave_data_0 = usb_0.ReturnData()
         slave_data_1 = usb_1.ReturnData()
@@ -84,21 +85,21 @@ while True:
         send_data += slave_data_4 + '#'
         send_data += slave_data_5 + '#'
         send_data += slave_data_6
-        print(send_data, len(send_data))
         
-        while len(send_data) < (7 * 53 + 6):
-            send_data += " "
+        send_data_list = send_data.split('#')
+        for i, data in enumerate(send_data_list):
+            print(f"[Slave_{i}] {len(data)} {data}")
+            communicate.write(data.encode('utf-8'))
+            
         
-        print(send_data, len(send_data))
+        # send_data.encode(encoding='utf-8')
+        # print(send_data)
         
-        send_data.encode(encoding='utf-8')
-        print(send_data)
+        # send_to_master = communicate.write(send_data)
         
-        send_to_master = communicate.write(send_data)
+        # print(f"\n [Length] {send_to_master}")
         
-        print(f"\n [Length] {send_to_master}")
-        
-        for i, data in enumerate(send_data.split('#')):
-            print(f"[Transmit_{i}] {data}")
+        # for i, data in enumerate(send_data.split('#')):
+        #     print(f"[Transmit_{i}] {data}")
             
     sleep(interval)
