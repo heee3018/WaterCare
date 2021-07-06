@@ -25,6 +25,7 @@ while True:
         
     if Mode == 'master':
         
+        print('\n')
         master_buf    = []
         master_buf.append(usb_0.ReturnData())
         master_buf.append(usb_1.ReturnData())
@@ -40,7 +41,6 @@ while True:
             
             print(f"[Master_{i}] {data}")
             
-        print('\n')
         
         received_by_slave = communicate.readline(377)
         
@@ -56,15 +56,14 @@ while True:
             if data[:5] == 'Error':
                 continue
             
-            print(f"[Slave_{i}] {len(data)} {data}")
-        
-        print('\n')
+            print(f"[Slave_{i}]  {data}")
 
         sleep(interval)
             
             
     elif Mode == 'slave':
                
+        print('\n')
         slave_data_0 = usb_0.ReturnData()
         slave_data_1 = usb_1.ReturnData()
         slave_data_2 = usb_2.ReturnData()
@@ -97,6 +96,5 @@ while True:
             
             print(f"[Slave_{i}] {len(data)} {data}")
         
-        print('\n')
         
         sleep(interval)
