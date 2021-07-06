@@ -7,6 +7,7 @@ from config  import Address, Mode
 communicate         = Serial()
 communicate.port    = '/dev/ttyAMA0'
 communicate.timeout = 1
+communicate.xonxoff = True
 interval            = 0.4
 
 if not communicate.is_open:
@@ -85,7 +86,7 @@ while True:
         send_data += slave_data_6
         print(send_data, len(send_data))
         
-        while len(send_data) < 53:
+        while len(send_data) < (7 * 53 + 6):
             send_data += " "
         
         print(send_data, len(send_data))
