@@ -103,8 +103,15 @@ class Setup():
                 
                 # else if inverted_address not in detected_addresses
                 select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
-                self.ser.write(str2hex(select_command))
-                    
+               
+                while True:
+                    try:
+                        self.ser.write(str2hex(select_command))
+                        break
+                    except:
+                        sleep(0.2)
+                        pass 
+                
                 response = self.ser.read(1)
                 if response == b'\xe5':
                     # print('%s has been added !' %Flip(inverted_address))
