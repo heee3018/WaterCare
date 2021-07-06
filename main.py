@@ -27,6 +27,8 @@ while True:
             communicate.close()
             print(f"communicate.open() Error")
             pass
+    
+    print(communicate)
         
     if Mode == 'master':
         
@@ -89,7 +91,8 @@ while True:
         
         while len(send_data) < 377:
             send_data += '#'
-            
+        print(send_data)
+        
         communicate.write(send_data.encode('utf-8'))
         print("communicate.write")
         
