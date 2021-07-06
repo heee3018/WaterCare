@@ -75,6 +75,7 @@ class Setup():
         
         self.mode        = mode     # 'master', 'slave'
         self.address     = self.SelectAddress(addresses)
+        
         print(f"{name} / {self.mode} / {self.address}")
         
         if self.address != '99999999':
@@ -87,7 +88,7 @@ class Setup():
     def SelectAddress(self, addresses):
         inverted_addresses = Flip(addresses)  # Flip Input Addresses
         selected_address   = None             # address to be returned
-        repeat_count       = 1                # number of repeat      
+        repeat_count       = 3                # number of repeat      
     
         for _ in range(repeat_count):
             # Select the Fliped addresses one by one

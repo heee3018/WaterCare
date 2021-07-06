@@ -1,5 +1,11 @@
 Mode = 'master'
-Address = ['20201315', '20201307']
+Address = ['20201307', 
+           '20201312',
+           '20201314',
+           '20201315',
+           '20201316',
+           '20201317']
+
 detected_addresses = list()
 
 save_as_csv = False
