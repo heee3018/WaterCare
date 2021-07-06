@@ -102,16 +102,10 @@ class Setup():
                 
                 # else if inverted_address not in detected_addresses
                 select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
-               
-                while True:
-                    try:
-                        self.ser.write(str2hex(select_command))
-                        break
-                    except:
-                        print('select_command Write Error')
-                        self.ser.close()
-                        self.ser.open()
-                        pass 
+                
+                print(select_command)
+                self.ser.write(str2hex(select_command))
+
                 
                 response = self.ser.read(1)
                 if response == b'\xe5':
