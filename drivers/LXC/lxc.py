@@ -58,7 +58,7 @@ class Setup():
         self.ser.stopbits     = serial_info['stopbits']  # Default : 1
         self.ser.parity       = serial_info['parity']    # Default : 'E'
         self.ser.timeout      = serial_info['timeout']   # Default : 1
-        self.ser.write_timout = 1
+        self.ser.write_timout = 5
         
         while not self.ser.is_open:
             try:
@@ -109,8 +109,21 @@ class Setup():
                 # else if inverted_address not in detected_addresses
                 select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
 
-                self.ser.write(str2hex(select_command))
-
+                try:
+                    self.ser.write(str2hex(select_command))
+                except:
+                    detected_addresses = []
+                    while not self.ser.is_open:
+                        try:
+                            self.ser.close()
+                            sleep(0.5)
+                            self.ser.open()
+                            sleep(0.5)
+                        except:
+                            print('ser.oepn Error')
+                            pass
+                    self.address = self.SelectAddress(addresses)
+                    
                 response = self.ser.read(1)
                 if response == b'\xe5':
                     # print('%s has been added !' %Flip(inverted_address))
