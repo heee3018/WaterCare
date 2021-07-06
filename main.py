@@ -40,7 +40,8 @@ while True:
             
             print(f"[Master_{i}] {data}")
             
-            
+        print('\n')
+        
         received_by_slave = communicate.readline(377)
         
         if received_by_slave == b'':

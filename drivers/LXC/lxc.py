@@ -59,10 +59,12 @@ class Setup():
         self.ser.parity   = serial_info['parity']    # Default : 'E'
         self.ser.timeout  = serial_info['timeout']   # Default : 1
         
-        self.ser.close()
         while not self.ser.is_open:
             try:
+                self.ser.close()
+                sleep(0.5)
                 self.ser.open()
+                sleep(0.5)
             except:
                 print('ser.oepn Error')
                 pass
