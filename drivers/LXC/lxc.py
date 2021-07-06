@@ -52,108 +52,95 @@ def SelectCommand(addresses):
 class Setup(): 
     def __init__(self, port, addresses, mode):
         self.ser          = Serial()
-        self.ser.port     = port                    # Default : '/dev/ttyUSB*'
-        self.ser.baudrate = serial_info['baudrate'] # Default : 2400
-        self.ser.bytesize = serial_info['bytesize'] # Default : 8
-        self.ser.stopbits = serial_info['stopbits'] # Default : 1
-        self.ser.parity   = serial_info['parity']   # Default : 'E'
-        self.ser.timeout  = serial_info['timeout']  # Default : 1
+        self.ser.port     = port                     # Default : '/dev/ttyUSB*'
+        self.ser.baudrate = serial_info['baudrate']  # Default : 2400
+        self.ser.bytesize = serial_info['bytesize']  # Default : 8
+        self.ser.stopbits = serial_info['stopbits']  # Default : 1
+        self.ser.parity   = serial_info['parity']    # Default : 'E'
+        self.ser.timeout  = serial_info['timeout']   # Default : 1
         
         if not self.ser.is_open:
             self.ser.open()
                 
         self.buf = {
-            'time'         : None,
-            'address'      : None,
-            'flow_rate'    : None,
-            'total_volume' : None,    
-            'slave_time'         : None,
-            'slave_address'      : None,
-            'slave_flow_rate'    : None,
-            'slave_total_volume' : None
+            'time'               : dt.now(),
+            'address'            : None,
+            'flow_rate'          : None,
+            'total_volume'       : None
         }
-
-        self.mode        = mode
-        self.address     = self.SelectAddress(addresses)
-        self.select_cmd  = '680B0B6873FD52' + Flip(self.address) + 'FFFFFFFF' + CRC(Flip(self.address)) + '16'
-        self.read_cmd    = '107BFD7816'
         
-        if self.address != None:
+        
+        self.read_cmd    = '107BFD7816'
+        self.select_cmd  = 'No address selected yet'
+        
+        self.mode        = mode     # 'master', 'slave'
+        self.address     = self.SelectAddress(addresses)
+        print(f"Mode: {self.mode} \nAddress: {self.address}")
+        
+        if self.address != '99999999':
             self.StartThreading() 
             
-        elif self.address == None:
+        elif self.address == '99999999':
             self.ser.close() 
             print("Threading could not start because the address not be found.")
-            
-    def SelectAddress(self, addresses):
-        inverted_addresses = Flip(addresses)
-        selected_address   = None
-        repeat             = True
-        repeat_count       = 1
-        send_and_receive   = True
         
-        while repeat:
-            for _ in range(repeat_count):
-                for inverted_address in inverted_addresses: 
-                    for detected_address in detected_addresses:
-                        if inverted_address == detected_address:
-                            print("The address is already connected.")
-                            send_and_receive = False
-                            break
-                        elif inverted_address != detected_address:
-                            send_and_receive = True
-                            pass
-                        
-                    if send_and_receive is True:
-                        select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
-                        self.ser.write(str2hex(select_command))
-                        response = self.ser.read(1)
-                        if response == b'\xe5':
-                            print('%s has been added !' %Flip(inverted_address))
-                            self.select_cmd  = select_command
-                            selected_address = Flip(inverted_address)
-                            detected_addresses.append(inverted_address)
-                            repeat = False
-                            break
-                        
-                        elif response != b'\xe5': 
-                            print('%s is not found...' %Flip(inverted_address))
-                            continue
-                        
-                    send_and_receive = True
+    def SelectAddress(self, addresses):
+        inverted_addresses = Flip(addresses)  # Flip Input Addresses
+        selected_address   = None             # address to be returned
+        repeat_count       = 1                # number of repeat      
+    
+        for _ in range(repeat_count):
+            # Select the Fliped addresses one by one
+            for inverted_address in inverted_addresses:  
+                # Check if the flipped address is in the list of detected addresses
+                if inverted_address in detected_addresses:
+                    # print("The address is already connected.")
+                    break # go to next address
+                
+                # else if inverted_address not in detected_addresses
+                select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
+                self.ser.write(str2hex(select_command))
+                    
+                response = self.ser.read(1)
+                if response == b'\xe5':
+                    # print('%s has been added !' %Flip(inverted_address))
+                    self.select_cmd  = select_command               # update the command
+                    selected_address = Flip(inverted_address)       # Save Fliped address as selected address
+                    detected_addresses.append(inverted_address)     # Add to Detected Address
+
+                    break
+                
+                elif response != b'\xe5': 
+                    # print('%s is not found...' %Flip(inverted_address))
+                    continue
+        
+            if selected_address != None:
+                # Exit the for, if the selected address is found
+                break
             
-                if selected_address == None:
-                    print('Address not found, Try again.')
-            
-            repeat = False    
+            elif selected_address == None:
+                # If there is no selected address, an error code is returned and for exits.
+                selected_address = '99999999'
+                break
             
         return selected_address
      
-    def StartThreading(self):        
+    def StartThreading(self):
         self.running       = True
         self.thread        = Thread(target=self.CommonThread)
         self.thread.daemon = False
         self.thread.start()
-        
-        # if self.mode == 'master': 
-        #     self.master_thread        = Thread(target=self.MasterThread)
-        #     self.master_thread.daemon = False
-        #     self.master_thread.start()
-            
-        # elif self.mode == 'slave':
-        #     self.slave_thread        = Thread(target=self.SlaveThread)
-        #     self.slave_thread.daemon = False
-        #     self.slave_thread.start()
             
     def CommonThread(self):
         while self.running:
             self.ser.write(str2hex(self.select_cmd))
             response = self.ser.read(1)
+            
             if response != b'\xe5':
                 self.buf['time']         = dt.now()
-                self.buf['address']      = None
-                self.buf['flow_rate']    = None
-                self.buf['total_volume'] = None
+                self.buf['address']      = '99999999'
+                self.buf['flow_rate']    = '9.999999'
+                self.buf['total_volume'] = '9.999999'
                 
             elif response == b'\xe5':
                 for _ in range(10):
@@ -162,7 +149,8 @@ class Setup():
                     read_data = hex2str(read_raw_data)
                     
                     if len(read_data)/2 != 39:
-                        continue # ==> Skip the code below and move on to the next one.
+                        # Skip the code below and move on to the next one.
+                        continue
 
                     current_time = dt.now()# .strftime('%Y.%m.%d %H:%M:%S') 
                     self.buf['time'] = current_time 
@@ -183,7 +171,6 @@ class Setup():
                     else:
                         self.buf['total_volume'] = int(hex2str(total_volume), 16) / 1000
                     
-                    # Print Data
                     # self.PrintData()
                     
                     if save_as_csv is True:
@@ -258,7 +245,7 @@ class Setup():
         try:
             send_data = str(time) + '/' + address + '/' + str(flow_rate) + '/' + str(total_volume)
         except:
-            send_data = 'Error' + '/' + '99999999' + '/' + '9.999999' + '/' + '9.999999'
+            send_data = 'Error/99999999/9.999999/9.999999'
            
         return send_data
         

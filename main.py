@@ -28,12 +28,6 @@ for i in range(5):
     
 while True:
     if Mode == 'master':
-        received_by_slave = communicate.readline()
-        if received_by_slave == b'':
-            continue
-        
-        received_buf = str(received_by_slave)[2:-1].split('#')
-        
         master_data_0 = usb_0.ReturnData()
         master_data_1 = usb_1.ReturnData()
         master_data_2 = usb_2.ReturnData()
@@ -50,6 +44,15 @@ while True:
         master_buf.append(master_data_5)
         master_buf.append(master_data_6)
         
+        received_by_slave = communicate.readline(53)
+        print(received_by_slave)
+        
+        if received_by_slave == b'':
+            continue
+        
+        received_buf = str(received_by_slave)[2:-1].split('#')
+        print(received_buf)
+        
         slave_data_0  = received_buf[0].split('/')
         slave_data_1  = received_buf[1].split('/')
         slave_data_2  = received_buf[2].split('/')
@@ -58,10 +61,11 @@ while True:
         slave_data_5  = received_buf[5].split('/')
         slave_data_6  = received_buf[6].split('/')
         
-        for data in master_buf:
-            print(f"[Master] {data}")
-        for data in received_buf:
-            print(f"[Slave]  {data}")
+        for i, data in enumerate(master_buf):
+            print(f"[Master_{i}] {data}")
+            
+        for i, data in enumerate(received_buf):
+            print(f"[Slave_{i}]  {data}")
         
     elif Mode == 'slave':
         slave_data_0 = usb_0.ReturnData()
@@ -79,12 +83,21 @@ while True:
         send_data += slave_data_4 + '#'
         send_data += slave_data_5 + '#'
         send_data += slave_data_6
+        print(send_data, len(send_data))
+        
+        while len(send_data) < 53:
+            send_data += " "
+        
+        print(send_data, len(send_data))
+        
         send_data.encode(encoding='utf-8')
+        print(send_data)
         
         send_to_master = communicate.write(send_data)
         
         print(f"\n [Length] {send_to_master}")
-        for data in  send_data.split('#'):
-            print(f"[Transmit] {data}")
+        
+        for i, data in enumerate(send_data.split('#')):
+            print(f"[Transmit_{i}] {data}")
             
     sleep(interval)
