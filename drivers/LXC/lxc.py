@@ -59,16 +59,18 @@ class Setup():
         self.ser.parity   = serial_info['parity']    # Default : 'E'
         self.ser.timeout  = serial_info['timeout']   # Default : 1
         
-        if not self.ser.is_open:
-            self.ser.open()
-                
+        while not self.ser.is_open:
+            try:
+                self.ser.open()
+            except:
+                pass
+            
         self.buf = {
             'time'               : dt.now().strftime('%Y.%m.%d %H:%M:%S') ,
             'address'            : None,
             'flow_rate'          : None,
             'total_volume'       : None
         }
-        
         
         self.read_cmd    = '107BFD7816'
         self.select_cmd  = 'No address selected yet'
@@ -77,18 +79,19 @@ class Setup():
         self.address     = self.SelectAddress(addresses)
         
         print(f"{name} / {self.mode} / {self.address}")
+        sleep(1)
         
         if self.address != '99999999':
             self.StartThreading() 
             
-        elif self.address == '99999999':
-            self.ser.close() 
+        # elif self.address == '99999999':
+        #     self.ser.close() 
             # print("Threading could not start because the address not be found.")
         
     def SelectAddress(self, addresses):
         inverted_addresses = Flip(addresses)  # Flip Input Addresses
         selected_address   = None             # address to be returned
-        repeat_count       = 3                # number of repeat      
+        repeat_count       = 1                # number of repeat      
     
         for _ in range(repeat_count):
             # Select the Fliped addresses one by one
@@ -96,7 +99,7 @@ class Setup():
                 # Check if the flipped address is in the list of detected addresses
                 if inverted_address in detected_addresses:
                     # print("The address is already connected.")
-                    break # go to next address
+                    continue # go to next address
                 
                 # else if inverted_address not in detected_addresses
                 select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'

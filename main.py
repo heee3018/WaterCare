@@ -17,8 +17,11 @@ usb_6 = LXC.Setup(name='usb_6', port='/dev/ttyUSB6', addresses=Address, mode=Mod
     
 while True:
     
-    if not communicate.is_open:
-        communicate.open()
+    while not communicate.is_open:
+        try:
+            communicate.open()
+        except:
+            pass
         
     if Mode == 'master':
         
