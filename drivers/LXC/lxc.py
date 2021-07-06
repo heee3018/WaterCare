@@ -88,6 +88,7 @@ class Setup():
             self.StartThreading() 
             
         elif self.address == '99999999':
+            sleep(1)
             pass
             # print("Threading could not start because the address not be found.")
         
