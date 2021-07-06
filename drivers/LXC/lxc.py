@@ -68,7 +68,7 @@ class Setup():
                 pass
             
         self.buf = {
-            'time'               : dt.now().strftime('%Y.%m.%d %H:%M:%S') ,
+            'time'               : 'Error'
             'address'            : '99999999',
             'flow_rate'          : '9.999999',
             'total_volume'       : '9.999999'
@@ -104,11 +104,9 @@ class Setup():
                 
                 # else if inverted_address not in detected_addresses
                 select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
-                
-                print(select_command)
+
                 self.ser.write(str2hex(select_command))
 
-                
                 response = self.ser.read(1)
                 if response == b'\xe5':
                     # print('%s has been added !' %Flip(inverted_address))
@@ -145,7 +143,7 @@ class Setup():
             response = self.ser.read(1)
             
             if response != b'\xe5':
-                self.buf['time']         = 'Error'
+                self.buf['time']         =  dt.now().strftime('%Y.%m.%d %H:%M:%S')
                 self.buf['address']      = '99999999'
                 self.buf['flow_rate']    = '9.999999'
                 self.buf['total_volume'] = '9.999999'
