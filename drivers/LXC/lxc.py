@@ -63,7 +63,7 @@ class Setup():
             self.ser.open()
                 
         self.buf = {
-            'time'               : dt.now(),
+            'time'               : dt.now().strftime('%Y.%m.%d %H:%M:%S') ,
             'address'            : None,
             'flow_rate'          : None,
             'total_volume'       : None
@@ -137,7 +137,7 @@ class Setup():
             response = self.ser.read(1)
             
             if response != b'\xe5':
-                self.buf['time']         = dt.now()
+                self.buf['time']         = dt.now().strftime('%Y.%m.%d %H:%M:%S') 
                 self.buf['address']      = '99999999'
                 self.buf['flow_rate']    = '9.999999'
                 self.buf['total_volume'] = '9.999999'
@@ -152,7 +152,7 @@ class Setup():
                         # Skip the code below and move on to the next one.
                         continue
 
-                    current_time = dt.now()# .strftime('%Y.%m.%d %H:%M:%S') 
+                    current_time = dt.now().strftime('%Y.%m.%d %H:%M:%S') # .strftime('%Y.%m.%d %H:%M:%S') 
                     self.buf['time'] = current_time 
                     address = ReadData(read_data, 7, 11)
                     self.buf['address'] = Flip(address)

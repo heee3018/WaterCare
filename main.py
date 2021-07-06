@@ -7,11 +7,6 @@ from config  import Address, Mode
 communicate = Serial(port='/dev/ttyAMA0', timeout=1, xonxoff=True)
 interval    = 0.4
 
-if not communicate.is_open:
-    communicate.open()
-
-data_buffer = [None] * 14
-
 usb_0 = LXC.Setup(name='usb_0', port='/dev/ttyUSB0', addresses=Address, mode=Mode)
 usb_1 = LXC.Setup(name='usb_1', port='/dev/ttyUSB1', addresses=Address, mode=Mode)
 usb_2 = LXC.Setup(name='usb_2', port='/dev/ttyUSB2', addresses=Address, mode=Mode)
@@ -19,12 +14,12 @@ usb_3 = LXC.Setup(name='usb_3', port='/dev/ttyUSB3', addresses=Address, mode=Mod
 usb_4 = LXC.Setup(name='usb_4', port='/dev/ttyUSB4', addresses=Address, mode=Mode)
 usb_5 = LXC.Setup(name='usb_5', port='/dev/ttyUSB5', addresses=Address, mode=Mode)
 usb_6 = LXC.Setup(name='usb_6', port='/dev/ttyUSB6', addresses=Address, mode=Mode)
-
-for i in range(5):
-    sleep(1)
-    print(i + 1)
     
 while True:
+    
+    if not communicate.is_open:
+        communicate.open()
+        
     if Mode == 'master':
         
         master_buf    = []
@@ -37,6 +32,9 @@ while True:
         master_buf.append(usb_6.ReturnData())
         
         for i, data in enumerate(master_buf):
+            if data[:5] == 'Error':
+                continue
+            
             print(f"[Master_{i}] {data}")
             
             
