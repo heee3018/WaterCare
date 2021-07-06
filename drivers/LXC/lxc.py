@@ -68,7 +68,7 @@ class Setup():
                 pass
             
         self.buf = {
-            'time'               : 'Error'
+            'time'               : 'Error',
             'address'            : '99999999',
             'flow_rate'          : '9.999999',
             'total_volume'       : '9.999999'
