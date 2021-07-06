@@ -79,6 +79,7 @@ class Setup():
         self.read_cmd    = '107BFD7816'
         self.select_cmd  = 'No address selected yet'
         
+        os.system('sudo /etc/init.d/udev restart')  
         self.mode        = mode     # 'master', 'slave'
         self.address     = self.SelectAddress(addresses)
         
