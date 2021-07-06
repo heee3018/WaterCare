@@ -50,7 +50,7 @@ def SelectCommand(addresses):
 
 
 class Setup(): 
-    def __init__(self, port, addresses, mode):
+    def __init__(self, name, port, addresses, mode):
         self.ser          = Serial()
         self.ser.port     = port                     # Default : '/dev/ttyUSB*'
         self.ser.baudrate = serial_info['baudrate']  # Default : 2400
@@ -75,14 +75,14 @@ class Setup():
         
         self.mode        = mode     # 'master', 'slave'
         self.address     = self.SelectAddress(addresses)
-        print(f"Mode: {self.mode} \nAddress: {self.address}")
+        print(f"{name} / {self.mode} / {self.address}")
         
         if self.address != '99999999':
             self.StartThreading() 
             
         elif self.address == '99999999':
             self.ser.close() 
-            print("Threading could not start because the address not be found.")
+            # print("Threading could not start because the address not be found.")
         
     def SelectAddress(self, addresses):
         inverted_addresses = Flip(addresses)  # Flip Input Addresses
