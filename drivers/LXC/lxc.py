@@ -65,6 +65,7 @@ class Setup():
             try:
                 self.ser.open()
             except:
+                self.ser.close()
                 print(f"{self.usb_num} ser.open() Error")
                 pass
             
