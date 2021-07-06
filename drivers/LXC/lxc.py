@@ -67,9 +67,9 @@ class Setup():
             
         self.buf = {
             'time'               : dt.now().strftime('%Y.%m.%d %H:%M:%S') ,
-            'address'            : None,
-            'flow_rate'          : None,
-            'total_volume'       : None
+            'address'            : '99999999',
+            'flow_rate'          : '9.999999',
+            'total_volume'       : '9.999999'
         }
         
         self.read_cmd    = '107BFD7816'
@@ -79,13 +79,12 @@ class Setup():
         self.address     = self.SelectAddress(addresses)
         
         print(f"{name} / {self.mode} / {self.address}")
-        sleep(1)
         
         if self.address != '99999999':
             self.StartThreading() 
             
-        # elif self.address == '99999999':
-        #     self.ser.close() 
+        elif self.address == '99999999':
+            pass
             # print("Threading could not start because the address not be found.")
         
     def SelectAddress(self, addresses):
@@ -109,6 +108,7 @@ class Setup():
                         self.ser.write(str2hex(select_command))
                         break
                     except:
+                        print('select_command Write Error')
                         pass 
                 
                 response = self.ser.read(1)
@@ -147,7 +147,7 @@ class Setup():
             response = self.ser.read(1)
             
             if response != b'\xe5':
-                self.buf['time']         = dt.now().strftime('%Y.%m.%d %H:%M:%S') 
+                self.buf['time']         = 'Error'
                 self.buf['address']      = '99999999'
                 self.buf['flow_rate']    = '9.999999'
                 self.buf['total_volume'] = '9.999999'
