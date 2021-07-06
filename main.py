@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
 from time    import sleep
 from serial  import Serial
 from drivers import LXC
 from config  import Address, Mode
+
+os.system('sudo /etc/init.d/udev restart')
 
 communicate = Serial(port='/dev/ttyAMA0', timeout=1, xonxoff=True)
 interval    = 0.4
