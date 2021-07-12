@@ -38,7 +38,7 @@ i2c_0.setFluidDensity(1000) # kg/m^3
 print("Depth: %.3f m (freshwater)  %.3f m (saltwater)"% (freshwaterDepth, saltwaterDepth))
 
 # fluidDensity doesn't matter for altitude() (always MSL air density)
-print("MSL Relative Altitude: %.2f m"% sensor.altitude()) # relative to Mean Sea Level pressure in air
+print("MSL Relative Altitude: %.2f m"% i2c_0.altitude()) # relative to Mean Sea Level pressure in air
 
 
         
