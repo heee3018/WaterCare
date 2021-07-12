@@ -61,6 +61,10 @@ class Setup():
         self.ser.parity       = serial_info['parity']    # Default : 'E'
         self.ser.timeout      = serial_info['timeout']   # Default : 1
         
+        self.mode             = mode     # 'master', 'slave', 'debug'
+        if self.mode == 'debug':
+            return None
+        
         while not self.ser.is_open:
             try:
                 self.ser.open()
@@ -80,7 +84,7 @@ class Setup():
         self.read_cmd    = '107BFD7816'
         self.select_cmd  = 'No address selected yet'
         
-        self.mode        = mode     # 'master', 'slave'
+        
         self.address     = self.SelectAddress(addresses)
         
         print(f"{self.usb_num} / {self.mode} / {self.address}")
@@ -251,6 +255,8 @@ class Setup():
     #         sleep(interval)
 #           
     def ReturnData(self):
+        if self.mode == 'debug':
+            return 'Debug/99999999/9.999999/9.999999'
         time         = self.buf['time']
         address      = self.buf['address']
         flow_rate    = self.buf['flow_rate']
