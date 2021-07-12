@@ -11,7 +11,37 @@ os.system('sudo /etc/init.d/udev restart')
 communicate = Serial(port='/dev/ttyAMA0', timeout=1, xonxoff=True)
 interval    = 0.4
 
+
+
+
 i2c_0 = ms5837.MS5837_30BA() 
+if not i2c_0.init():
+        print("Sensor could not be initialized")
+        exit(1)
+if not i2c_0.read():
+        print("Sensor read failed!")
+        exit(1)
+print("Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
+i2c_0.pressure(ms5837.UNITS_atm),
+i2c_0.pressure(ms5837.UNITS_Torr),
+i2c_0.pressure(ms5837.UNITS_psi)))
+
+print("Temperature: %.2f C  %.2f F  %.2f K" % (
+i2c_0.temperature(ms5837.UNITS_Centigrade),
+i2c_0.temperature(ms5837.UNITS_Farenheit),
+i2c_0.temperature(ms5837.UNITS_Kelvin)))
+
+freshwaterDepth = i2c_0.depth() # default is freshwater
+i2c_0.setFluidDensity(ms5837.DENSITY_SALTWATER)
+saltwaterDepth = i2c_0.depth() # No nead to read() again
+i2c_0.setFluidDensity(1000) # kg/m^3
+print("Depth: %.3f m (freshwater)  %.3f m (saltwater)"% (freshwaterDepth, saltwaterDepth))
+
+# fluidDensity doesn't matter for altitude() (always MSL air density)
+print("MSL Relative Altitude: %.2f m"% sensor.altitude()) # relative to Mean Sea Level pressure in air
+
+
+        
 usb_0 = LXC.Setup(name='usb_0', port='/dev/ttyUSB0', addresses=Address, mode=Mode)
 usb_1 = LXC.Setup(name='usb_1', port='/dev/ttyUSB1', addresses=Address, mode=Mode)
 usb_2 = LXC.Setup(name='usb_2', port='/dev/ttyUSB2', addresses=Address, mode=Mode)
@@ -111,12 +141,12 @@ while True:
                
         sleep(interval)
         
-        print("Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
-            i2c_0.pressure(ms5837.UNITS_atm),
-            i2c_0.pressure(ms5837.UNITS_Torr),
-            i2c_0.pressure(ms5837.UNITS_psi)))
-
-        print("Temperature: %.2f C  %.2f F  %.2f K" % (
-            i2c_0.temperature(ms5837.UNITS_Centigrade),
-            i2c_0.temperature(ms5837.UNITS_Farenheit),
-            i2c_0.temperature(ms5837.UNITS_Kelvin)))
+        if i2c_0.read():
+            print("P: %0.1f hPa  %0.3f psi\tT: %0.2f C  %0.2f F" % (
+            i2c_0.pressure(), # Default is mbar (no arguments)
+            i2c_0.pressure(ms5837.UNITS_hPa), # Request psi
+            i2c_0.temperature(), # Default is degrees C (no arguments)
+            i2c_0.temperature(ms5837.UNITS_Farenheit))) # Request Farenheit
+        else:
+            print("Sensor read failed!")
+            exit(1)
