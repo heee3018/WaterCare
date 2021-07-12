@@ -3,6 +3,7 @@ import os
 from time    import sleep
 from serial  import Serial
 from drivers import LXC
+from drivers import MS5837
 from config  import Address, Mode
 
 os.system('sudo /etc/init.d/udev restart')
@@ -10,6 +11,7 @@ os.system('sudo /etc/init.d/udev restart')
 communicate = Serial(port='/dev/ttyAMA0', timeout=1, xonxoff=True)
 interval    = 0.4
 
+i2c_0 = ms5837.MS5837_30BA() 
 usb_0 = LXC.Setup(name='usb_0', port='/dev/ttyUSB0', addresses=Address, mode=Mode)
 usb_1 = LXC.Setup(name='usb_1', port='/dev/ttyUSB1', addresses=Address, mode=Mode)
 usb_2 = LXC.Setup(name='usb_2', port='/dev/ttyUSB2', addresses=Address, mode=Mode)
@@ -66,7 +68,17 @@ while True:
             print(f"[Slave_{i}]  {data}")
 
         sleep(interval)
-            
+        
+        print("Pressure: %.2f atm  %.2f Torr  %.2f psi"% (
+            i2c_0.pressure(MS5837.UNITS_atm),
+            i2c_0.pressure(MS5837.UNITS_Torr),
+            i2c_0.pressure(MS5837.UNITS_psi)))
+
+        print("Temperature: %.2f C  %.2f F  %.2f K" % (
+            i2c_0.temperature(MS5837.UNITS_Centigrade),
+            i2c_0.temperature(MS5837.UNITS_Farenheit),
+            i2c_0.temperature(MS5837.UNITS_Kelvin)))
+
             
     elif Mode == 'slave':
                
