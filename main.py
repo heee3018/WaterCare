@@ -30,7 +30,6 @@ while True:
             print(f"communicate.open() Error")
             pass
     
-    print(communicate)
         
     if Mode == 'master':
         
@@ -68,15 +67,6 @@ while True:
             print(f"[Slave_{i}]  {data}")
 
         sleep(interval)
-        print("Pressure: %.2f atm  %.2f Torr  %.2f psi"% (
-            i2c_0.pressure(ms5837.UNITS_atm),
-            i2c_0.pressure(ms5837.UNITS_Torr),
-            i2c_0.pressure(ms5837.UNITS_psi)))
-
-        print("Temperature: %.2f C  %.2f F  %.2f K" % (
-            i2c_0.temperature(ms5837.UNITS_Centigrade),
-            i2c_0.temperature(ms5837.UNITS_Farenheit),
-            i2c_0.temperature(ms5837.UNITS_Kelvin)))
 
             
     elif Mode == 'slave':
@@ -116,3 +106,17 @@ while True:
         
         
         sleep(interval)
+    
+    elif Mode == 'debug':
+               
+        sleep(interval)
+        
+        print("Pressure: %.2f atm  %.2f Torr  %.2f psi"% (
+            i2c_0.pressure(ms5837.UNITS_atm),
+            i2c_0.pressure(ms5837.UNITS_Torr),
+            i2c_0.pressure(ms5837.UNITS_psi)))
+
+        print("Temperature: %.2f C  %.2f F  %.2f K" % (
+            i2c_0.temperature(ms5837.UNITS_Centigrade),
+            i2c_0.temperature(ms5837.UNITS_Farenheit),
+            i2c_0.temperature(ms5837.UNITS_Kelvin)))
