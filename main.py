@@ -142,9 +142,9 @@ while True:
         sleep(interval)
         
         if i2c_0.read():
-            print("P: %0.1f hPa  %0.3f psi\tT: %0.2f C  %0.2f F" % (
+            print("P: %0.1f hPa  %0.3f bar\tT: %0.2f C  %0.2f F" % (
             i2c_0.pressure(), # Default is mbar (no arguments)
-            i2c_0.pressure(ms5837.UNITS_hPa), # Request psi
+            i2c_0.pressure(ms5837.UNITS_bar), # Request psi
             i2c_0.temperature(), # Default is degrees C (no arguments)
             i2c_0.temperature(ms5837.UNITS_Farenheit))) # Request Farenheit
         else:
