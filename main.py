@@ -78,7 +78,6 @@ while True:
         slave_data_4 = usb_4.ReturnData()
         slave_data_5 = usb_5.ReturnData()
         slave_data_6 = usb_6.ReturnData()
-        print("slave_data")
         
         send_data  = slave_data_0 + '#'
         send_data += slave_data_1 + '#'
@@ -87,14 +86,11 @@ while True:
         send_data += slave_data_4 + '#'
         send_data += slave_data_5 + '#'
         send_data += slave_data_6
-        print("send_data")
         
         while len(send_data) < 377:
             send_data += '#'
-        print(send_data)
         
         communicate.write(send_data.encode('utf-8'))
-        print("communicate.write")
         
         send_data_list = send_data.split('#')
         
