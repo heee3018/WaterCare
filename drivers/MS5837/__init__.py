@@ -1,1 +1,1 @@
-from .ms5837 import ms5837
+from .ms5837 import MS5837
