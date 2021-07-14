@@ -74,6 +74,7 @@ class Setup():
             except:
                 self.ser.close()
                 print(f"{name} Check the USB connection..")
+                self.address = None
                 return None
             
         self.usb_num          = name
