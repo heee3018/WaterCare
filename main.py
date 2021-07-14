@@ -80,7 +80,6 @@ while True:
                 master_buf[address]['flow_rate'],
                 master_buf[address]['total_volume']))
             
-
         if i2c_0.read():
             print(f"Pressure: %0.6f bar  Temperature: %0.6f C" % (
                 i2c_0.pressure(MS5837.unit_bar),
