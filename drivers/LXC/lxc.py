@@ -100,9 +100,9 @@ class Setup():
         
     def SelectAddress(self, addresses):
         inverted_addresses = Flip(addresses)  # Flip Input Addresses
-        repeat_count       = 1                # number of repeat      
+        repeat             = 1                # number of repeat      
         
-        for _ in range(repeat_count):
+        for _ in range(repeat):
             # Select the Fliped addresses one by one
             for inverted_address in inverted_addresses:  
                 # Check if the flipped address is in the list of detected addresses
@@ -116,8 +116,7 @@ class Setup():
                 try:
                     self.ser.write(str2hex(select_command))
                 except:
-                    print(f"{self.usb_num} ser.write Error")
-                    continue
+                    print(f"{self.usb_num} {Flip(inverted_address)} ser.write Error")
                     
                 response = self.ser.read(1)
                 
