@@ -80,7 +80,7 @@ class Setup():
                 self.ser.open()
             except:
                 self.ser.close()
-                print(f"{self.usb_num} ser.open() Error")
+                print(f"{self.usb_num} Check the USB connection..")
                 return None
             
         print(f"{self.usb_num} / {self.mode} / {self.address}")
@@ -132,7 +132,8 @@ class Setup():
                         continue        
             
                 except:
-                    print(f"{self.usb_num} {Flip(inverted_address)} ser.write Error")
+                    pass
+                    #print(f"{self.usb_num} {Flip(inverted_address)} ser.write Error")
                     
         if self.address == {}:
             # if nothing
