@@ -28,7 +28,7 @@ while True:
     sleep(interval)
     if Mode == 'master':
         if usb_0.address != None:
-            for address in list(self.address.keys()):
+            for address in list(usb_0.address.keys()):
                 print(f"\n usb_0")
                 print(f"  {usb_0.address[address]['time']}")
                 print(f"  {usb_0.address[address]['address']}")
@@ -36,7 +36,7 @@ while True:
                 print(f"  {usb_0.address[address]['total_volume']}")
             
         if usb_1.address != None:
-            for address in list(self.address.keys()):
+            for address in list(usb_1.address.keys()):
                 print(f"\n usb_1")
                 print(f"  {usb_1.address[address]['time']}")
                 print(f"  {usb_1.address[address]['address']}")
@@ -44,7 +44,7 @@ while True:
                 print(f"  {usb_1.address[address]['total_volume']}")
             
         if usb_2.address != None:
-            for address in list(self.address.keys()):
+            for address in list(usb_2.address.keys()):
                 print(f"\n usb_2")
                 print(f"  {usb_2.address[address]['time']}")
                 print(f"  {usb_2.address[address]['address']}")
@@ -52,7 +52,7 @@ while True:
                 print(f"  {usb_2.address[address]['total_volume']}")
             
         if usb_3.address != None:
-            for address in list(self.address.keys()):
+            for address in list(usb_3.address.keys()):
                 print(f"\n usb_3")
                 print(f"  {usb_3.address[address]['time']}")
                 print(f"  {usb_3.address[address]['address']}")
@@ -60,7 +60,7 @@ while True:
                 print(f"  {usb_3.address[address]['total_volume']}")
             
         if usb_4.address != None:
-            for address in list(self.address.keys()):
+            for address in list(usb_4.address.keys()):
                 print(f"\n usb_4")
                 print(f"  {usb_4.address[address]['time']}")
                 print(f"  {usb_4.address[address]['address']}")
@@ -68,7 +68,7 @@ while True:
                 print(f"  {usb_4.address[address]['total_volume']}")
             
         if usb_5.address != None:
-            for address in list(self.address.keys()):
+            for address in list(usb_5.address.keys()):
                 print(f"\n usb_5")
                 print(f"  {usb_5.address[address]['time']}")
                 print(f"  {usb_5.address[address]['address']}")
@@ -76,7 +76,7 @@ while True:
                 print(f"  {usb_5.address[address]['total_volume']}")
             
         if usb_6.address != None:
-            for address in list(self.address.keys()):
+            for address in list(usb_6.address.keys()):
                 print(f"\n usb_6")
                 print(f"  {usb_6.address[address]['time']}")
                 print(f"  {usb_6.address[address]['address']}")
