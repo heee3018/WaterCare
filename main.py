@@ -28,53 +28,60 @@ while True:
     sleep(interval)
     if Mode == 'master':
         if usb_0.address != None:
-            print(f"usb_0 %s %s %11.6f %11.6f" %(
-                usb_0.address['time'],
-                usb_0.address['address'],
-                usb_0.address['flow_rate'],
-                usb_0.address['total_volume']))
+            for address in list(self.address.keys()):
+                print(f"\n usb_0")
+                print(f"  {usb_0.address[address]['time']}")
+                print(f"  {usb_0.address[address]['address']}")
+                print(f"  {usb_0.address[address]['flow_rate']}")
+                print(f"  {usb_0.address[address]['total_volume']}")
             
         if usb_1.address != None:
-            print(f"-- usb_1 --")
-            print(f"  {usb_1.address['time']}")
-            print(f"  {usb_1.address['address']}")
-            print(f"  {usb_1.address['flow_rate']}")
-            print(f"  {usb_1.address['total_volume']}")
+            for address in list(self.address.keys()):
+                print(f"\n usb_1")
+                print(f"  {usb_1.address[address]['time']}")
+                print(f"  {usb_1.address[address]['address']}")
+                print(f"  {usb_1.address[address]['flow_rate']}")
+                print(f"  {usb_1.address[address]['total_volume']}")
             
         if usb_2.address != None:
-            print(f"usb_2 %s %s %11.6f %11.6f" %(
-                usb_2.address['time'],
-                usb_2.address['address'],
-                usb_2.address['flow_rate'],
-                usb_2.address['total_volume']))
+            for address in list(self.address.keys()):
+                print(f"\n usb_2")
+                print(f"  {usb_2.address[address]['time']}")
+                print(f"  {usb_2.address[address]['address']}")
+                print(f"  {usb_2.address[address]['flow_rate']}")
+                print(f"  {usb_2.address[address]['total_volume']}")
             
         if usb_3.address != None:
-            print(f"usb_3 %s %s %11.6f %11.6f" %(
-                usb_3.address['time'],
-                usb_3.address['address'],
-                usb_3.address['flow_rate'],
-                usb_3.address['total_volume']))
+            for address in list(self.address.keys()):
+                print(f"\n usb_3")
+                print(f"  {usb_3.address[address]['time']}")
+                print(f"  {usb_3.address[address]['address']}")
+                print(f"  {usb_3.address[address]['flow_rate']}")
+                print(f"  {usb_3.address[address]['total_volume']}")
             
         if usb_4.address != None:
-            print(f"usb_4 %s %s %11.6f %11.6f" %(
-                usb_4.address['time'],
-                usb_4.address['address'],
-                usb_4.address['flow_rate'],
-                usb_4.address['total_volume']))
+            for address in list(self.address.keys()):
+                print(f"\n usb_4")
+                print(f"  {usb_4.address[address]['time']}")
+                print(f"  {usb_4.address[address]['address']}")
+                print(f"  {usb_4.address[address]['flow_rate']}")
+                print(f"  {usb_4.address[address]['total_volume']}")
             
         if usb_5.address != None:
-            print(f"usb_5 %s %s %11.6f %11.6f" %(
-                usb_5.address['time'],
-                usb_5.address['address'],
-                usb_5.address['flow_rate'],
-                usb_5.address['total_volume']))
+            for address in list(self.address.keys()):
+                print(f"\n usb_5")
+                print(f"  {usb_5.address[address]['time']}")
+                print(f"  {usb_5.address[address]['address']}")
+                print(f"  {usb_5.address[address]['flow_rate']}")
+                print(f"  {usb_5.address[address]['total_volume']}")
             
         if usb_6.address != None:
-            print(f"usb_6 %s %s %11.6f %11.6f" %(
-                usb_6.address['time'],
-                usb_6.address['address'],
-                usb_6.address['flow_rate'],
-                usb_6.address['total_volume']))
+            for address in list(self.address.keys()):
+                print(f"\n usb_6")
+                print(f"  {usb_6.address[address]['time']}")
+                print(f"  {usb_6.address[address]['address']}")
+                print(f"  {usb_6.address[address]['flow_rate']}")
+                print(f"  {usb_6.address[address]['total_volume']}")
              
         if i2c_0.read():
             print("P: %0.1f hPa  %0.3f bar\tT: %0.2f C  %0.2f F" % (
