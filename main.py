@@ -25,6 +25,7 @@ interval    = 0.4
 
 print(f"\n===== Main loop =====")
 while True:
+    sleep(interval)
     if Mode == 'master':
         print("usb_0", usb_0.address)
         print("usb_1", usb_1.address)
