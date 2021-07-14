@@ -115,24 +115,25 @@ class Setup():
 
                 try:
                     self.ser.write(str2hex(select_command))
+                    
+                    response = self.ser.read(1)
+                    
+                    if response == b'\xe5':
+                        # print('%s has been added !' %Flip(inverted_address))
+                        detected_addresses.append(inverted_address)  # Add to Detected Address
+                        self.address[Flip(inverted_address)] = {'select_cmd': select_command,
+                                                                'time':         dt.now().strftime('%Y.%m.%d %H:%M:%S'),
+                                                                'address':      Flip(inverted_address),
+                                                                'flow_rate':    0.0,
+                                                                'total_volume': 0.0}
+                    
+                    elif response != b'\xe5': 
+                        # print('%s is not found...' %Flip(inverted_address))
+                        continue        
+            
                 except:
                     print(f"{self.usb_num} {Flip(inverted_address)} ser.write Error")
                     
-                response = self.ser.read(1)
-                
-                if response == b'\xe5':
-                    # print('%s has been added !' %Flip(inverted_address))
-                    detected_addresses.append(inverted_address)  # Add to Detected Address
-                    self.address[Flip(inverted_address)] = {'select_cmd': select_command,
-                                                            'time':         dt.now().strftime('%Y.%m.%d %H:%M:%S'),
-                                                            'address':      Flip(inverted_address),
-                                                            'flow_rate':    0.0,
-                                                            'total_volume': 0.0}
-                
-                elif response != b'\xe5': 
-                    # print('%s is not found...' %Flip(inverted_address))
-                    continue        
-        
         if self.address == {}:
             # if nothing
             self.address['99999999'] = {'select_cmd': 'Select command not found',
