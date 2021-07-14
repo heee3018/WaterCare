@@ -23,6 +23,7 @@ usb_6 = LXC.Setup(name='usb_6', port='/dev/ttyUSB6', addresses=Address, mode=Mod
 communicate = Serial(port='/dev/ttyAMA0', timeout=1, xonxoff=True)
 interval    = 0.4
 
+print(f"\n===== Main loop =====")
 while True:
     if Mode == 'master':
         print("usb_0", usb_0.address)
