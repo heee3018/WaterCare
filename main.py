@@ -87,7 +87,7 @@ while True:
                              i2c_0.pressure(MS5837.unit_bar),
                              i2c_0.temperature()]
                 file_name = address + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
-                toCSV('ms5837', 'csv\', file_name, save_data)
+                toCSV('ms5837', 'csv//', file_name, save_data)
             
         for address in list(master_buf.keys()):
             print(f"%s  %s  Flow rate: %0.6f ㎥/h  Total volume: %0.6f ㎥" %(
