@@ -8,6 +8,7 @@ from config  import Address, Mode
 ## USB Restart
 # os.system('sudo /etc/init.d/udev restart')
 
+print(f"# Mode: {Mode}")
 ## Sensor Setup
 i2c_0 = MS5837.Setup()
 usb_0 = LXC.Setup(name='usb_0', port='/dev/ttyUSB0', addresses=Address, mode=Mode) # 3

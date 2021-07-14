@@ -83,7 +83,7 @@ class Setup():
                 print(f"{self.usb_num} Check the USB connection..")
                 return None
             
-        print(f"{self.usb_num} Connected successfully! [{self.mode}]")
+        print(f"{self.usb_num} Connected successfully!")
         
         if '99999999' not in list(self.address.keys()):
             print(f"{self.usb_num} Found the address!")
