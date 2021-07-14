@@ -73,7 +73,7 @@ class Setup():
                 self.ser.open()
             except:
                 self.ser.close()
-                print(f"{name} Check the USB connection..")
+                print(f"{name} Check the USB connection.. \n")
                 self.address = None
                 return None
             
@@ -89,13 +89,13 @@ class Setup():
         if '99999999' not in list(self.address.keys()):
             print(f"{self.usb_num} Found the address!")
             for address in list(self.address.keys()):
-                print(f" -> {address}")
+                print(f" -> {address} \n")
                 
             self.StartThreading() 
             
         elif '99999999' in list(self.address.keys()):
             sleep(1)
-            print(f"{self.usb_num} Address not found")
+            print(f"{self.usb_num} Address not found \n")
             
             # print("Threading could not start because the address not be found.")
         

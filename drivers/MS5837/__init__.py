@@ -33,5 +33,6 @@ def Setup():
 
         # fluidDensity doesn't matter for altitude() (always MSL air density)
         print("MSL Relative Altitude: %.2f m"% i2c.altitude()) # relative to Mean Sea Level pressure in air
-
+        print("\n")
+        
         return i2c
