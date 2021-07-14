@@ -27,7 +27,7 @@ print(f"\n===== Main loop =====")
 while True:
     sleep(interval)
     if Mode == 'master':
-        os.system('clear')
+        print('\n')
         if usb_0.address != None:
             for address in list(usb_0.address.keys()):
                 print(f"usb_0   %s  %s  Flow rate: %0.6f ㎥/h  Total volume: %0.6f ㎥" %(

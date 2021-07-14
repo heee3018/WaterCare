@@ -66,7 +66,7 @@ class Setup():
         self.ser.bytesize     = serial_info['bytesize']  # Default : 8
         self.ser.stopbits     = serial_info['stopbits']  # Default : 1
         self.ser.parity       = serial_info['parity']    # Default : 'E'
-        self.ser.timeout      = serial_info['timeout']   # Default : 3
+        self.ser.timeout      = serial_info['timeout']   # Default : 2
         
         if not self.ser.is_open:
             try:
