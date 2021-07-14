@@ -27,7 +27,6 @@ print(f"\n===== Main loop =====")
 while True:
     sleep(interval)
     if Mode == 'master':
-        print('\n')
         if usb_0.address != None:
             for address in list(usb_0.address.keys()):
                 print(f"usb_0   %s  %s  Flow rate: %0.6f ㎥/h  Total volume: %0.6f ㎥" %(
@@ -79,12 +78,12 @@ while True:
                     usb_6.address[address]['total_volume']))
              
         if i2c_0.read():
-            print(f"i2c_0   Pressure: %0.6f bar Temperature: %0.6f C" % (
+            print(f"i2c_0   Pressure: %0.6f bar  Temperature: %0.6f C" % (
                 i2c_0.pressure(MS5837.unit_bar),
                 i2c_0.temperature()))
         else:
             print("Sensor read failed!")
-            exit(1)
+            # exit(1)
             
     # if Mode == 'master':
     #     print('\n')
