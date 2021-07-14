@@ -81,7 +81,7 @@ class Setup():
             except:
                 self.ser.close()
                 print(f"{self.usb_num} ser.open() Error")
-                pass
+                return None
             
         print(f"{self.usb_num} / {self.mode} / {self.address}")
         
