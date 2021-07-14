@@ -187,8 +187,8 @@ class Setup():
                         self.address[address]['time'] = current_time 
                         
                         # ---------- Address
-                        address = ReadData(read_data, 7, 11)
-                        self.address[address]['address'] = Flip(address)
+                        read_address = ReadData(read_data, 7, 11)
+                        self.address[address]['address'] = Flip(read_address)
                         
                         # ---------- Flow Rate
                         flow_rate = ReadData(read_data, 27, 31)
