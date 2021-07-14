@@ -1,5 +1,5 @@
 from .ms5837 import * 
-# 수정
+# 수
 def Setup():
         i2c = MS5837_30BA() 
         if not i2c.init():
