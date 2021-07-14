@@ -110,20 +110,13 @@ class Setup():
                 if inverted_address in detected_addresses:
                     # print("The address is already connected.")
                     continue # go to next address
-                print(inverted_address)
-                sleep(0.2)
+
                 # else if inverted_address not in detected_addresses
                 select_command = '680B0B6873FD52' + inverted_address + 'FFFFFFFF' + CRC(inverted_address) + '16'
-                print(select_command)
-                sleep(0.2)
                 
                 self.ser.write(str2hex(select_command))
-                    
-                    
-                response = self.ser.read(1)
                 
-                print(response)
-                sleep(0.2)
+                response = self.ser.read(1)
                 
                 if response == b'\xe5':
                     # print('%s has been added !' %Flip(inverted_address))
