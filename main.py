@@ -2,8 +2,8 @@
 import os
 from time    import sleep
 from serial  import Serial
-from drivers import LXC, MS5837
 from config  import Address, Mode
+from drivers import LXC, MS5837
 
 ## USB Restart
 # os.system('sudo /etc/init.d/udev restart')
@@ -25,14 +25,22 @@ interval    = 0.4
 
 while True:
     if Mode == 'master':
-        print("usb_0", usb_0)
-        print("usb_1", usb_1)
-        print("usb_2", usb_2)
-        print("usb_3", usb_3)
-        print("usb_4", usb_4)
-        print("usb_5", usb_5)
-        print("usb_6", usb_6)
-    
+        print("usb_0", usb_0.address)
+        print("usb_1", usb_1.address)
+        print("usb_2", usb_2.address)
+        print("usb_3", usb_3.address)
+        print("usb_4", usb_4.address)
+        print("usb_5", usb_5.address)
+        print("usb_6", usb_6.address)
+        if i2c_0.read():
+            print("P: %0.1f hPa  %0.3f bar\tT: %0.2f C  %0.2f F" % (
+                i2c_0.pressure(), # Default is mbar (no arguments)
+                i2c_0.pressure(MS5837.unit_bar), # Request psi
+                i2c_0.temperature(), # Default is degrees C (no arguments)
+                i2c_0.temperature(MS5837.unit_Farenheit))) # Request Farenheit
+        else:
+            print("Sensor read failed!")
+            exit(1)
     # if Mode == 'master':
     #     print('\n')
     #     master_buf = []
@@ -108,16 +116,16 @@ while True:
     
     # elif Mode == 'debug':
                
-        sleep(interval)
+        # sleep(interval)
         
-        if i2c_0.read():
-            print("P: %0.1f hPa  %0.3f bar\tT: %0.2f C  %0.2f F" % (
-            i2c_0.pressure(), # Default is mbar (no arguments)
-            i2c_0.pressure(ms5837.UNITS_bar), # Request psi
-            i2c_0.temperature(), # Default is degrees C (no arguments)
-            i2c_0.temperature(ms5837.UNITS_Farenheit))) # Request Farenheit
-        else:
-            print("Sensor read failed!")
-            exit(1)
+        # if i2c_0.read():
+        #     print("P: %0.1f hPa  %0.3f bar\tT: %0.2f C  %0.2f F" % (
+        #     i2c_0.pressure(), # Default is mbar (no arguments)
+        #     i2c_0.pressure(ms5837.UNITS_bar), # Request psi
+        #     i2c_0.temperature(), # Default is degrees C (no arguments)
+        #     i2c_0.temperature(ms5837.UNITS_Farenheit))) # Request Farenheit
+        # else:
+        #     print("Sensor read failed!")
+        #     exit(1)
     
     ## Common

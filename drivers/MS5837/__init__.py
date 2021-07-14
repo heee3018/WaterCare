@@ -1,5 +1,12 @@
 from .ms5837 import * 
-# 수
+unit_atm        = UNITS_atm
+unit_Torr       = UNITS_Torr
+unit_psi        = UNITS_psi
+unit_bar        = UNITS_bar
+unit_Centigrade = UNITS_Centigrade
+unit_Farenheit  = UNITS_Farenheit
+unit_Kelvin     = UNITS_Kelvin
+
 def Setup():
         i2c = MS5837_30BA() 
         if not i2c.init():
