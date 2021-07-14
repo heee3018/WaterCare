@@ -118,12 +118,8 @@ class Setup():
                 print(select_command)
                 sleep(0.2)
                 
-                try:
-                    self.ser.write(str2hex(select_command))
+                self.ser.write(str2hex(select_command))
                     
-                except:
-                    print('self.ser.write Error -> continue')
-                    continue
                     
                 response = self.ser.read(1)
                 
