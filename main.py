@@ -6,7 +6,7 @@ from config  import Address, Mode
 from drivers import LXC, MS5837
 
 ## USB Restart
-# os.system('sudo /etc/init.d/udev restart')
+os.system('sudo /etc/init.d/udev restart')
 
 print(f"\n===== Mode: {Mode} =====")
 ## Sensor Setup
@@ -26,8 +26,9 @@ interval    = 0.5
 print(f"\n===== Main loop =====")
 while True:
     sleep(interval)
+    
     if Mode == 'master':
-        print('\n')
+        print('\nMaster')
         if usb_0.address != None:
             for address in list(usb_0.address.keys()):
                 print(f"usb_0   %s  %s  Flow rate: %0.6f ㎥/h  Total volume: %0.6f ㎥" %(
