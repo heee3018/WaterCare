@@ -73,7 +73,7 @@ class Setup():
                 self.ser.open()
             except:
                 self.ser.close()
-                print(f"{self.usb_num} Check the USB connection..")
+                print(f"{name} Check the USB connection..")
                 
         self.usb_num          = name
         self.mode             = mode     # 'master', 'slave', 'debug'
