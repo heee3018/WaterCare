@@ -68,20 +68,19 @@ class Setup():
         self.ser.parity       = serial_info['parity']    # Default : 'E'
         self.ser.timeout      = serial_info['timeout']   # Default : 1
         
+        if not self.ser.is_open:
+            try:
+                self.ser.open()
+            except:
+                self.ser.close()
+                print(f"{self.usb_num} Check the USB connection..")
+                
         self.usb_num          = name
         self.mode             = mode     # 'master', 'slave', 'debug'
         self.address          = dict()
         self.read_cmd         = '107BFD7816'
         
         self.SelectAddress(addresses)
-        
-        while not self.ser.is_open:
-            try:
-                self.ser.open()
-            except:
-                self.ser.close()
-                print(f"{self.usb_num} Check the USB connection..")
-                return None
             
         print(f"{self.usb_num} Connected successfully!")
         
