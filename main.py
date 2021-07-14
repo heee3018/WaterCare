@@ -102,7 +102,7 @@ while True:
                              master_buf[address]['flow_rate'],
                              master_buf[address]['total_volume']]
                 file_name = address + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
-                toCSV('lxc', 'gathering\\', file_name, save_data)
+                toCSV('lxc', 'gathering/', file_name, save_data)
                 
             # exit(1)
             
