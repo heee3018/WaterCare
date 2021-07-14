@@ -16,5 +16,5 @@ serial_info = {
     'bytesize': 8,
     'stopbits': 1,
     'parity': 'E',
-    'timeout': 1
+    'timeout': 3
 }

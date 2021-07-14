@@ -21,7 +21,7 @@ usb_6 = LXC.Setup(name='usb_6', port='/dev/ttyUSB6', addresses=Address, mode=Mod
     
 ## Master-Slave Communication
 communicate = Serial(port='/dev/ttyAMA0', timeout=1, xonxoff=True)
-interval    = 0.2
+interval    = 0.5
 
 print(f"\n===== Main loop =====")
 while True:
