@@ -74,7 +74,8 @@ class Setup():
             except:
                 self.ser.close()
                 print(f"{name} Check the USB connection..")
-                
+                return None
+            
         self.usb_num          = name
         self.mode             = mode     # 'master', 'slave', 'debug'
         self.address          = dict()
@@ -156,7 +157,7 @@ class Setup():
         while self.running:
             for address in list(self.address.keys()):
                 
-                select_command = self.address[address]
+                select_command = self.address[address]['select_cmd']
                 self.ser.write(str2hex(select_command))
                 response = self.ser.read(1)
                 
