@@ -83,11 +83,14 @@ class Setup():
                 print(f"{self.usb_num} Check the USB connection..")
                 return None
             
-        print(f"{self.usb_num} / {self.mode} / {self.address}")
+        print(f"{self.usb_num} Connected successfully! [{self.mode}]")
+        print(f"{self.usb_num} {}")
         
         if '99999999' not in list(self.address.keys()):
             print(f"{self.usb_num} Found the address!")
-            print(f"{list(self.address.keys())}")
+            for address in list(self.address.keys()):
+                print(f" - address")
+                
             self.StartThreading() 
             
         elif '99999999' in list(self.address.keys()):

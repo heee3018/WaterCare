@@ -1,4 +1,4 @@
-Mode = 'debug'
+Mode = 'master'
 Address = ['20201307', 
            '20201312',
            '20201314',
