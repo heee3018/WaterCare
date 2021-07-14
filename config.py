@@ -1,4 +1,4 @@
-Mode = 'master'
+Mode    = 'master'
 Address = ['20201307', 
            '20201312',
            '20201314',
@@ -6,15 +6,12 @@ Address = ['20201307',
            '20201316',
            '20201317']
 
+# Initial setting
+save_as_csv        = True
+send_to_db         = False
 detected_addresses = list()
-
-save_as_csv = False
-send_to_db  = False
-
-serial_info = {
-    'baudrate': 2400,
-    'bytesize': 8,
-    'stopbits': 1,
-    'parity': 'E',
-    'timeout': 2
-}
+serial_info        = {'baudrate': 2400,
+                      'bytesize': 8,
+                      'stopbits': 1,
+                      'parity': 'E',
+                      'timeout': 1}

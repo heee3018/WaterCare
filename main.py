@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
-from time    import sleep
-from serial  import Serial
-from config  import Address, Mode
-from drivers import LXC, MS5837
+from time       import sleep
+from serial     import Serial
+from datetime   import timedelta, datetime as dt
+from config     import Address, Mode, save_as_csv
+from drivers    import LXC, MS5837
+from lib.to_csv import toCSV
 
 ## USB Restart
 os.system('sudo /etc/init.d/udev restart')
@@ -28,8 +30,10 @@ while True:
     sleep(interval)
     
     if Mode == 'master':
-        master_buf = {}
         print('\nMaster')
+        
+        master_buf = {}
+        
         if usb_0.address != None:
             for address in list(usb_0.address.keys()):
                 master_buf[address] = {'time'         : usb_0.address[address]['time'],
@@ -73,6 +77,18 @@ while True:
                                        'flow_rate'    : usb_6.address[address]['flow_rate'],
                                        'total_volume' : usb_6.address[address]['total_volume']}
 
+        if i2c_0.read() == True:
+            print(f"Pressure: %0.6f bar  Temperature: %0.6f C" % (
+                i2c_0.pressure(MS5837.unit_bar),
+                i2c_0.temperature()))
+            
+            if save_as_csv is True:
+                save_data = [dt.now().strftime('%Y.%m.%d %H:%M:%S'),
+                             i2c_0.pressure(MS5837.unit_bar),
+                             i2c_0.temperature()]
+                file_name = address + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
+                toCSV('ms5837', 'gathering\\', file_name, save_data)
+            
         for address in list(master_buf.keys()):
             print(f"%s  %s  Flow rate: %0.6f ㎥/h  Total volume: %0.6f ㎥" %(
                 master_buf[address]['time'],
@@ -80,12 +96,14 @@ while True:
                 master_buf[address]['flow_rate'],
                 master_buf[address]['total_volume']))
             
-        if i2c_0.read():
-            print(f"Pressure: %0.6f bar  Temperature: %0.6f C" % (
-                i2c_0.pressure(MS5837.unit_bar),
-                i2c_0.temperature()))
-        else:
-            print("Sensor read failed!")
+            if save_as_csv is True:
+                save_data = [master_buf[address]['time'],
+                             master_buf[address]['address'],
+                             master_buf[address]['flow_rate'],
+                             master_buf[address]['total_volume']]
+                file_name = address + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
+                toCSV('lxc', 'gathering\\', file_name, save_data)
+                
             # exit(1)
             
     # if Mode == 'master':

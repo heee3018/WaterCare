@@ -66,7 +66,7 @@ class Setup():
         self.ser.bytesize     = serial_info['bytesize']  # Default : 8
         self.ser.stopbits     = serial_info['stopbits']  # Default : 1
         self.ser.parity       = serial_info['parity']    # Default : 'E'
-        self.ser.timeout      = serial_info['timeout']   # Default : 2
+        self.ser.timeout      = serial_info['timeout']   # Default : 1
         
         if not self.ser.is_open:
             try:
@@ -210,16 +210,7 @@ class Setup():
                             self.address[address]['total_volume'] = int(hex2str(total_volume), 16) / 1000
                         
                 
-                        if save_as_csv is True:
-                            save_data = [
-                                self.address[address]['time'], 
-                                self.address[address]['address'], 
-                                self.address[address]['flow_rate'],
-                                self.address[address]['total_volume'] 
-                            ]
-                            
-                            file_name = current_time.strftime('%Y_%m_%d') + '.csv'
-                            toCSV(path='gathering\\', file_name=file_name, save_data=save_data)
+                        
                         
                         if send_to_db is True:
                             # sql = "INSERT INTO `%s` VALUES ('%s', '%s', '%f', '%f')" %(
