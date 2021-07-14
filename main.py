@@ -32,46 +32,46 @@ while True:
         print('\nMaster')
         if usb_0.address != None:
             for address in list(usb_0.address.keys()):
-                master_buf[address]['time']         = usb_0.address[address]['time']
-                master_buf[address]['address']      = usb_0.address[address]['address']
-                master_buf[address]['flow_rate']    = usb_0.address[address]['flow_rate']
-                master_buf[address]['total_volume'] = usb_0.address[address]['total_volume']
+                master_buf[address] = {'time'         : usb_0.address[address]['time'],
+                                       'address'      : usb_0.address[address]['address'],
+                                       'flow_rate'    : usb_0.address[address]['flow_rate'],
+                                       'total_volume' : usb_0.address[address]['total_volume']}
         if usb_1.address != None:
             for address in list(usb_1.address.keys()):
-                master_buf[address]['time']         = usb_1.address[address]['time']
-                master_buf[address]['address']      = usb_1.address[address]['address']
-                master_buf[address]['flow_rate']    = usb_1.address[address]['flow_rate']
-                master_buf[address]['total_volume'] = usb_1.address[address]['total_volume']
+                master_buf[address] = {'time'         : usb_1.address[address]['time'],
+                                       'address'      : usb_1.address[address]['address'],
+                                       'flow_rate'    : usb_1.address[address]['flow_rate'],
+                                       'total_volume' : usb_1.address[address]['total_volume']}
         if usb_2.address != None:
             for address in list(usb_2.address.keys()):
-                master_buf[address]['time']         = usb_2.address[address]['time']
-                master_buf[address]['address']      = usb_2.address[address]['address']
-                master_buf[address]['flow_rate']    = usb_2.address[address]['flow_rate']
-                master_buf[address]['total_volume'] = usb_2.address[address]['total_volume']
+                master_buf[address] = {'time'         : usb_2.address[address]['time'],
+                                       'address'      : usb_2.address[address]['address'],
+                                       'flow_rate'    : usb_2.address[address]['flow_rate'],
+                                       'total_volume' : usb_2.address[address]['total_volume']}
         if usb_3.address != None:
             for address in list(usb_3.address.keys()):
-                master_buf[address]['time']         = usb_3.address[address]['time']
-                master_buf[address]['address']      = usb_3.address[address]['address']
-                master_buf[address]['flow_rate']    = usb_3.address[address]['flow_rate']
-                master_buf[address]['total_volume'] = usb_3.address[address]['total_volume']
+                master_buf[address] = {'time'         : usb_3.address[address]['time'],
+                                       'address'      : usb_3.address[address]['address'],
+                                       'flow_rate'    : usb_3.address[address]['flow_rate'],
+                                       'total_volume' : usb_3.address[address]['total_volume']}
         if usb_4.address != None:
             for address in list(usb_4.address.keys()):
-                master_buf[address]['time']         = usb_4.address[address]['time']
-                master_buf[address]['address']      = usb_4.address[address]['address']
-                master_buf[address]['flow_rate']    = usb_4.address[address]['flow_rate']
-                master_buf[address]['total_volume'] = usb_4.address[address]['total_volume']
+                master_buf[address] = {'time'         : usb_4.address[address]['time'],
+                                       'address'      : usb_4.address[address]['address'],
+                                       'flow_rate'    : usb_4.address[address]['flow_rate'],
+                                       'total_volume' : usb_4.address[address]['total_volume']}
         if usb_5.address != None:
             for address in list(usb_5.address.keys()):
-                master_buf[address]['time']         = usb_5.address[address]['time']
-                master_buf[address]['address']      = usb_5.address[address]['address']
-                master_buf[address]['flow_rate']    = usb_5.address[address]['flow_rate']
-                master_buf[address]['total_volume'] = usb_5.address[address]['total_volume']
+                master_buf[address] = {'time'         : usb_5.address[address]['time'],
+                                       'address'      : usb_5.address[address]['address'],
+                                       'flow_rate'    : usb_5.address[address]['flow_rate'],
+                                       'total_volume' : usb_5.address[address]['total_volume']}
         if usb_6.address != None:
             for address in list(usb_6.address.keys()):
-                master_buf[address]['time']         = usb_6.address[address]['time']
-                master_buf[address]['address']      = usb_6.address[address]['address']
-                master_buf[address]['flow_rate']    = usb_6.address[address]['flow_rate']
-                master_buf[address]['total_volume'] = usb_6.address[address]['total_volume']
+                master_buf[address] = {'time'         : usb_6.address[address]['time'],
+                                       'address'      : usb_6.address[address]['address'],
+                                       'flow_rate'    : usb_6.address[address]['flow_rate'],
+                                       'total_volume' : usb_6.address[address]['total_volume']}
 
         for address in list(master_buf.keys()):
             print(f"%s  %s  Flow rate: %0.6f ㎥/h  Total volume: %0.6f ㎥" %(
