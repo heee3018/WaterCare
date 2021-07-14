@@ -1,4 +1,4 @@
-from ms5837 import *
+from .ms5837 import *
 
 def Setup():
         i2c = MS5837_30BA() 
