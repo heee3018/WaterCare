@@ -68,9 +68,10 @@ class MS5837(object):
         if self._bus is None:
             print("No bus!")
             return False
-        
-        self._bus.write_byte(self._MS5837_ADDR, self._MS5837_RESET)
-        
+        try:
+            self._bus.write_byte(self._MS5837_ADDR, self._MS5837_RESET)
+        except:
+            return False
         # Wait for reset to complete
         sleep(0.01)
         
