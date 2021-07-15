@@ -11,7 +11,7 @@ def Setup():
         i2c = MS5837_30BA() 
         if not i2c.init():
                 print("Sensor could not be initialized")
-                exit(1)
+                return False
                 
         if not i2c.read():
                 print("Sensor read failed!")
