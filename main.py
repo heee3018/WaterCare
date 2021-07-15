@@ -76,18 +76,6 @@ while True:
                                        'address'      : usb_6.address[address]['address'],
                                        'flow_rate'    : usb_6.address[address]['flow_rate'],
                                        'total_volume' : usb_6.address[address]['total_volume']}
-
-        if i2c_0.read() == True:
-            print(f"Pressure: %0.6f bar  Temperature: %0.6f C" % (
-                i2c_0.pressure(MS5837.unit_bar),
-                i2c_0.temperature()))
-            
-            if save_as_csv is True:
-                save_data = [dt.now().strftime('%Y.%m.%d %H:%M:%S'),
-                             i2c_0.pressure(MS5837.unit_bar),
-                             i2c_0.temperature()]
-                file_name = 'ms5837' + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
-                toCSV('ms5837', 'csv/', file_name, save_data)
             
         for address in list(master_buf.keys()):
             print(f"%s  %s  Flow rate: %0.6f ㎥/h  Total volume: %0.6f ㎥" %(
@@ -104,6 +92,19 @@ while True:
                 file_name = address + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
                 toCSV('lxc', 'csv/', file_name, save_data)
     
+        if i2c_0.read() == True:
+            print(f"Pressure: %0.6f bar  Temperature: %0.6f C" % (
+                i2c_0.pressure(MS5837.unit_bar),
+                i2c_0.temperature()))
+            
+            if save_as_csv is True:
+                save_data = [dt.now().strftime('%Y.%m.%d %H:%M:%S'),
+                             i2c_0.pressure(MS5837.unit_bar),
+                             i2c_0.temperature()]
+                file_name = 'ms5837' + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
+                toCSV('ms5837', 'csv/', file_name, save_data)
+
+
     elif Mode == 'slave':
         pass
     
