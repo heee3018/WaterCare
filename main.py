@@ -92,7 +92,7 @@ while True:
                 file_name = address + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
                 toCSV('lxc', 'csv/', file_name, save_data)
         
-        if i2c_0 != False
+        if i2c_0 != False:
             if i2c_0.read() == True:
                 print(f"Pressure: %0.6f bar  Temperature: %0.6f C" % (
                     i2c_0.pressure(MS5837.unit_bar),
