@@ -193,11 +193,12 @@ class Setup():
                         
                         # ---------- Flow Rate
                         flow_rate = ReadData(read_data, 27, 31)
-                        flow_rate = Flip(flow_rate[6:8])
+                        flow_rate = Flip(flow_rate)
                         flow_rate = str2hex(flow_rate)
                         if flow_rate == b'\x00':
                             self.address[address]['flow_rate'] = 0.0
                         else:
+                            print(flow_rate)
                             self.address[address]['flow_rate'] = unpack("!f", flow_rate)[0]
                             
                         # ---------- Total Volume

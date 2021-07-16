@@ -15,8 +15,7 @@ def Setup():
                 
         if not i2c.read():
                 print("Sensor read failed!")
-                pass
-                #exit(1)
+                return False
                 
         print("Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
         i2c.pressure(UNITS_atm),
