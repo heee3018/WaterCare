@@ -35,6 +35,6 @@ while True:
         temperature   = (d_temperature * 200) / 2047 - 50
         
         print(str(dt.now()))
-        print(f"pres: %.5f ({toHex(read[:2])})" %pressure)
-        print(f"temp: %.5f ({toHex(read[2:])})" %temperature)
+        print(f"pres: %.10f ({toHex(read[:2])})" %pressure)
+        print(f"temp: %.10f ({toHex(read[2:])})" %temperature)
      
