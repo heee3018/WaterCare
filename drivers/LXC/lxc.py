@@ -198,7 +198,6 @@ class Setup():
                         if flow_rate == b'\x00':
                             self.address[address]['flow_rate'] = 0.0
                         else:
-                            print(flow_rate)
                             self.address[address]['flow_rate'] = unpack("!f", flow_rate)[0]
                             
                         # ---------- Total Volume
