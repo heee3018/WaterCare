@@ -66,5 +66,3 @@ class Setup:
             
             self.find_address()  
             
-    def data_gathering(self):
-        
