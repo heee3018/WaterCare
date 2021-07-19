@@ -96,6 +96,7 @@ class Setup():
         elif '99999999' in list(self.address.keys()):
             sleep(1)
             print(f"{self.usb_num} Address not found \n")
+            self.SelectAddress(addresses)
             
             # print("Threading could not start because the address not be found.")
         

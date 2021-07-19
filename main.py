@@ -7,8 +7,9 @@ from config     import Address, Mode, save_as_csv
 from drivers    import LXC, MS5837
 from lib.to_csv import toCSV
 
-## USB Restart
-os.system('sudo /etc/init.d/udev restart')
+
+os.system('sudo /etc/init.d/udev restart') # USB Restart
+os.system('sudo rdate -s time.bora.net')   # Set to current time
 
 print(f"\n===== Mode: {Mode} =====")
 ## Sensor Setup
