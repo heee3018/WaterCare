@@ -82,7 +82,8 @@ class Setup():
         self.address          = dict()
         self.read_cmd         = '107BFD7816'
         
-        self.SelectAddress(addresses)
+        self.addresses = addresses
+        self.SelectAddress(self.addresses)
             
         print(f"{self.usb_num} Connected successfully!")
         
@@ -96,7 +97,7 @@ class Setup():
         elif '99999999' in list(self.address.keys()):
             sleep(1)
             print(f"{self.usb_num} Address not found \n")
-            self.SelectAddress(addresses)
+            
             
             # print("Threading could not start because the address not be found.")
         
@@ -157,6 +158,11 @@ class Setup():
             
     def CommonThread(self):
         while self.running:
+            if '99999999' in list(self.address.keys()):
+                sleep(1)
+                print(f"{self.usb_num} Address not found \n")
+                self.SelectAddress(self.addresses)
+                
             for address in list(self.address.keys()):
                 
                 select_command = self.address[address]['select_cmd']

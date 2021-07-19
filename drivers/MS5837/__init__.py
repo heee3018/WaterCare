@@ -10,7 +10,7 @@ unit_Kelvin     = UNITS_Kelvin
 def Setup():
         i2c = MS5837_30BA() 
         if not i2c.init():
-                print("Sensor could not be initialized")
+                print("MS5837 Sensor could not be initialized")
                 return False
                 
         if not i2c.read():
