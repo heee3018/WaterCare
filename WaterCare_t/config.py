@@ -1,0 +1,3 @@
+DEVICE_MODE      = 'master'
+ADDRESS_LIST     = ['12345678']
+DETECTED_ADDRESS = []
