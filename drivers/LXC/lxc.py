@@ -105,7 +105,7 @@ class Setup():
         
     def SelectAddress(self, addresses):
         inverted_addresses = Flip(addresses)  # Flip Input Addresses
-        repeat             = 2                # number of repeat      
+        repeat             = 1                # number of repeat      
         
         for _ in range(repeat):
             # Select the Fliped addresses one by one
