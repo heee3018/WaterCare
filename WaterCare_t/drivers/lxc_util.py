@@ -3,6 +3,7 @@ import pandas as pd
 from datetime  import datetime
 from binascii  import hexlify   as hex2str
 from binascii  import unhexlify as str2hex
+from struct    import unpack
 
 read_command = '107BFD7816'
 
@@ -47,5 +48,14 @@ def to_csv(path, file_name, save_data):
         df.to_csv(path + file_name, index=False, mode='a', encoding='utf-8-sig', header=False)
 
 
-def read_data(read_data, from_start, to_end):
-    return str(hex2str(str2hex(read_data)[from_start:to_end]))[2:-1]
+def read_format(hex_data, from_start, to_end):
+    return str(hex2str(hex_data[from_start:to_end]))[2:-1]
+
+def get_return_address(read_format):
+    return flip(read_format)
+
+def get_flow_rate(read_format):
+    return unpack('!f', str2hex(flip(read_format)))[0]
+
+def get_total_volume(read_format):
+    return int(flip(read_format), 16) / 1000

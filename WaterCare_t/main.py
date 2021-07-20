@@ -1,10 +1,8 @@
 import os
-import threading
 from time       import sleep
-from datetime   import datetime
-from serial     import Serial
+from threading  import Thread
 
-from drivers import lxc
+from drivers    import lxc
 
 # os.system('sudo /etc/init.d/udev restart') # USB Restart
 # os.system('sudo rdate -s time.bora.net')   # Set to current time
@@ -25,7 +23,31 @@ print("[LOG] Main loop Start.")
 while True:
     try:
         sleep(1)
-        print('main loop')
+        
+        thread_0 = Thread(target=USB_0.to_read).start()
+        thread_1 = Thread(target=USB_1.to_read).start()
+        thread_2 = Thread(target=USB_2.to_read).start()
+        thread_3 = Thread(target=USB_3.to_read).start()
+        thread_4 = Thread(target=USB_4.to_read).start()
+        thread_5 = Thread(target=USB_5.to_read).start()
+        thread_6 = Thread(target=USB_6.to_read).start()
+
+        thread_0.join()
+        thread_1.join()
+        thread_2.join()
+        thread_3.join()
+        thread_4.join()
+        thread_5.join()
+        thread_6.join()
+        
+        USB_0.print_data()
+        USB_1.print_data()
+        USB_2.print_data()
+        USB_3.print_data()
+        USB_4.print_data()
+        USB_5.print_data()
+        USB_6.print_data()   
+    
     
     except KeyboardInterrupt:
         print("[LOG] Keyboard Interrupt.")
