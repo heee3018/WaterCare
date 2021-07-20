@@ -1,6 +1,5 @@
 import os
 from time       import sleep
-from threading  import Thread
 
 from drivers    import lxc
 
@@ -19,47 +18,27 @@ USB_6 = lxc.Setup(name='USB_6', port='/dev/ttyUSB6')
 
 print("[LOG] Initialization complete.")
 
+USB_0.start_thread()
+USB_1.start_thread()
+USB_2.start_thread()
+USB_3.start_thread()
+USB_4.start_thread()
+USB_5.start_thread()
+USB_6.start_thread()
+print("[LOG] Start threading.")
+
 print("[LOG] Main loop Start.")
+
 while True:
     try:
         sleep(1)
-        
-        thread_0 = Thread(target=USB_0.to_read)
-        thread_1 = Thread(target=USB_1.to_read)
-        thread_2 = Thread(target=USB_2.to_read)
-        thread_3 = Thread(target=USB_3.to_read)
-        thread_4 = Thread(target=USB_4.to_read)
-        thread_5 = Thread(target=USB_5.to_read)
-        thread_6 = Thread(target=USB_6.to_read)
-        thread_0.daemon = False
-        thread_1.daemon = False
-        thread_2.daemon = False
-        thread_3.daemon = False
-        thread_4.daemon = False
-        thread_5.daemon = False
-        thread_6.daemon = False
-        thread_0.start()
-        thread_1.start()
-        thread_2.start()
-        thread_3.start()
-        thread_4.start()
-        thread_5.start()
-        thread_6.start()
-        thread_0.join()
-        thread_1.join()
-        thread_2.join()
-        thread_3.join()
-        thread_4.join()
-        thread_5.join()
-        thread_6.join()
-        
         USB_0.print_data()
         USB_1.print_data()
         USB_2.print_data()
         USB_3.print_data()
         USB_4.print_data()
         USB_5.print_data()
-        USB_6.print_data()   
+        USB_6.print_data()
     
     
     except KeyboardInterrupt:

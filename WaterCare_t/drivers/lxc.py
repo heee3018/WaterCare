@@ -1,6 +1,8 @@
-from serial  import Serial, serialutil
-from config  import ADDRESS_LIST
-from config  import DETECTED_ADDRESS
+from serial    import Serial, serialutil
+from threading import Thread
+from config    import ADDRESS_LIST
+from config    import DETECTED_ADDRESS
+from config    import FIND_COUNT
 from drivers.lxc_util import flip
 from drivers.lxc_util import read_command
 from drivers.lxc_util import to_select_command
@@ -17,11 +19,12 @@ class Setup:
         self.name    = name
         
         try: 
-            self.ser = Serial(port=port, baudrate=2400, parity='E', timeout=1)
+            self.ser = Serial(port=port, baudrate=2400, parity='E', timeout=0.5)
             
             if self.ser.is_open is False:
                 print(f"[ERROR] {self.name} 'self.ser' is closed.")
             
+            self.find_count = FIND_COUNT
             self.find_address()
             
         except serialutil.SerialException as e:
@@ -29,16 +32,17 @@ class Setup:
             error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
             if error_message[:9] == '[Errno 2]':
                 print(f"[ERROR] {self.name} - {error_port} Could not open port.")
+            
             self.state = 'desable'
         
         
     def find_address(self):
-        address_list  = ADDRESS_LIST
-        inverted_list = flip(address_list)
+        address_list    = ADDRESS_LIST
+        inverted_list   = flip(address_list)
         
         for inverted_address in inverted_list:
             if inverted_address in DETECTED_ADDRESS:
-                print(f"[LOG] {flip(inverted_address)} has already been detected. -> continue")
+                print(f"[LOG] {self.name} - {flip(inverted_address)} has already been detected. -> continue")
                 continue
             
             select_command = to_select_command(inverted_address)
@@ -47,7 +51,7 @@ class Setup:
             response = self.ser.read(1)
             
             if response == b'\xE5':
-                self.state = 'good'
+                self.state = 'running'
                 print(f"[LOG] {self.name} - {flip(inverted_address)} was successfully selected.")
                 
                 DETECTED_ADDRESS.append(inverted_address)
@@ -89,8 +93,13 @@ class Setup:
         #     print("[ERROR] 'self.address' contains an Error code(99999999)")
         #     # self.find_address()  
     
+    def start_thread(self):
+        thread = Thread(target=self.to_read)
+        thread.daemon = False
+        thread.start()
+    
     def to_read(self):
-        if self.state == 'good':
+        while self.state == 'running':
             for key in list(self.address.keys()):
             
                 select_command = self.address[key]['select']
@@ -127,13 +136,13 @@ class Setup:
                         'total_volume'   :  9.999999
                     }
 
-        elif self.state == 'desable':
-            # print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
-            pass
-        
-        else:
-            # print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
-            pass
+            if self.state == 'desable':
+                # print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
+                pass
+            
+            elif self.state == 'error':
+                # print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
+                pass
         
         
     def print_data(self):

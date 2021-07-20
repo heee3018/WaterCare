@@ -5,7 +5,7 @@ from binascii  import hexlify   as hex2str
 from binascii  import unhexlify as str2hex
 from struct    import unpack
 
-read_command = '107BFD7816'
+read_command = str2hex('107BFD7816')
 
 def flip(address):
     if type(address) == list:

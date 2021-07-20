@@ -1,4 +1,5 @@
 DEVICE_MODE      = 'master'
+FIND_COUNT       = 5
 DETECTED_ADDRESS = []
 ADDRESS_LIST     = [
     '20201307', 
