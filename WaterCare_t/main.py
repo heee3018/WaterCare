@@ -4,10 +4,10 @@ from threading  import Thread
 
 from drivers    import lxc
 
-# os.system('sudo /etc/init.d/udev restart') # USB Restart
-# os.system('sudo rdate -s time.bora.net')   # Set to current time
-
 print("[LOG] Initializing")
+
+os.system('sudo /etc/init.d/udev restart') # USB Restart
+os.system('sudo rdate -s time.bora.net')   # Set to current time
 
 USB_0 = lxc.Setup(name='USB_0', port='/dev/ttyUSB0')
 USB_1 = lxc.Setup(name='USB_1', port='/dev/ttyUSB1')
