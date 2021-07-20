@@ -87,7 +87,7 @@ class Setup:
             
             if self.address == {}:
                 self.state = 'error'
-                print(f"[ERROR] {self.name} - couldn't find anything {self.find_count}/{FIND_COUNT}")
+                print(f"[ERROR] {self.name} - couldn't find anything {self.find_count+1}/{FIND_COUNT}")
                 self.find_address()
                 
             # elif '99999999' in list(self.address.keys()):
@@ -150,7 +150,7 @@ class Setup:
         
         
     def print_data(self):
-        if self.state == 'good':
+        if self.state == 'running':
             for key in list(self.address.keys()):
                 state          = self.address[key]['state']
                 time           = self.address[key]['time']
