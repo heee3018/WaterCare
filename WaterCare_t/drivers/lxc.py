@@ -35,11 +35,11 @@ class Setup:
                 continue
             
             select_command = to_select_command(inverted_address)
-            print("[LOG] Write Select command")
+            # print(f"[LOG] {self.name} - Write Select command")
             self.ser.write(select_command)
             
             response = self.ser.read(1)
-            print("[LOG] Read One byte")
+            # print(f"[LOG] {self.name} - Read One byte")
             
             if response == b'\xE5':
                 print(f"[LOG] {inverted_address} was successfully selected.")
@@ -62,13 +62,10 @@ class Setup:
         
         
         if self.address == {}:
-            print("[ERROR] Couldn't find anything.")
-            print("[ERROR] re-execute the 'find_address' function")
-            self.find_address()
+            print(f"[ERROR] {self.name} - Couldn't find anything.")
+            # self.find_address()
             
         elif '99999999' in list(self.address.keys()):
             print("[ERROR] 'self.address' contains an Error code(99999999)")
-            print("[ERROR] re-execute the 'find_address' function")
-            
-            self.find_address()  
+            # self.find_address()  
             
