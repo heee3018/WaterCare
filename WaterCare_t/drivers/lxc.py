@@ -48,10 +48,10 @@ class Setup:
             
             if response == b'\xE5':
                 self.state = 'good'
-                print(f"[LOG] {inverted_address} was successfully selected.")
+                print(f"[LOG] {self.name} - {flip(inverted_address)} was successfully selected.")
                 
                 DETECTED_ADDRESS.append(inverted_address)
-                print(f"[LOG] Add {inverted_address} to DETECTED_ADDRESS")
+                print(f"[LOG] {self.name} -  Add {flip(inverted_address)} to DETECTED_ADDRESS")
                 
                 self.address[flip(inverted_address)] = {
                     'state'       : 'is detected',
@@ -61,10 +61,10 @@ class Setup:
                     'flow_rate'   :  0.0,
                     'total_volume':  0.0
                 }
-                print(f"[LOG] Added the contents of {inverted_address} to 'self.address'")
+                print(f"[LOG] {self.name} - Added the contents of {flip(inverted_address)} to 'self.address'")
                 
             else:
-                print(f"[LOG] Couldn't find {inverted_address}")
+                print(f"[LOG] {self.name} - Couldn't find {flip(inverted_address)}")
                 
                 self.address[flip(inverted_address)] = {
                     'state'       : 'select error',
@@ -87,7 +87,7 @@ class Setup:
     
     def to_read(self):
         if self.state == 'good':
-            for key in list(self.address.key()):
+            for key in list(self.address.keys()):
             
                 select_command = self.address[key]['select']
                 self.ser.write(select_command)
@@ -130,7 +130,7 @@ class Setup:
         
     def print_data(self):
         if self.state == 'good':
-            for key in list(self.address.key()):
+            for key in list(self.address.keys()):
                 time         = self.address[key]['time']
                 address      = self.address[key]['address']
                 flow_rate    = self.address[key]['flow_rate']
