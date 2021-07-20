@@ -55,14 +55,10 @@ def read_format(hex_data, from_start, to_end):
     return read_data
 
 def get_return_address(str_data):
-    if str_data == '':
-        print('1')
     return_address = flip(str_data)
     return return_address
 
 def get_flow_rate(str_data):
-    if str_data == '':
-        print('2')
     flow_rate = flip(str_data)
     flow_rate = str2hex(flow_rate)
     flow_rate = unpack('!f', flow_rate)[0]
@@ -70,8 +66,6 @@ def get_flow_rate(str_data):
     return flow_rate
 
 def get_total_volume(str_data):
-    if str_data == '':
-        print('3')
     total_volume = flip(str_data)
     total_volume = int(total_volume, 16) / 1000
     return total_volume

@@ -112,23 +112,27 @@ class Setup:
                 response = self.ser.read(1)
                 
                 if response == b'\xE5':
+                    
                     self.ser.write(read_command)
+                    
                     read_data = self.ser.read(39)
-                    print(read_data)
+                    if read_data == b'':
+                        continue
                     
                     return_address = get_return_address(read_format(read_data, 7, 11))
                     flow_rate      = get_flow_rate(read_format(read_data, 27, 31))
                     total_volume   = get_total_volume(read_format(read_data, 21, 25))
 
-                    self.address[key] = {
-                        'state'          : 'reading success',
-                        'select'         :  select_command,
-                        'time'           :  current_time(),
-                        'address'        :  key,
-                        'return_address' :  return_address,
-                        'flow_rate'      :  flow_rate,
-                        'total_volume'   :  total_volume
-                    }
+                    if key == return_address:
+                        self.address[key] = {
+                            'state'          : 'reading success',
+                            'select'         :  select_command,
+                            'time'           :  current_time(),
+                            'address'        :  key,
+                            'return_address' :  return_address,
+                            'flow_rate'      :  flow_rate,
+                            'total_volume'   :  total_volume
+                        }
                     
                 else:
                     self.address[key] = {
@@ -156,11 +160,10 @@ class Setup:
                 state          = self.address[key]['state']
                 time           = self.address[key]['time']
                 address        = self.address[key]['address']
-                return_address = self.address[key]['return_address']
                 flow_rate      = self.address[key]['flow_rate']
                 total_volume   = self.address[key]['total_volume']
                 
-                print(f'[READ] {self.name} - | {time} | {address} <-> {return_address} | {flow_rate:11.6f}㎥/h | {total_volume:11.6f}㎥ | {state} |')
+                print(f'[READ] {self.name} - | {time} | {address} | {flow_rate:10.6f}㎥/h | {total_volume:10.6f}㎥ | {state} |')
         
         else:
             pass        
