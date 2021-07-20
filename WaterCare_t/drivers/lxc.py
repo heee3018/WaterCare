@@ -19,7 +19,7 @@ class Setup:
         self.name    = name
         
         try: 
-            self.ser = Serial(port=port, baudrate=2400, parity='E', timeout=0.5)
+            self.ser = Serial(port=port, baudrate=2400, parity='E', timeout=1)
             
             if self.ser.is_open is False:
                 print(f"[ERROR] {self.name} 'self.ser' is closed.")
