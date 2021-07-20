@@ -1,4 +1,4 @@
-from serial  import Serial
+from serial  import Serial, serialutil
 from config  import ADDRESS_LIST
 from config  import DETECTED_ADDRESS
 from drivers.lxc_util import flip
@@ -10,13 +10,19 @@ class Setup:
     def __init__(self, name, port):
         self.address = dict()
         self.name    = name
-        self.ser     = Serial(port=port, baudrate=2400, parity='E', timeout=1)
         
-        if self.ser.is_open is False:
-            print(f"[ERROR] {self.name} 'self.ser' is closed")
+        try: 
+            self.ser = Serial(port=port, baudrate=2400, parity='E', timeout=1)
             
-        
-        # self.find_address()
+            if self.ser.is_open is False:
+                print(f"[ERROR] {self.name} 'self.ser' is closed")
+            
+            self.find_address()
+            
+        except serialutil.SerialException as e:
+            error_message = str(e)
+            print(f"[ERROR] {self.name} - {error_message}")
+            
         
         
     def find_address(self):
