@@ -85,7 +85,7 @@ class Setup:
             print("[ERROR] 'self.address' contains an Error code(99999999)")
             # self.find_address()  
     
-    async def to_read(self):
+    def to_read(self):
         if self.state == 'good':
             for key in list(self.address.key()):
             
