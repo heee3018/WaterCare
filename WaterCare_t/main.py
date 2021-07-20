@@ -31,6 +31,13 @@ while True:
         thread_4 = Thread(target=USB_4.to_read)
         thread_5 = Thread(target=USB_5.to_read)
         thread_6 = Thread(target=USB_6.to_read)
+        thread_0.daemon = False
+        thread_1.daemon = False
+        thread_2.daemon = False
+        thread_3.daemon = False
+        thread_4.daemon = False
+        thread_5.daemon = False
+        thread_6.daemon = False
         thread_0.start()
         thread_1.start()
         thread_2.start()

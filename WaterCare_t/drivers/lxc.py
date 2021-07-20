@@ -38,7 +38,7 @@ class Setup:
         
         for inverted_address in inverted_list:
             if inverted_address in DETECTED_ADDRESS:
-                print(f"[LOG] {inverted_address} has already been detected. -> continue")
+                print(f"[LOG] {flip(inverted_address)} has already been detected. -> continue")
                 continue
             
             select_command = to_select_command(inverted_address)
@@ -51,7 +51,7 @@ class Setup:
                 print(f"[LOG] {self.name} - {flip(inverted_address)} was successfully selected.")
                 
                 DETECTED_ADDRESS.append(inverted_address)
-                print(f"[LOG] {self.name} -  Add {flip(inverted_address)} to DETECTED_ADDRESS")
+                print(f"[LOG] {self.name} - Add {flip(inverted_address)} to DETECTED_ADDRESS")
                 
                 self.address[flip(inverted_address)] = {
                     'state'       : 'is detected',
@@ -131,12 +131,13 @@ class Setup:
     def print_data(self):
         if self.state == 'good':
             for key in list(self.address.keys()):
+                state        = self.address[key]['state']
                 time         = self.address[key]['time']
                 address      = self.address[key]['address']
                 flow_rate    = self.address[key]['flow_rate']
                 total_volume = self.address[key]['total_volume']
                 
-                print(f'[READ] {self.name} - {time} | {address} | {flow_rate:11.6f}㎥/h | {total_volume:11.6f}㎥')
+                print(f'[READ] {self.name} - | {time} | {address} | {flow_rate:11.6f}㎥/h | {total_volume:11.6f}㎥ | {state} |')
         
         else:
             pass        
