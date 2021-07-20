@@ -7,20 +7,17 @@ from binascii  import unhexlify as str2hex
 read_command = '107BFD7816'
 
 def flip(address):
-    result = list()
-    if address == None:
-        return '00000000'
-    if type(address) != list:
-        address = [address]
+    if type(address) == list:
+        result = list()
         
-    for addr in address:
-        flip = addr[6:8] + addr[4:6] + addr[2:4] + addr[0:2]
-        result.append(flip)
-        
-    if len(result) == 1:
-        result = str(result)[2:-2]
-        
-    return result
+        for addr in address:
+            addr = addr[6:8] + addr[4:6] + addr[2:4] + addr[0:2]
+            result.append(addr)
+            
+        return result
+    
+    else:
+        return address[6:8] + address[4:6] + address[2:4] + address[0:2]
 
 def crc(address):
     return ('%x' %sum(str2hex('73FD52' + address + 'FFFFFFFF')))[-2:]
