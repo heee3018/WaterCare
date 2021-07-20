@@ -54,26 +54,28 @@ class Setup:
                 print(f"[LOG] {self.name} - Add {flip(inverted_address)} to DETECTED_ADDRESS")
                 
                 self.address[flip(inverted_address)] = {
-                    'state'       : 'is detected',
-                    'select'      :  select_command,
-                    'time'        :  current_time(),
-                    'address'     :  flip(inverted_address),
-                    'flow_rate'   :  0.0,
-                    'total_volume':  0.0
+                    'state'          : 'is detected',
+                    'select'         :  select_command,
+                    'time'           :  current_time(),
+                    'address'        :  flip(inverted_address),
+                    'return_address' : '88888888',
+                    'flow_rate'      :  8.888888,
+                    'total_volume'   :  8.888888
                 }
                 print(f"[LOG] {self.name} - Added the contents of {flip(inverted_address)} to 'self.address'")
                 
             else:
                 print(f"[LOG] {self.name} - Couldn't find {flip(inverted_address)}")
                 
-                self.address[flip(inverted_address)] = {
-                    'state'       : 'select error',
-                    'select'      :  select_command,
-                    'time'        :  current_time(),
-                    'address'     : '99999999',
-                    'flow_rate'   :  9.999999,
-                    'total_volume':  9.999999
-                 }
+                self.address['99999999'] = {
+                    'state'          : 'select error',
+                    'select'         :  select_command,
+                    'time'           :  current_time(),
+                    'address'        : '99999999',
+                    'return_address' : '99999999',
+                    'flow_rate'      :  9.999999,
+                    'total_volume'   :  9.999999
+                }
         
         if self.address == {}:
             self.state = 'error'
@@ -103,41 +105,46 @@ class Setup:
                     total_volume   = get_total_volume(read_format(read_data, 21, 25))
 
                     self.address[key] = {
-                        'state'       : 'read data',
-                        'select'      :  select_command,
-                        'time'        :  current_time(),
-                        'address'     :  return_address,
-                        'flow_rate'   :  flow_rate,
-                        'total_volume':  total_volume
+                        'state'          : 'reading success',
+                        'select'         :  select_command,
+                        'time'           :  current_time(),
+                        'address'        :  key,
+                        'return_address' :  return_address,
+                        'flow_rate'      :  flow_rate,
+                        'total_volume'   :  total_volume
                     }
                     
                 else:
                     self.address[key] = {
-                        'state'       : 'read error',
-                        'select'      :  select_command,
-                        'time'        :  current_time(),
-                        'address'     : '99999999',
-                        'flow_rate'   :  9.999999,
-                        'total_volume':  9.999999
+                        'state'          : 'reading error',
+                        'select'         :  select_command,
+                        'time'           :  current_time(),
+                        'address'        :  key,
+                        'return_address' : '99999999',
+                        'flow_rate'      :  9.999999,
+                        'total_volume'   :  9.999999
                     }
 
         elif self.state == 'desable':
+            # print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
             pass
         
         else:
-            print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
+            # print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
+            pass
         
         
     def print_data(self):
         if self.state == 'good':
             for key in list(self.address.keys()):
-                state        = self.address[key]['state']
-                time         = self.address[key]['time']
-                address      = self.address[key]['address']
-                flow_rate    = self.address[key]['flow_rate']
-                total_volume = self.address[key]['total_volume']
+                state          = self.address[key]['state']
+                time           = self.address[key]['time']
+                address        = self.address[key]['address']
+                return_address = self.address[key]['return_address']
+                flow_rate      = self.address[key]['flow_rate']
+                total_volume   = self.address[key]['total_volume']
                 
-                print(f'[READ] {self.name} - | {time} | {address} | {flow_rate:11.6f}㎥/h | {total_volume:11.6f}㎥ | {state} |')
+                print(f'[READ] {self.name} - | {time} | {address} <-> {return_address} | {flow_rate:11.6f}㎥/h | {total_volume:11.6f}㎥ | {state} |')
         
         else:
             pass        
