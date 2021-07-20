@@ -125,7 +125,7 @@ class Setup:
             pass
         
         else:
-            print(f"[ERROR] Please check 'self.state = {self.state}'.")
+            print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
         
         
     def print_data(self):
