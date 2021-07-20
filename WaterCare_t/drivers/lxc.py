@@ -66,7 +66,7 @@ class Setup:
             else:
                 print(f"[LOG] Couldn't find {inverted_address}")
                 
-                self.address[key] = {
+                self.address[flip(inverted_address)] = {
                     'state'       : 'select error',
                     'select'      :  select_command,
                     'time'        :  current_time(),
