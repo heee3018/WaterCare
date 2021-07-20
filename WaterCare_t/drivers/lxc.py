@@ -114,6 +114,7 @@ class Setup:
                 if response == b'\xE5':
                     self.ser.write(read_command)
                     read_data = self.ser.read(39)
+                    print(read_data)
                     
                     return_address = get_return_address(read_format(read_data, 7, 11))
                     flow_rate      = get_flow_rate(read_format(read_data, 27, 31))
