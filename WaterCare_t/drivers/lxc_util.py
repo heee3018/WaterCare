@@ -49,13 +49,24 @@ def to_csv(path, file_name, save_data):
 
 
 def read_format(hex_data, from_start, to_end):
-    return str(hex2str(hex_data[from_start:to_end]))[2:-1]
+    read_data = hex_data[from_start:to_end]
+    read_data = hex2str(read_data)
+    read_data = str(read_data)[2:-1]
+    return read_data
 
-def get_return_address(read_format):
-    return flip(read_format)
+def get_return_address(str_data):
+    return_address = flip(str_data)
+    return return_address
 
-def get_flow_rate(read_format):
-    return unpack('!f', str2hex(flip(read_format)))[0]
+def get_flow_rate(str_data):
+    flow_rate = flip(str_data)
+    flow_rate = str2hex(flow_rate)
+    print(flow_rate)
+    flow_rate = unpack('!f', flow_rate)[0]
+    print(flow_rate)
+    return flow_rate
 
-def get_total_volume(read_format):
-    return int(flip(read_format), 16) / 1000
+def get_total_volume(str_data):
+    total_volume = flip(str_data)
+    total_volume = int(total_volume, 16) / 1000
+    return total_volume
