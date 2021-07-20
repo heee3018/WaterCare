@@ -35,64 +35,68 @@ class Setup:
             
             self.state = 'desable'
         
-        
     def find_address(self):
-        address_list    = ADDRESS_LIST
-        inverted_list   = flip(address_list)
+        if self.find_count > 0:
+            self.find_count -= 1
+            
+            address_list    = ADDRESS_LIST
+            inverted_list   = flip(address_list)
+            
+            for inverted_address in inverted_list:
+                if inverted_address in DETECTED_ADDRESS:
+                    # print(f"[LOG] {self.name} - {flip(inverted_address)} has already been detected. -> continue")
+                    continue
+                
+                select_command = to_select_command(inverted_address)
+                self.ser.write(select_command)
+                
+                response = self.ser.read(1)
+                
+                if response == b'\xE5':
+                    self.state = 'running'
+                    print(f"[LOG] {self.name} - {flip(inverted_address)} was successfully selected.")
+                    
+                    DETECTED_ADDRESS.append(inverted_address)
+                    # print(f"[LOG] {self.name} - Add {flip(inverted_address)} to DETECTED_ADDRESS")
+                    
+                    self.address[flip(inverted_address)] = {
+                        'state'          : 'is detected',
+                        'select'         :  select_command,
+                        'time'           :  current_time(),
+                        'address'        :  flip(inverted_address),
+                        'return_address' : '88888888',
+                        'flow_rate'      :  8.888888,
+                        'total_volume'   :  8.888888
+                    }
+                    # print(f"[LOG] {self.name} - Added the contents of {flip(inverted_address)} to 'self.address'")
+                    
+                else:
+                    # print(f"[LOG] {self.name} - Couldn't find {flip(inverted_address)}")
+                    
+                    # self.address['99999999'] = {
+                    #     'state'          : 'select error',
+                    #     'select'         :  select_command,
+                    #     'time'           :  current_time(),
+                    #     'address'        : '99999999',
+                    #     'return_address' : '99999999',
+                    #     'flow_rate'      :  9.999999,
+                    #     'total_volume'   :  9.999999
+                    # }
+                    
+                    pass
+            
+            if self.address == {}:
+                self.state = 'error'
+                print(f"[ERROR] {self.name} - couldn't find anything {self.find_count}/{FIND_COUNT}")
+                self.find_address()
+                
+            # elif '99999999' in list(self.address.keys()):
+            #     self.state = 'error'
+            #     print("[ERROR] 'self.address' contains an Error code(99999999)")
+            #     # self.find_address()  
         
-        for inverted_address in inverted_list:
-            if inverted_address in DETECTED_ADDRESS:
-                print(f"[LOG] {self.name} - {flip(inverted_address)} has already been detected. -> continue")
-                continue
-            
-            select_command = to_select_command(inverted_address)
-            self.ser.write(select_command)
-            
-            response = self.ser.read(1)
-            
-            if response == b'\xE5':
-                self.state = 'running'
-                print(f"[LOG] {self.name} - {flip(inverted_address)} was successfully selected.")
-                
-                DETECTED_ADDRESS.append(inverted_address)
-                # print(f"[LOG] {self.name} - Add {flip(inverted_address)} to DETECTED_ADDRESS")
-                
-                self.address[flip(inverted_address)] = {
-                    'state'          : 'is detected',
-                    'select'         :  select_command,
-                    'time'           :  current_time(),
-                    'address'        :  flip(inverted_address),
-                    'return_address' : '88888888',
-                    'flow_rate'      :  8.888888,
-                    'total_volume'   :  8.888888
-                }
-                # print(f"[LOG] {self.name} - Added the contents of {flip(inverted_address)} to 'self.address'")
-                
-            else:
-                # print(f"[LOG] {self.name} - Couldn't find {flip(inverted_address)}")
-                
-                # self.address['99999999'] = {
-                #     'state'          : 'select error',
-                #     'select'         :  select_command,
-                #     'time'           :  current_time(),
-                #     'address'        : '99999999',
-                #     'return_address' : '99999999',
-                #     'flow_rate'      :  9.999999,
-                #     'total_volume'   :  9.999999
-                # }
-                
-                pass
+
         
-        if self.address == {}:
-            self.state = 'error'
-            print(f"[ERROR] {self.name} - Couldn't find anything, so restart 'self.find_address()'.")
-            self.find_address()
-            
-        # elif '99999999' in list(self.address.keys()):
-        #     self.state = 'error'
-        #     print("[ERROR] 'self.address' contains an Error code(99999999)")
-        #     # self.find_address()  
-    
     def start_thread(self):
         thread = Thread(target=self.to_read)
         thread.daemon = False
