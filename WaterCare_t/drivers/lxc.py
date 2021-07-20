@@ -51,7 +51,7 @@ class Setup:
                 print(f"[LOG] {self.name} - {flip(inverted_address)} was successfully selected.")
                 
                 DETECTED_ADDRESS.append(inverted_address)
-                print(f"[LOG] {self.name} - Add {flip(inverted_address)} to DETECTED_ADDRESS")
+                # print(f"[LOG] {self.name} - Add {flip(inverted_address)} to DETECTED_ADDRESS")
                 
                 self.address[flip(inverted_address)] = {
                     'state'          : 'is detected',
@@ -62,30 +62,32 @@ class Setup:
                     'flow_rate'      :  8.888888,
                     'total_volume'   :  8.888888
                 }
-                print(f"[LOG] {self.name} - Added the contents of {flip(inverted_address)} to 'self.address'")
+                # print(f"[LOG] {self.name} - Added the contents of {flip(inverted_address)} to 'self.address'")
                 
             else:
-                print(f"[LOG] {self.name} - Couldn't find {flip(inverted_address)}")
+                # print(f"[LOG] {self.name} - Couldn't find {flip(inverted_address)}")
                 
-                self.address['99999999'] = {
-                    'state'          : 'select error',
-                    'select'         :  select_command,
-                    'time'           :  current_time(),
-                    'address'        : '99999999',
-                    'return_address' : '99999999',
-                    'flow_rate'      :  9.999999,
-                    'total_volume'   :  9.999999
-                }
+                # self.address['99999999'] = {
+                #     'state'          : 'select error',
+                #     'select'         :  select_command,
+                #     'time'           :  current_time(),
+                #     'address'        : '99999999',
+                #     'return_address' : '99999999',
+                #     'flow_rate'      :  9.999999,
+                #     'total_volume'   :  9.999999
+                # }
+                
+                pass
         
         if self.address == {}:
             self.state = 'error'
-            print(f"[ERROR] {self.name} - Could not find anything.")
-            # self.find_address()
+            print(f"[ERROR] {self.name} - Couldn't find anything, so restart 'self.find_address()'.")
+            self.find_address()
             
-        elif '99999999' in list(self.address.keys()):
-            self.state = 'error'
-            print("[ERROR] 'self.address' contains an Error code(99999999)")
-            # self.find_address()  
+        # elif '99999999' in list(self.address.keys()):
+        #     self.state = 'error'
+        #     print("[ERROR] 'self.address' contains an Error code(99999999)")
+        #     # self.find_address()  
     
     def to_read(self):
         if self.state == 'good':
