@@ -31,4 +31,4 @@ while True:
         print("[LOG] Keyboard Interrupt.")
         break
 
-print("[LOG] The Main loop is over.")serial.serialutil.SerialException
+print("[LOG] The Main loop is over.")
