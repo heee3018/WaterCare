@@ -131,10 +131,13 @@ class Setup:
                     if read_data == b'':
                         continue
                     
-                    return_address = get_return_address(read_format(read_data, 7, 11))
-                    flow_rate      = get_flow_rate(read_format(read_data, 27, 31))
-                    total_volume   = get_total_volume(read_format(read_data, 21, 25))
-
+                    try:
+                        return_address = get_return_address(read_format(read_data, 7, 11))
+                        flow_rate      = get_flow_rate(read_format(read_data, 27, 31))
+                        total_volume   = get_total_volume(read_format(read_data, 21, 25))
+                    except:
+                        print(f"[ERROR] - read_data : {read_data}")
+                    
                     if key == return_address:
                         self.address[key] = {
                             'state'          : 'reading success',
