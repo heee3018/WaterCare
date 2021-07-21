@@ -1,8 +1,9 @@
-from serial    import Serial, serialutil
 from threading import Thread
+from serial    import Serial, serialutil
 from config    import ADDRESS_LIST
 from config    import DETECTED_ADDRESS
 from config    import FIND_COUNT
+from config    import CHOOSE_ONE_USB
 from drivers.lxc_util import flip
 from drivers.lxc_util import read_command
 from drivers.lxc_util import to_select_command
@@ -14,35 +15,42 @@ from drivers.lxc_util import get_total_volume
 
 class Setup:
     def __init__(self, name, port):
-        self.address = dict()
-        self.state   = 'init' # 'good' or 'error'
-        self.name    = name
-        self.find_count = FIND_COUNT
-        self.serial_port = port
+        self.state       = 'init'
+        self.address     =  dict()
+        self.name        =  name
+        self.find_count  =  FIND_COUNT
+        self.serial_port =  port
+        
         self.set_serial()
-
+        self.find_address()
     
     def set_serial(self):
-        while 
+        find_count = FIND_COUNT
+        while find_count > 0:
+            find_count -= 1
+            
             try: 
                 self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=2)
                 
                 if self.ser.is_open is False:
                     print(f"[ERROR] {self.name} 'self.ser' is closed.")
+                    
+                self.state = 'serial'
                 
-                self.find_address()
+                break
                 
             except serialutil.SerialException as e:
                 error_message = str(e)
                 error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
                 if error_message[:9] == '[Errno 2]':
-                    print(f"[ERROR] {self.name} - {error_port} Could not open port.")
+                    print(f"[ERROR] {self.name} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
                 
-                self.state = 'desable'     
-
+                self.state = 'desable'
+        
     def find_address(self):
-        if self.find_count > 0:
-            self.find_count -= 1
+        find_count = FIND_COUNT
+        while find_count > 0 and self.state == 'serial':
+            find_count -= 1
             
             address_list    = ADDRESS_LIST
             inverted_list   = flip(address_list)
@@ -56,52 +64,50 @@ class Setup:
                 self.ser.write(select_command)
                 
                 response = self.ser.read(1)
-                
                 if response == b'\xE5':
-                    self.state = 'running'
                     print(f"[LOG] {self.name} - {flip(inverted_address)} was successfully selected.")
                     
                     DETECTED_ADDRESS.append(inverted_address)
                     # print(f"[LOG] {self.name} - Add {flip(inverted_address)} to DETECTED_ADDRESS")
                     
                     self.address[flip(inverted_address)] = {
-                        'state'          : 'is detected',
+                        'state'          : 'detected',
                         'select'         :  select_command,
                         'time'           :  current_time(),
                         'address'        :  flip(inverted_address),
-                        'return_address' : '88888888',
-                        'flow_rate'      :  8.888888,
-                        'total_volume'   :  8.888888
+                        'return_address' : '11111111',
+                        'flow_rate'      :  1.111111,
+                        'total_volume'   :  1.111111
                     }
                     # print(f"[LOG] {self.name} - Added the contents of {flip(inverted_address)} to 'self.address'")
                     
-                else:
-                    # print(f"[LOG] {self.name} - Couldn't find {flip(inverted_address)}")
-                    
-                    # self.address['99999999'] = {
-                    #     'state'          : 'select error',
-                    #     'select'         :  select_command,
-                    #     'time'           :  current_time(),
-                    #     'address'        : '99999999',
-                    #     'return_address' : '99999999',
-                    #     'flow_rate'      :  9.999999,
-                    #     'total_volume'   :  9.999999
-                    # }
-                    
-                    pass
-            
-            if self.address == {}:
-                self.state = 'error'
-                print(f"[ERROR] {self.name} - couldn't find anything {self.find_count+1}/{FIND_COUNT}")
-                self.find_address()
+                    if CHOOSE_ONE_USB:
+                        # If you are looking for only one
+                        self.address = {flip(inverted_address) : self.address[flip(inverted_address)]}
+                        break 
                 
-            # elif '99999999' in list(self.address.keys()):
-            #     self.state = 'error'
-            #     print("[ERROR] 'self.address' contains an Error code(99999999)")
-            #     # self.find_address()  
-        
+                else:
+                    self.address[flip(inverted_address)] = {
+                        'state'          : 'not detected',
+                        'select'         :  select_command,
+                        'time'           :  current_time(),
+                        'address'        :  flip(inverted_address),
+                        'return_address' : '99999999',
+                        'flow_rate'      :  9.999999,
+                        'total_volume'   :  9.999999
+                    }
+                    # print(f"[LOG] {self.name} - Couldn't find {flip(inverted_address)}")                    
+                    pass
 
-        
+            if 'detected' in [self.address[key]['state'] for key in list(self.address.keys())]:
+                self.state = 'running'
+                break
+            
+            else:
+                print(f"[ERROR] {self.name} - couldn't find anything {find_count+1}/{FIND_COUNT}")
+                self.state = 'error'
+                pass
+                
     def start_thread(self):
         thread = Thread(target=self.to_read)
         thread.daemon = False
@@ -111,32 +117,34 @@ class Setup:
         while self.state == 'running':
             for key in list(self.address.keys()):
             
+                if self.address[key]['state'] == 'detected': 
+                    pass
+                elif self.address[key]['state'] == 'reading success': 
+                    pass
+                else: 
+                    continue 
+                
                 select_command = self.address[key]['select']
                 self.ser.write(select_command)
                 
-                try:
-                    response = self.ser.read(1)
-                    
-                except:
-                    self.state = 'serial read error'
-                    self.set_serial()
-                
-                
+                response = self.ser.read(1)
                 if response == b'\xE5':
                     
                     self.ser.write(read_command)
                     
                     read_data = self.ser.read(39)
                     
-                    if read_data == b'':
-                        continue
+                    if read_data == b'': continue
                     
                     try:
                         return_address = get_return_address(read_format(read_data, 7, 11))
                         flow_rate      = get_flow_rate(read_format(read_data, 27, 31))
                         total_volume   = get_total_volume(read_format(read_data, 21, 25))
+                        
                     except:
                         print(f"[ERROR] - read_data : {read_data}")
+                        self.state = 'get error'
+                        break
                     
                     if key == return_address:
                         self.address[key] = {
@@ -160,14 +168,18 @@ class Setup:
                         'total_volume'   :  9.999999
                     }
 
-            if self.state == 'desable':
-                # print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
-                pass
-            
-            elif self.state == 'error':
-                # print(f"[ERROR] {self.name} - Please check 'self.state = {self.state}'.")
-                pass
+        if self.state == 'serial read error':
+            print(f"[ERROR] Serial read error ")
+            self.set_serial()
+            self.find_address()
         
+        elif self.state == 'get error':
+            print(f"[ERROR] get error ")
+            self.set_serial()
+            self.find_address()
+        
+            
+            
         
     def print_data(self):
         if self.state == 'running':

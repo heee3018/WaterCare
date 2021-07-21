@@ -1,6 +1,7 @@
 DEVICE_MODE      = 'master'
 FIND_COUNT       = 3
 DETECTED_ADDRESS = []
+CHOOSE_ONE_USB   = True
 ADDRESS_LIST     = [
     '20201307', 
     '20201312',
