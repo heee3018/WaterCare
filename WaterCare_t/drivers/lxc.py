@@ -128,13 +128,17 @@ class Setup:
                 self.ser.write(select_command)
                 
                 response = self.ser.read(1)
+                
+                
                 if response == b'\xE5':
                     
                     self.ser.write(read_command)
                     
                     read_data = self.ser.read(39)
                     
-                    if read_data == b'': continue
+                    if read_data == b'': 
+                        self.state = 'empty response'
+                        break
                     
                     try:
                         return_address = get_return_address(read_format(read_data, 7, 11))
@@ -177,6 +181,13 @@ class Setup:
             print(f"[ERROR] get error ")
             self.set_serial()
             self.find_address()
+            self.find_address()
+        
+        elif self.state == 'empty response':
+            print(f"[ERROR] empty response error ")
+            self.set_serial()
+            self.find_address()
+        
         
             
             
