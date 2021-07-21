@@ -18,6 +18,10 @@ class Setup:
         self.state   = 'init' # 'good' or 'error'
         self.name    = name
         
+        self.set_serial()
+
+    
+    def set_serial(self):
         try: 
             self.ser = Serial(port=port, baudrate=2400, parity='E', timeout=1)
             
@@ -33,8 +37,8 @@ class Setup:
             if error_message[:9] == '[Errno 2]':
                 print(f"[ERROR] {self.name} - {error_port} Could not open port.")
             
-            self.state = 'desable'
-        
+            self.state = 'desable'     
+
     def find_address(self):
         if self.find_count > 0:
             self.find_count -= 1
@@ -109,7 +113,13 @@ class Setup:
                 select_command = self.address[key]['select']
                 self.ser.write(select_command)
                 
-                response = self.ser.read(1)
+                try:
+                    response = self.ser.read(1)
+                    
+                except:
+                    self.state = 'serial read error'
+                    self.set_serial()
+                
                 
                 if response == b'\xE5':
                     
@@ -119,7 +129,7 @@ class Setup:
                     
                     if read_data == b'':
                         continue
-                    print
+                    
                     return_address = get_return_address(read_format(read_data, 7, 11))
                     flow_rate      = get_flow_rate(read_format(read_data, 27, 31))
                     total_volume   = get_total_volume(read_format(read_data, 21, 25))
