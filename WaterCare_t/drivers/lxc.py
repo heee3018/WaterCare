@@ -116,9 +116,10 @@ class Setup:
                     self.ser.write(read_command)
                     
                     read_data = self.ser.read(39)
+                    
                     if read_data == b'':
                         continue
-                    
+                    print
                     return_address = get_return_address(read_format(read_data, 7, 11))
                     flow_rate      = get_flow_rate(read_format(read_data, 27, 31))
                     total_volume   = get_total_volume(read_format(read_data, 21, 25))
@@ -163,8 +164,8 @@ class Setup:
                 flow_rate      = self.address[key]['flow_rate']
                 total_volume   = self.address[key]['total_volume']
                 
-                print(f'[READ] {self.name} - | {time} | {address} | {flow_rate:10.6f}㎥/h | {total_volume:10.6f}㎥ | {state} |')
+                print(f'[READ] {self.name} - {time} | {address} | {flow_rate:10.6f}㎥/h | {total_volume:10.6f}㎥ | {state}')
         
         else:
             pass        
-        
+    

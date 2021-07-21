@@ -61,8 +61,10 @@ def get_return_address(str_data):
 def get_flow_rate(str_data):
     flow_rate = flip(str_data)
     flow_rate = str2hex(flow_rate)
-    flow_rate = unpack('!f', flow_rate)[0]
-    
+    try:
+        flow_rate = unpack('!f', flow_rate)[0]
+    except:
+        print(f"[ERROR] read_data error \n - {str_data}")
     return flow_rate
 
 def get_total_volume(str_data):
