@@ -18,12 +18,13 @@ class Setup:
         self.state   = 'init' # 'good' or 'error'
         self.name    = name
         
+        self.serial_port = port
         self.set_serial()
 
     
     def set_serial(self):
         try: 
-            self.ser = Serial(port=port, baudrate=2400, parity='E', timeout=1)
+            self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
             
             if self.ser.is_open is False:
                 print(f"[ERROR] {self.name} 'self.ser' is closed.")
