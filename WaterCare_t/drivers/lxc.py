@@ -17,28 +17,28 @@ class Setup:
         self.address = dict()
         self.state   = 'init' # 'good' or 'error'
         self.name    = name
-        
+        self.find_count = FIND_COUNT
         self.serial_port = port
         self.set_serial()
 
     
     def set_serial(self):
-        try: 
-            self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
-            
-            if self.ser.is_open is False:
-                print(f"[ERROR] {self.name} 'self.ser' is closed.")
-            
-            self.find_count = FIND_COUNT
-            self.find_address()
-            
-        except serialutil.SerialException as e:
-            error_message = str(e)
-            error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
-            if error_message[:9] == '[Errno 2]':
-                print(f"[ERROR] {self.name} - {error_port} Could not open port.")
-            
-            self.state = 'desable'     
+        while 
+            try: 
+                self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=2)
+                
+                if self.ser.is_open is False:
+                    print(f"[ERROR] {self.name} 'self.ser' is closed.")
+                
+                self.find_address()
+                
+            except serialutil.SerialException as e:
+                error_message = str(e)
+                error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
+                if error_message[:9] == '[Errno 2]':
+                    print(f"[ERROR] {self.name} - {error_port} Could not open port.")
+                
+                self.state = 'desable'     
 
     def find_address(self):
         if self.find_count > 0:
