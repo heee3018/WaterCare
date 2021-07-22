@@ -1,29 +1,31 @@
 from threading import Thread
-from serial    import Serial, serialutil
-from config    import ADDRESS_LIST
-from config    import DETECTED_ADDRESS
+from serial    import Serial
+from serial    import serialutil
 from config    import FIND_COUNT
+from config    import ADDRESS_LIST
 from config    import CHOOSE_ONE_USB
+from config    import DETECTED_ADDRESS
 from drivers.lxc_util import flip
+from drivers.lxc_util import read_format
+from drivers.lxc_util import current_time
 from drivers.lxc_util import read_command
 from drivers.lxc_util import to_select_command
-from drivers.lxc_util import current_time
-from drivers.lxc_util import read_format
-from drivers.lxc_util import get_return_address
 from drivers.lxc_util import get_flow_rate
 from drivers.lxc_util import get_total_volume
+from drivers.lxc_util import get_return_address
 
 class Setup:
     def __init__(self, name, port):
         self.state       = 'init'
         self.address     =  dict()
         self.name        =  name
-        self.find_count  =  FIND_COUNT
         self.serial_port =  port
         
         self.set_serial()
         self.find_address()
-    
+
+        print(f"[LOG] {self.name} - state : '{self.state}'")
+        
     def set_serial(self):
         find_count = FIND_COUNT
         while find_count > 0:
@@ -33,9 +35,9 @@ class Setup:
                 self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=2)
                 
                 if self.ser.is_open is False:
-                    print(f"[ERROR] {self.name} 'self.ser' is closed.")
+                    print(f"[ERROR] {self.name} - 'self.ser' is closed.")
                     
-                self.state = 'serial'
+                self.state = 'connected'
                 
                 break
                 
@@ -45,15 +47,15 @@ class Setup:
                 if error_message[:9] == '[Errno 2]':
                     print(f"[ERROR] {self.name} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
                 
-                self.state = 'desable'
+                self.state = 'disable'
         
     def find_address(self):
         find_count = FIND_COUNT
-        while find_count > 0 and self.state == 'serial':
+        while find_count > 0 and self.state == 'connected':
             find_count -= 1
             
-            address_list    = ADDRESS_LIST
-            inverted_list   = flip(address_list)
+            address_list  = ADDRESS_LIST
+            inverted_list = flip(address_list)
             
             for inverted_address in inverted_list:
                 if inverted_address in DETECTED_ADDRESS:
@@ -64,6 +66,7 @@ class Setup:
                 self.ser.write(select_command)
                 
                 response = self.ser.read(1)
+                
                 if response == b'\xE5':
                     print(f"[LOG] {self.name} - {flip(inverted_address)} was successfully selected.")
                     
@@ -101,11 +104,11 @@ class Setup:
 
             if 'detected' in [self.address[key]['state'] for key in list(self.address.keys())]:
                 self.state = 'running'
-                break
+                break 
             
             else:
                 print(f"[ERROR] {self.name} - couldn't find anything {find_count+1}/{FIND_COUNT}")
-                self.state = 'error'
+                self.state = 'not found'
                 pass
                 
     def start_thread(self):
@@ -128,7 +131,6 @@ class Setup:
                 self.ser.write(select_command)
                 
                 response = self.ser.read(1)
-                
                 
                 if response == b'\xE5':
                     
@@ -171,26 +173,10 @@ class Setup:
                         'flow_rate'      :  9.999999,
                         'total_volume'   :  9.999999
                     }
-
-        if self.state == 'serial read error':
-            print(f"[ERROR] Serial read error ")
-            self.set_serial()
-            self.find_address()
         
-        elif self.state == 'get error':
-            print(f"[ERROR] get error ")
-            self.set_serial()
-            self.find_address()
-            self.find_address()
-        
-        elif self.state == 'empty response':
-            print(f"[ERROR] empty response error ")
-            self.set_serial()
-            self.find_address()
+        self.__init__(name=self.name, port=self.serial_port)
         
         
-            
-            
         
     def print_data(self):
         if self.state == 'running':

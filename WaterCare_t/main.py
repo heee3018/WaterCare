@@ -1,6 +1,5 @@
 import os
 from time       import sleep
-
 from drivers    import lxc
 
 print("[LOG] Initializing")
@@ -26,7 +25,6 @@ print("[LOG] Start threading.")
 print("[LOG] Main loop Start.")
 while True:
     try:
-        sleep(1)
         USB_0.print_data()
         USB_1.print_data()
         USB_2.print_data()
@@ -35,7 +33,8 @@ while True:
         USB_5.print_data()
         USB_6.print_data()
     
-    
+        sleep(1)
+        
     except KeyboardInterrupt:
         print("[LOG] Keyboard Interrupt.")
         break
