@@ -1,10 +1,14 @@
 from threading import Thread
 from serial    import Serial
 from serial    import serialutil
+from config    import USE_DB
+from config    import SAVE_CSV
 from config    import FIND_COUNT
 from config    import ADDRESS_LIST
 from config    import CHOOSE_ONE_USB
 from config    import DETECTED_ADDRESS
+from drivers   import db
+from drivers   import save_csv
 from drivers.lxc_util import flip
 from drivers.lxc_util import read_format
 from drivers.lxc_util import current_time
@@ -14,12 +18,14 @@ from drivers.lxc_util import get_flow_rate
 from drivers.lxc_util import get_total_volume
 from drivers.lxc_util import get_return_address
 
+    
 class Setup:
     def __init__(self, name, port):
         self.state       = 'init'
         self.address     =  dict()
         self.name        =  name
         self.serial_port =  port
+        self.db          =  db.Setup()
         
         self.set_serial()
         self.find_address()
@@ -32,7 +38,7 @@ class Setup:
             find_count -= 1
             
             try: 
-                self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=2)
+                self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
                 
                 if self.ser.is_open is False:
                     print(f"[ERROR] {self.name} - 'self.ser' is closed.")
@@ -107,7 +113,7 @@ class Setup:
                 break 
             
             else:
-                print(f"[ERROR] {self.name} - couldn't find anything {find_count+1}/{FIND_COUNT}")
+                print(f"[ERROR] {self.name} - couldn't find anything")
                 self.state = 'not found'
                 pass
                 
@@ -148,7 +154,7 @@ class Setup:
                         total_volume   = get_total_volume(read_format(read_data, 21, 25))
                         
                     except:
-                        print(f"[ERROR] - read_data : {read_data}")
+                        print(f"[ERROR] {self.name} - read_data : {read_data}")
                         self.state = 'get error'
                         break
                     
@@ -162,6 +168,23 @@ class Setup:
                             'flow_rate'      :  flow_rate,
                             'total_volume'   :  total_volume
                         }
+                        
+                    if CHOOSE_ONE_USB:
+                        self.to_list = [
+                            self.address[key]['time'],
+                            self.address[key]['address'],
+                            self.address[key]['flow_rate'],
+                            self.address[key]['total_volume']
+                        ]
+                        
+                    if SAVE_CSV:
+                        path = f'csv/{key}_dt.'
+                        save_csv.lxc_to_csv(path=path, data=self.to_list)
+                        
+                    if USE_DB:
+                        self.db.send_lxc(data=self.to_list)
+                        
+        
                     
                 else:
                     self.address[key] = {
@@ -175,20 +198,18 @@ class Setup:
                     }
         
         self.__init__(name=self.name, port=self.serial_port)
-        
-        
-        
+
+
     def print_data(self):
         if self.state == 'running':
             for key in list(self.address.keys()):
-                state          = self.address[key]['state']
-                time           = self.address[key]['time']
-                address        = self.address[key]['address']
-                flow_rate      = self.address[key]['flow_rate']
-                total_volume   = self.address[key]['total_volume']
+                state        = self.address[key]['state']
+                time         = self.address[key]['time']
+                address      = self.address[key]['address']
+                flow_rate    = self.address[key]['flow_rate']
+                total_volume = self.address[key]['total_volume']
                 
                 print(f'[READ] {self.name} - {time} | {address} | {flow_rate:10.6f}㎥/h | {total_volume:10.6f}㎥ | {state}')
         
         else:
             pass        
-    
