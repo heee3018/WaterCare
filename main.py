@@ -1,205 +1,54 @@
-# -*- coding: utf-8 -*-
 import os
 from time       import sleep
-from serial     import Serial
-from datetime   import timedelta, datetime as dt
-from config     import Address, Mode, save_as_csv
-from drivers    import LXC, MS5837
-from lib.to_csv import toCSV
-
+from drivers    import db
+from drivers    import lxc
+from drivers    import ms5837
 
 os.system('sudo /etc/init.d/udev restart') # USB Restart
 os.system('sudo rdate -s time.bora.net')   # Set to current time
 
-print(f"\n===== Mode: {Mode} =====")
-## Sensor Setup
-i2c_0 = MS5837.Setup()
-usb_0 = LXC.Setup(name='usb_0', port='/dev/ttyUSB0', addresses=Address, mode=Mode) # 3
-usb_1 = LXC.Setup(name='usb_1', port='/dev/ttyUSB1', addresses=Address, mode=Mode) # 3
-usb_2 = LXC.Setup(name='usb_2', port='/dev/ttyUSB2', addresses=Address, mode=Mode) # 2
-usb_3 = LXC.Setup(name='usb_3', port='/dev/ttyUSB3', addresses=Address, mode=Mode)
-usb_4 = LXC.Setup(name='usb_4', port='/dev/ttyUSB4', addresses=Address, mode=Mode)
-usb_5 = LXC.Setup(name='usb_5', port='/dev/ttyUSB5', addresses=Address, mode=Mode)
-usb_6 = LXC.Setup(name='usb_6', port='/dev/ttyUSB6', addresses=Address, mode=Mode)
-    
-## Master-Slave Communication
-communicate = Serial(port='/dev/ttyAMA0', timeout=1, xonxoff=True)
-interval    = 0.5
+DB    = db.Setup()
 
-print(f"\n===== Main loop =====")
+USB_0 = lxc.Setup(name='USB_0', port='/dev/ttyUSB0')
+USB_1 = lxc.Setup(name='USB_1', port='/dev/ttyUSB1')
+USB_2 = lxc.Setup(name='USB_2', port='/dev/ttyUSB2')
+USB_3 = lxc.Setup(name='USB_3', port='/dev/ttyUSB3')
+USB_4 = lxc.Setup(name='USB_4', port='/dev/ttyUSB4')
+USB_5 = lxc.Setup(name='USB_5', port='/dev/ttyUSB5')
+USB_6 = lxc.Setup(name='USB_6', port='/dev/ttyUSB6')
+
+I2C_0 = ms5837.Setup()
+
+print("[LOG] Initialization complete.")
+
+USB_0.start_thread()
+USB_1.start_thread()
+USB_2.start_thread()
+USB_3.start_thread()
+USB_4.start_thread()
+USB_5.start_thread()
+USB_6.start_thread()
+
+print("[LOG] Start threading.")
+
+print("[LOG] Main loop Start.")
 while True:
-    sleep(interval)
-    
-    if Mode == 'master':
-        print('\nMaster')
-        
-        master_buf = {}
-        
-        if usb_0.address != None:
-            for address in list(usb_0.address.keys()):
-                master_buf[address] = {'time'         : usb_0.address[address]['time'],
-                                       'address'      : usb_0.address[address]['address'],
-                                       'flow_rate'    : usb_0.address[address]['flow_rate'],
-                                       'total_volume' : usb_0.address[address]['total_volume']}
-        if usb_1.address != None:
-            for address in list(usb_1.address.keys()):
-                master_buf[address] = {'time'         : usb_1.address[address]['time'],
-                                       'address'      : usb_1.address[address]['address'],
-                                       'flow_rate'    : usb_1.address[address]['flow_rate'],
-                                       'total_volume' : usb_1.address[address]['total_volume']}
-        if usb_2.address != None:
-            for address in list(usb_2.address.keys()):
-                master_buf[address] = {'time'         : usb_2.address[address]['time'],
-                                       'address'      : usb_2.address[address]['address'],
-                                       'flow_rate'    : usb_2.address[address]['flow_rate'],
-                                       'total_volume' : usb_2.address[address]['total_volume']}
-        if usb_3.address != None:
-            for address in list(usb_3.address.keys()):
-                master_buf[address] = {'time'         : usb_3.address[address]['time'],
-                                       'address'      : usb_3.address[address]['address'],
-                                       'flow_rate'    : usb_3.address[address]['flow_rate'],
-                                       'total_volume' : usb_3.address[address]['total_volume']}
-        if usb_4.address != None:
-            for address in list(usb_4.address.keys()):
-                master_buf[address] = {'time'         : usb_4.address[address]['time'],
-                                       'address'      : usb_4.address[address]['address'],
-                                       'flow_rate'    : usb_4.address[address]['flow_rate'],
-                                       'total_volume' : usb_4.address[address]['total_volume']}
-        if usb_5.address != None:
-            for address in list(usb_5.address.keys()):
-                master_buf[address] = {'time'         : usb_5.address[address]['time'],
-                                       'address'      : usb_5.address[address]['address'],
-                                       'flow_rate'    : usb_5.address[address]['flow_rate'],
-                                       'total_volume' : usb_5.address[address]['total_volume']}
-        if usb_6.address != None:
-            for address in list(usb_6.address.keys()):
-                master_buf[address] = {'time'         : usb_6.address[address]['time'],
-                                       'address'      : usb_6.address[address]['address'],
-                                       'flow_rate'    : usb_6.address[address]['flow_rate'],
-                                       'total_volume' : usb_6.address[address]['total_volume']}
-            
-        for address in list(master_buf.keys()):
-            print(f"%s  %s  Flow rate: %0.6f ㎥/h  Total volume: %0.6f ㎥" %(
-                master_buf[address]['time'],
-                master_buf[address]['address'],
-                master_buf[address]['flow_rate'],
-                master_buf[address]['total_volume']))
-            
-            if save_as_csv is True:
-                save_data = [master_buf[address]['time'],
-                             master_buf[address]['address'],
-                             master_buf[address]['flow_rate'],
-                             master_buf[address]['total_volume']]
-                file_name = address + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
-                toCSV('lxc', 'csv/', file_name, save_data)
-        
-        if i2c_0 != False:
-            if i2c_0.read() == True:
-                print(f"Pressure: %0.6f bar  Temperature: %0.6f C" % (
-                    i2c_0.pressure(MS5837.unit_bar),
-                    i2c_0.temperature()))
-                
-                if save_as_csv is True:
-                    save_data = [dt.now().strftime('%Y.%m.%d %H:%M:%S'),
-                                i2c_0.pressure(MS5837.unit_bar),
-                                i2c_0.temperature()]
-                    file_name = 'ms5837' + '_' + dt.now().strftime('%Y_%m_%d') + '.csv' # 20201316_2021_07_14.csv
-                    toCSV('ms5837', 'csv/', file_name, save_data)
+    try:
+        USB_0.print_data()
+        USB_1.print_data()
+        USB_2.print_data()
+        USB_3.print_data()
+        USB_4.print_data()
+        USB_5.print_data()
+        USB_6.print_data()
 
+        if I2C_0.read():
+            print(f"Pressure: {I2C_0.pressure():0.6f} bar  Temperature:{I2C_0.temperature():0.6f} C")
+            
+        sleep(1)
 
-    elif Mode == 'slave':
-        pass
-    
-    elif Mode == 'debug':
-        pass            
-    
-            # exit(1)
-            
-    # if Mode == 'master':
-    #     print('\n')
-    #     master_buf = []
-    #     master_buf.append(usb_0.ReturnData())
-    #     master_buf.append(usb_1.ReturnData())
-    #     master_buf.append(usb_2.ReturnData())
-    #     master_buf.append(usb_3.ReturnData())
-    #     master_buf.append(usb_4.ReturnData())
-    #     master_buf.append(usb_5.ReturnData())
-    #     master_buf.append(usb_6.ReturnData())
-        
-    #     for i, data in enumerate(master_buf):
-    #         if data[:5] == 'Error':
-    #             continue
-            
-    #         print(f"[Master_{i}] {data}")
-            
-    #     received_by_slave = communicate.readline(377)
-        
-    #     if received_by_slave == b'':
-    #         continue
-        
-    #     received_by_slave = str(received_by_slave)[2:-1].split('#')
-        
-    #     while '' in received_by_slave:
-    #         received_by_slave.remove('')
-            
-    #     for i, data in enumerate(received_by_slave):
-    #         if data[:5] == 'Error':
-    #             continue
-            
-    #         print(f"[Slave_{i}]  {data}")
+    except KeyboardInterrupt:
+        print("[LOG] Keyboard Interrupt.")
+        break
 
-    #     sleep(interval)
-        
-    # elif Mode == 'slave':
-               
-    #     print('\n')
-    #     slave_data_0 = usb_0.ReturnData()
-    #     slave_data_1 = usb_1.ReturnData()
-    #     slave_data_2 = usb_2.ReturnData()
-    #     slave_data_3 = usb_3.ReturnData()
-    #     slave_data_4 = usb_4.ReturnData()
-    #     slave_data_5 = usb_5.ReturnData()
-    #     slave_data_6 = usb_6.ReturnData()
-        
-    #     send_data  = slave_data_0 + '#'
-    #     send_data += slave_data_1 + '#'
-    #     send_data += slave_data_2 + '#'
-    #     send_data += slave_data_3 + '#'
-    #     send_data += slave_data_4 + '#'
-    #     send_data += slave_data_5 + '#'
-    #     send_data += slave_data_6
-        
-    #     while len(send_data) < 377:
-    #         send_data += '#'
-        
-    #     communicate.write(send_data.encode('utf-8'))
-        
-    #     send_data_list = send_data.split('#')
-        
-    #     while '' in send_data_list:
-    #         send_data_list.remove('')
-            
-    #     for i, data in enumerate(send_data_list):            
-    #         if data[:5] == 'Error':
-    #             continue
-            
-    #         print(f"[Slave_{i}] {len(data)} {data}")
-        
-        
-    #     sleep(interval)
-    
-    # elif Mode == 'debug':
-               
-        # sleep(interval)
-        
-        # if i2c_0.read():
-        #     print("P: %0.1f hPa  %0.3f bar\tT: %0.2f C  %0.2f F" % (
-        #     i2c_0.pressure(), # Default is mbar (no arguments)
-        #     i2c_0.pressure(ms5837.UNITS_bar), # Request psi
-        #     i2c_0.temperature(), # Default is degrees C (no arguments)
-        #     i2c_0.temperature(ms5837.UNITS_Farenheit))) # Request Farenheit
-        # else:
-        #     print("Sensor read failed!")
-        #     exit(1)
-    
-    ## Common
+print("[LOG] The Main loop is over.")

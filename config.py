@@ -1,5 +1,10 @@
-Mode    = 'master'
-Address = [
+DEVICE_MODE      = 'master'
+FIND_COUNT       = 3
+DETECTED_ADDRESS = []
+CHOOSE_ONE_USB   = True
+USE_DB           = True
+SAVE_CSV         = True
+ADDRESS_LIST     = [
     '20201307', 
     '20201312',
     '20201314',
@@ -18,12 +23,9 @@ Address = [
     '21060010'
 ]
 
-# Initial setting
-save_as_csv        = True
-send_to_db         = False
-detected_addresses = list()
-serial_info        = {'baudrate': 2400,
-                      'bytesize': 8,
-                      'stopbits': 1,
-                      'parity': 'E',
-                      'timeout': 1}
+# =- DB Info -= #
+HOST      = '3.34.94.252'
+USER      = 'kwater01'
+PASSWORD  = '1234'
+DB        = 'kwaterdb'
+TABLE     = 'KWATERTABLE2'
