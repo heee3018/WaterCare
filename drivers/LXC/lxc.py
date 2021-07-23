@@ -102,7 +102,6 @@ class Setup():
             # print("Threading could not start because the address not be found.")
         
         
-        
     def SelectAddress(self, addresses):
         inverted_addresses = Flip(addresses)  # Flip Input Addresses
         repeat             = 1                # number of repeat      
@@ -161,7 +160,7 @@ class Setup():
             if '99999999' in list(self.address.keys()):
                 sleep(1)
                 print(f"{self.usb_num} Address not found \n")
-                self.SelectAddress(self.addresses)
+                self.__init__()
                 
             for address in list(self.address.keys()):
                 
