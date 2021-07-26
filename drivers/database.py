@@ -13,6 +13,3 @@ class Setup():
         
     def close(self):
         self.db.close()
-        
-    def __del__(self):
-        self.db.close()
