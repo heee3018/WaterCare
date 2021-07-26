@@ -3,7 +3,7 @@ FIND_COUNT       = 1
 DETECTED_ADDRESS = []
 CHOOSE_ONE_USB   = True
 USE_DB           = True
-SAVE_CSV         = True
+SAVE_CSV         = False
 ADDRESS_LIST     = [
     '20201307', 
     '20201312',
