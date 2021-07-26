@@ -7,7 +7,6 @@ from config    import FIND_COUNT
 from config    import ADDRESS_LIST
 from config    import CHOOSE_ONE_USB
 from config    import DETECTED_ADDRESS
-from drivers   import db
 from drivers   import save_csv
 from drivers.lxc_util import flip
 from drivers.lxc_util import read_format
@@ -25,7 +24,6 @@ class Setup:
         self.address     =  dict()
         self.name        =  name
         self.serial_port =  port
-        self.db          =  db.Setup()
         
         self.set_serial()
         self.find_address()
@@ -180,9 +178,6 @@ class Setup:
                     if SAVE_CSV:
                         path = f'csv/{key}_dt.'
                         save_csv.lxc_to_csv(path=path, data=self.to_list)
-                        
-                    if USE_DB:
-                        self.db.send_lxc(data=self.to_list)
                         
         
                     
