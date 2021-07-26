@@ -182,7 +182,7 @@ class Setup:
                         ]
                         
                     if SAVE_CSV:
-                        path = f'csv/{key}_dt.'
+                        path = f'csv/{key}_{dt.now().strftime('%Y-%m-%d')}'
                         save_csv.lxc_to_csv(path=path, data=self.to_list)
                         
         
