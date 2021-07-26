@@ -8,7 +8,7 @@ os.system('sudo rdate -s time.bora.net')   # Set to current time
 
 if __name__ == '__main__':
         
-    db    = database.Setup(HOST, USER, PASSWORD, DB)
+    #db    = database.Setup(HOST, USER, PASSWORD, DB)
     I2C_0 = ms5837.Setup()
     USB_0 = lxc.Setup(name='USB_0', port='/dev/ttyUSB0')
     USB_1 = lxc.Setup(name='USB_1', port='/dev/ttyUSB1')
