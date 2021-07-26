@@ -1,8 +1,4 @@
-try:
-    import smbus
-except:
-    print('Try sudo apt-get install python-smbus')
-    
+import smbus
 from time import sleep
 
 # Models
@@ -37,9 +33,7 @@ UNITS_Farenheit  = 2
 UNITS_Kelvin     = 3
 
 
-    
 class MS5837(object):
-    
     # Registers
     _MS5837_ADDR             = 0x76  
     _MS5837_RESET            = 0x1E
@@ -235,37 +229,43 @@ class MS5837_30BA(MS5837):
 class MS5837_02BA(MS5837):
     def __init__(self, bus=1):
         MS5837.__init__(self, MODEL_02BA, bus)
+
+class Setup(MS5837):
+    
+    def __init__(self):
+        self.i2c = MS5837_30BA() 
         
-def Setup():
-    i2c = MS5837_30BA() 
-    if not i2c.init():
-        print("MS5837 Sensor could not be initialized")
-        return False
+        if not self.i2c.init():
+            print("[ERROR] MS5837 Sensor could not be initialized")
+            return False
+    
+        if not self.i2c.read():
+            print("[ERROR] Sensor read failed!")
+            return False
             
-    if not i2c.read():
-        print("Sensor read failed!")
-        return False
-            
-    print("Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
-        i2c.pressure(UNITS_atm),
-        i2c.pressure(UNITS_Torr),
-        i2c.pressure(UNITS_psi)))
+        print("[LOG] Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
+            self.i2c.pressure(UNITS_atm),
+            self.i2c.pressure(UNITS_Torr),
+            self.i2c.pressure(UNITS_psi)))
 
-    print("Temperature: %.2f C  %.2f F  %.2f K" % (
-        i2c.temperature(UNITS_Centigrade),
-        i2c.temperature(UNITS_Farenheit),
-        i2c.temperature(UNITS_Kelvin)))
+        print("[LOG] Temperature: %.2f C  %.2f F  %.2f K" % (
+            self.i2c.temperature(UNITS_Centigrade),
+            self.i2c.temperature(UNITS_Farenheit),
+            self.i2c.temperature(UNITS_Kelvin)))
 
-    freshwaterDepth = i2c.depth() # default is freshwater
-    i2c.setFluidDensity(DENSITY_SALTWATER)
-    
-    saltwaterDepth = i2c.depth() # No nead to read() again
-    i2c.setFluidDensity(1000) # kg/m^3
-    
-    print("Depth: %.3f m (freshwater)  %.3f m (saltwater)"% (freshwaterDepth, saltwaterDepth))
+        freshwaterDepth = self.i2c.depth() # default is freshwater
+        self.i2c.setFluidDensity(DENSITY_SALTWATER)
+        saltwaterDepth = self.i2c.depth() # No nead to read() again
+        self.i2c.setFluidDensity(1000) # kg/m^3
+        print("[LOG] Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
 
-    # fluidDensity doesn't matter for altitude() (always MSL air density)
-    print("MSL Relative Altitude: %.2f m"% i2c.altitude()) # relative to Mean Sea Level pressure in air
-    print("\n")
-    
-    return i2c
+        # fluidDensity doesn't matter for altitude() (always MSL air density)
+        print("[LOG] MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
+        print("\n")
+
+    def print_data(self):
+        if self.i2c.read():
+            pressure    = self.i2c.pressure()
+            temperature = self.i2c.temperature()
+            print(f"[LOG] Pressure: {pressure:0.6f} bar  Temperature:{temperature:0.6f} C")
+                
