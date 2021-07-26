@@ -1,5 +1,5 @@
 DEVICE_MODE      = 'master'
-FIND_COUNT       = 3
+FIND_COUNT       = 1
 DETECTED_ADDRESS = []
 CHOOSE_ONE_USB   = True
 USE_DB           = True
@@ -25,7 +25,7 @@ ADDRESS_LIST     = [
 
 # =- DB Info -= #
 HOST      = 'smartwatercare.com'
-USER      = 'kwater01'
-PASSWORD  = '1234'
+USER      = 'pncuser1'
+PASSWORD  = 'pncltd775!'
 DB        = 'kwaterdb'
 TABLE     = 'KWATERTABLE'
