@@ -7,37 +7,41 @@ os.system('sudo /etc/init.d/udev restart') # USB Restart
 os.system('sudo rdate -s time.bora.net')   # Set to current time
 
 if __name__ == '__main__':
-        
-    #db    = database.Setup(HOST, USER, PASSWORD, DB)
+    lxc_list = list()
+    
+    db    = database.Setup(HOST, USER, PASSWORD, DB)
     I2C_0 = ms5837.Setup()
-    USB_0 = lxc.Setup(name='USB_0', port='/dev/ttyUSB0')
-    USB_1 = lxc.Setup(name='USB_1', port='/dev/ttyUSB1')
-    USB_2 = lxc.Setup(name='USB_2', port='/dev/ttyUSB2')
-    USB_3 = lxc.Setup(name='USB_3', port='/dev/ttyUSB3')
-    USB_4 = lxc.Setup(name='USB_4', port='/dev/ttyUSB4')
-    USB_5 = lxc.Setup(name='USB_5', port='/dev/ttyUSB5')
-    USB_6 = lxc.Setup(name='USB_6', port='/dev/ttyUSB6')
+    
+    lxc_list.append(lxc.Setup(name='USB_0', port='/dev/ttyUSB0'))
+    lxc_list.append(lxc.Setup(name='USB_1', port='/dev/ttyUSB1'))
+    lxc_list.append(lxc.Setup(name='USB_2', port='/dev/ttyUSB2'))
+    lxc_list.append(lxc.Setup(name='USB_3', port='/dev/ttyUSB3'))
+    lxc_list.append(lxc.Setup(name='USB_4', port='/dev/ttyUSB4'))
+    lxc_list.append(lxc.Setup(name='USB_5', port='/dev/ttyUSB5'))
+    lxc_list.append(lxc.Setup(name='USB_6', port='/dev/ttyUSB6'))
     print("[LOG] Initialization complete.")
-    USB_0.start_thread()
-    USB_1.start_thread()
-    USB_2.start_thread()
-    USB_3.start_thread()
-    USB_4.start_thread()
-    USB_5.start_thread()
-    USB_6.start_thread()
+    
+    for lxc in lxc_list:
+        lxc.start_thread()
+        
     print("[LOG] Start threading.")
     print("[LOG] Main loop Start.")
+    
     while True:
         try:
-            I2C_0.print_data()
-            USB_0.print_data()
-            USB_1.print_data()
-            USB_2.print_data()
-            USB_3.print_data()
-            USB_4.print_data()
-            USB_5.print_data()
-            USB_6.print_data()
-        
+            ms5837_data = I2C_0.print_data()
+            time        = ms5837_data["time"]
+            pressure    = ms5837_data["pressure"]
+            temperature = ms5837_data["temperature"]
+            print(f"INSERT INTO {TABLE} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
+            
+            for lxc in lxc_list:
+                lxc_data     = lxc.print_data()
+                time         = lxc_data["time"]
+                address      = lxc_data["address"]
+                flow_rate    = lxc_data["flow_rate"]
+                total_volume = lxc_data["total_volum"]
+                print(f"INSERT INTO {TABLE} (time, address, flow_rate, total_volum) VALUES ('{time}', '{address}', '{flow_rate}', '{total_volum}')")
             sleep(1)
 
         except KeyboardInterrupt:

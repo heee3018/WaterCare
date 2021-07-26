@@ -1,7 +1,6 @@
 import pymysql
 from datetime import datetime
 
-
 class Setup():
     def __init__(self, host, user, password, db):
         self.db = pymysql.connect(host=host, user=user, passwd=password, db=db, charset='utf8')

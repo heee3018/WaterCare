@@ -1,5 +1,6 @@
 import smbus
-from time import sleep
+from time     import sleep
+from datetime import datetime
 
 # Models
 MODEL_02BA = 0
@@ -264,7 +265,12 @@ class Setup(MS5837):
 
     def print_data(self):
         if self.i2c.read():
+            time        = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             pressure    = self.i2c.pressure()
             temperature = self.i2c.temperature()
-            print(f"[LOG] Pressure: {pressure:0.6f} bar  Temperature:{temperature:0.6f} C")
-                
+            print(f"[READ] I2C_0 - {time} | {pressure:0.6f} bar | {temperature:0.6f} C")
+            return {
+                "time"        : time,
+                "pressure"    : pressure,
+                "temperature" : temperature
+            }

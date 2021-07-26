@@ -205,6 +205,11 @@ class Setup:
                 total_volume = self.address[key]['total_volume']
                 
                 print(f'[READ] {self.name} - {time} | {address} | {flow_rate:10.6f}㎥/h | {total_volume:10.6f}㎥ | {state}')
-        
+                return {
+                    "time"         : time,
+                    "address"      : address,
+                    "flow_rate"    : flow_rate,
+                    "total_volume" : total_volume
+                }
         else:
             pass        
