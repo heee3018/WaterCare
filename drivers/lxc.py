@@ -44,7 +44,7 @@ class Setup:
                 self.state = 'connected'
                 
                 break
-            except OSError:
+            except OSError as e:
                 error_message = str(e)
                 error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
                 if error_message[:9] == '[Errno 2]':
