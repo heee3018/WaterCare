@@ -211,12 +211,13 @@ class Setup:
                 flow_rate    = self.address[key]['flow_rate']
                 total_volume = self.address[key]['total_volume']
                 
-                print(f'[READ] {self.name} - {time} | {address} | {flow_rate:10.6f}㎥/h | {total_volume:10.6f}㎥ | {state}')
+                print(f"[READ] {self.name} - {time.strftime('%Y-%m-%d %H:%M:%S')} | {address:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ | {state}")
                 return {
                     "time"         : time,
                     "address"      : address,
                     "flow_rate"    : flow_rate,
                     "total_volume" : total_volume
                 }
+
         else:
             return False   

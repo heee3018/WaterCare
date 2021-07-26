@@ -35,7 +35,7 @@ def to_select_command(inverted_address):
         return str2hex('680B0B6873FD52' + inverted_address + 'FFFFFFFF' + crc(inverted_address) + '16')
 
 def current_time():
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.now()
 
 
 def to_csv(path, file_name, save_data):    
