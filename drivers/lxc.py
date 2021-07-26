@@ -44,7 +44,13 @@ class Setup:
                 self.state = 'connected'
                 
                 break
+            except OSError:
+                error_message = str(e)
+                error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
+                if error_message[:9] == '[Errno 2]':
+                    print(f"[ERROR] {self.name} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
                 
+                self.state = 'disable'
             except serialutil.SerialException as e:
                 error_message = str(e)
                 error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
