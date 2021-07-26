@@ -237,31 +237,30 @@ class Setup(MS5837):
         
         if not self.i2c.init():
             print("[ERROR] MS5837 Sensor could not be initialized")
-            return False
     
-        if not self.i2c.read():
+        elif not self.i2c.read():
             print("[ERROR] Sensor read failed!")
-            return False
             
-        print("[LOG] Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
-            self.i2c.pressure(UNITS_atm),
-            self.i2c.pressure(UNITS_Torr),
-            self.i2c.pressure(UNITS_psi)))
+        else:
+            print("[LOG] Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
+                self.i2c.pressure(UNITS_atm),
+                self.i2c.pressure(UNITS_Torr),
+                self.i2c.pressure(UNITS_psi)))
 
-        print("[LOG] Temperature: %.2f C  %.2f F  %.2f K" % (
-            self.i2c.temperature(UNITS_Centigrade),
-            self.i2c.temperature(UNITS_Farenheit),
-            self.i2c.temperature(UNITS_Kelvin)))
+            print("[LOG] Temperature: %.2f C  %.2f F  %.2f K" % (
+                self.i2c.temperature(UNITS_Centigrade),
+                self.i2c.temperature(UNITS_Farenheit),
+                self.i2c.temperature(UNITS_Kelvin)))
 
-        freshwaterDepth = self.i2c.depth() # default is freshwater
-        self.i2c.setFluidDensity(DENSITY_SALTWATER)
-        saltwaterDepth = self.i2c.depth() # No nead to read() again
-        self.i2c.setFluidDensity(1000) # kg/m^3
-        print("[LOG] Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
+            freshwaterDepth = self.i2c.depth() # default is freshwater
+            self.i2c.setFluidDensity(DENSITY_SALTWATER)
+            saltwaterDepth = self.i2c.depth() # No nead to read() again
+            self.i2c.setFluidDensity(1000) # kg/m^3
+            print("[LOG] Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
 
-        # fluidDensity doesn't matter for altitude() (always MSL air density)
-        print("[LOG] MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
-        print("\n")
+            # fluidDensity doesn't matter for altitude() (always MSL air density)
+            print("[LOG] MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
+            print("\n")
 
     def print_data(self):
         if self.i2c.read():
