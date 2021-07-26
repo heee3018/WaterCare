@@ -40,8 +40,8 @@ if __name__ == '__main__':
                 time         = lxc_data["time"]
                 address      = lxc_data["address"]
                 flow_rate    = lxc_data["flow_rate"]
-                total_volume = lxc_data["total_volum"]
-                print(f"INSERT INTO {TABLE} (time, address, flow_rate, total_volum) VALUES ('{time}', '{address}', '{flow_rate}', '{total_volum}')")
+                total_volume = lxc_data["total_volume"]
+                print(f"INSERT INTO {TABLE} (time, address, flow_rate, total_volume) VALUES ('{time}', '{address}', '{flow_rate}', '{total_volume}')")
             sleep(1)
 
         except KeyboardInterrupt:
