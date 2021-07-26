@@ -274,3 +274,5 @@ class Setup(MS5837):
                 "pressure"    : pressure,
                 "temperature" : temperature
             }
+        else:
+            return False

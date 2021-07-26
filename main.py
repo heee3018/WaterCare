@@ -30,20 +30,20 @@ if __name__ == '__main__':
     while True:
         try:
             ms5837_data = I2C_0.print_data()
-            time        = ms5837_data["time"]
-            pressure    = ms5837_data["pressure"]
-            temperature = ms5837_data["temperature"]
-            db.send(f"INSERT INTO {TABLE} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
+            if ms5837_data:
+                time        = ms5837_data["time"]
+                pressure    = ms5837_data["pressure"]
+                temperature = ms5837_data["temperature"]
+                db.send(f"INSERT INTO {TABLE} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
             
             for lxc in lxc_list:
                 lxc_data     = lxc.print_data()
-                if not lxc_data:
-                    continue
-                time         = lxc_data["time"]
-                address      = lxc_data["address"]
-                flow_rate    = lxc_data["flow_rate"]
-                total_volume = lxc_data["total_volume"]
-                db.send(f"INSERT INTO {TABLE} (time, address, flow_rate, total_volume) VALUES ('{time}', '{address}', '{flow_rate}', '{total_volume}')")
+                if lxc_data:
+                    time         = lxc_data["time"]
+                    address      = lxc_data["address"]
+                    flow_rate    = lxc_data["flow_rate"]
+                    total_volume = lxc_data["total_volume"]
+                    db.send(f"INSERT INTO {TABLE} (time, address, flow_rate, total_volume) VALUES ('{time}', '{address}', '{flow_rate}', '{total_volume}')")
             
             sleep(1)
 
