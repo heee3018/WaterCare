@@ -16,6 +16,7 @@ from drivers.lxc_util import to_select_command
 from drivers.lxc_util import get_flow_rate
 from drivers.lxc_util import get_total_volume
 from drivers.lxc_util import get_return_address
+from datetime  import datetime as dt
 
     
 class Setup:
@@ -182,7 +183,7 @@ class Setup:
                         ]
                         
                     if SAVE_CSV:
-                        path = f'csv/{key}_{dt.now().strftime('%Y-%m-%d')}'
+                        path = f"csv/{key}_{dt.now().strftime('%Y-%m-%d')}"
                         save_csv.lxc_to_csv(path=path, data=self.to_list)
                         
         
@@ -218,4 +219,4 @@ class Setup:
                     "total_volume" : total_volume
                 }
         else:
-            pass        
+            return False   
