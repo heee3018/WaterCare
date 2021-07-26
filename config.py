@@ -25,7 +25,7 @@ ADDRESS_LIST     = [
 
 # =- DB Info -= #
 HOST      = 'smartwatercare.net'
-USER      = 'pncuser1'
-PASSWORD  = 'pncltd775!'
+USER      = 'kwater01'
+PASSWORD  = '1234'
 DB        = 'kwaterdb'
 TABLE     = 'KWATERTABLE'
