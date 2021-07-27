@@ -275,8 +275,8 @@ class Setup(MS5837):
 
     def read_data(self):
         while True:
-            time        = current_time(),
-            pressure    = self.i2c.pressure(UNITS_bar),
+            time        = current_time()
+            pressure    = self.i2c.pressure(UNITS_bar)
             temperature = self.i2c.temperature(UNITS_Centigrade)
             
             self.data['serial_num'] = {
