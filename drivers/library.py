@@ -1,12 +1,18 @@
 import os
 import pandas as pd
-from datetime import datetime
+from time      import sleep
+from datetime  import datetime
 from binascii  import hexlify   as hex2str
 from binascii  import unhexlify as str2hex
 from struct    import unpack
 
 READ_COMMAND = str2hex('107BFD7816')
 
+def count_down(num=5):
+    for count_down in reversed(range(num)):
+        print(f"[LOG] {count_down + 1}")
+        sleep(1)
+        
 def current_time():
     return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]  # format : 2020-05-04 10:18:32.926
 

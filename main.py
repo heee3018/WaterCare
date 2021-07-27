@@ -1,6 +1,7 @@
 import os
-from threading import Thread
-from drivers   import ms5837, lxc 
+from threading       import Thread
+from drivers         import ms5837, lxc 
+from drivers.library import count_down
 
 os.system('sudo /etc/init.d/udev restart') # USB Restart
 os.system('sudo /usr/bin/rdate -s time.bora.net')   # Set to current time
@@ -26,11 +27,19 @@ if __name__ == '__main__':
                 
         for thread in threads:
             thread.join()
+        
+        for dev in device:
+            if dev.name == 'lxc':
+                print(f"[LOG] {dev.num} - {dev.state}")
+                
+        print(f"[LOG] All threads are ready.")
 
+        count_down(5)
+            
         # Start threading
         for dev in device:
             dev.start_thread()
-
+        
         while True:
             pass
 

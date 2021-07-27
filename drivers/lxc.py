@@ -46,8 +46,6 @@ class Setup:
                 self.state = 'disabled'
                 continue
             
-        print(f"[LOG] {self.num} - {self.state}")
-            
     def start_search(self):
         thread = Thread(target=self.find_serial_num, daemon=True)
         thread.start()
