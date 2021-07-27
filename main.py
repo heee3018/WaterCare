@@ -23,7 +23,7 @@ if __name__ == '__main__':
         threads = [ ]
         for dev in device:
             if dev.name == 'lxc':
-                thread = Thread(target=dev.find_serial_number, daemon=True)
+                thread = Thread(target=dev.find_serial_num, daemon=True)
                 thread.start()
                 threads.append(thread)
                 

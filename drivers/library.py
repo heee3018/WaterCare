@@ -29,7 +29,6 @@ def save_as_csv(device, save_data, file_name):
     else:
         data.to_csv(file_name, index=False, mode='a', encoding='utf-8-sig', header=False)
 
-
 def flip(address):
     if type(address) == list:
         result = list()
@@ -63,9 +62,9 @@ def read_format(hex_data, from_start, to_end):
     read_data = str(read_data)[2:-1]
     return read_data
 
-def get_return_address(str_data):
-    return_address = flip(str_data)
-    return return_address
+def get_return_serial_num(str_data):
+    retrun_serial_num = flip(str_data)
+    return retrun_serial_num
 
 def get_flow_rate(str_data):
     flow_rate = flip(str_data)
