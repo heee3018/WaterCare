@@ -8,7 +8,6 @@ from drivers.library import current_time, current_date, save_as_csv
 from drivers.library import READ_COMMAND, flip, read_format, to_select_command
 from drivers.library import get_flow_rate, get_total_volume, get_return_serial_num
 
-
 class Setup:
     def __init__(self, num, port):
         self.name             = 'lxc'
@@ -54,7 +53,7 @@ class Setup:
         thread.start()
         return thread
     
-    def search_serial_num(self):
+    def search_serial_num(self): 
         find_count = FIND_COUNT
         while find_count > 0 and self.state == 'connected':
             find_count -= 1
@@ -63,7 +62,12 @@ class Setup:
                 select_command = to_select_command(reversed_num)
                 self.ser.write(select_command)
                 
-                if self.ser.read(1) == b'\xE5':
+                try:
+                    response = self.ser.read(1)
+                except:
+                    continue
+
+                if response == b'\xE5':
                     print(f"[LOG] {self.num} - {flip(reversed_num)} and {self.num} were successfully matched !")
                     self.data[flip(reversed_num)] = {
                         'state'          : 'detected',
@@ -129,7 +133,6 @@ class Setup:
                             flow_rate    = get_flow_rate(read_format(read_data, 27, 31))
                             total_volume = get_total_volume(read_format(read_data, 21, 25))
                         except:
-                            self.state = 'value error'
                             print(f"[ERROR] {self.num} - Eempty response")
                             self.error_cumulative += 1
                             break
@@ -167,23 +170,3 @@ class Setup:
                 search_thread.join()
                 self.start_read_thread()
                 break
-                
-    # def print_data(self):
-    #     if self.state == 'running':
-    #         for key in list(self.data.keys()):
-    #             state        = self.data[key]['state']
-    #             time         = self.data[key]['time']
-    #             serial_num   = self.data[key]['serial_num']
-    #             flow_rate    = self.data[key]['flow_rate']
-    #             total_volume = self.data[key]['total_volume']
-                
-    #             print(f"[READ] {self.num} - {time.strftime('%Y-%m-%d %H:%M:%S')} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ | {state}")
-    #             return {
-    #                 "time"         : time,
-    #                 "serial_num"   : serial_num,
-    #                 "flow_rate"    : flow_rate,
-    #                 "total_volume" : total_volume
-    #             }
-
-    #     else:
-    #         return False   

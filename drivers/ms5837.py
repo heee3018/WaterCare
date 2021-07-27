@@ -234,13 +234,12 @@ class MS5837_02BA(MS5837):
         MS5837.__init__(self, MODEL_02BA, bus)
 
 class Setup(MS5837):
-    
-    def __init__(self):
-        self.name = 'ms5837'
-        self.data = { }
-        self.db   = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
-        
-        self.i2c = MS5837_30BA() 
+    def __init__(self, interval):
+        self.name     = 'ms5837'
+        self.data     = { }
+        self.db       = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+        self.i2c      = MS5837_30BA() 
+        self.interval = interval
         
         if not self.i2c.init():
             print("[ERROR] MS5837 Sensor could not be initialized")
@@ -273,8 +272,7 @@ class Setup(MS5837):
 
     def read_data(self):
         while True:
-            sleep(0.5)
-            
+            sleep(self.interval)
             try:
                 if not self.i2c.read():
                     print("[ERROR] Sensor read failed!")
@@ -302,22 +300,3 @@ class Setup(MS5837):
             except OSError:
                 time = current_time()
                 print(f"[ERROR] I2C_0 - {time} | {'':12} | {'':21} | {'':22} |")
-                 
-                 
-                 
-                 
-                 
-                 
-    # def print_data(self):
-    #     if self.i2c.read():
-    #         time        = current_time()
-    #         pressure    = self.i2c.pressure()
-    #         temperature = self.i2c.temperature()
-    #         print(f"[READ] I2C_0 - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
-    #         return {
-    #             "time"        : time,
-    #             "pressure"    : pressure,
-    #             "temperature" : temperature
-    #         }
-    #     else:
-    #         return False

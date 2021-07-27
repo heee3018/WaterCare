@@ -9,7 +9,7 @@ os.system('sudo ntpdate -u 3.kr.pool.ntp.org')   # Set to current time
 if __name__ == '__main__':
     try:
         device = list()
-        device.append(ms5837.Setup())
+        device.append(ms5837.Setup(interval=0.5))
         device.append(lxc.Setup(num='USB_0', port='/dev/ttyUSB0'))
         device.append(lxc.Setup(num='USB_1', port='/dev/ttyUSB1'))
         device.append(lxc.Setup(num='USB_2', port='/dev/ttyUSB2'))
