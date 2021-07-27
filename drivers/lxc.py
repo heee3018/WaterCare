@@ -43,7 +43,9 @@ class Setup:
                     print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
                 
                 self.state = 'disabled' 
-        
+
+            print(f"[LOG] {self.num} - {self.state}")
+            
     def start_search(self):
         thread = Thread(target=self.find_serial_num, daemon=True)
         thread.start()
