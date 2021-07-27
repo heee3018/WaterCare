@@ -29,7 +29,8 @@ class Setup:
                 
                 self.state = 'connected'
                 print(f"[LOG] {self.num} - Successfully opened the port")
-
+                break
+                
             except serialutil.SerialException as e:
                 print(f"[ERROR] {self.num} - {e[9:]}")
                 self.state = 'disabled' 
@@ -40,8 +41,7 @@ class Setup:
                 self.state = 'disabled'
                 continue
             
-            finally:   
-                print(f"[LOG] {self.num} - {self.state}")
+        print(f"[LOG] {self.num} - {self.state}")
             
     def start_search(self):
         thread = Thread(target=self.find_serial_num, daemon=True)
