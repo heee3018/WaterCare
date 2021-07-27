@@ -275,24 +275,29 @@ class Setup(MS5837):
 
     def read_data(self):
         while True:
-            time        = current_time()
-            pressure    = self.i2c.pressure(UNITS_bar)
-            temperature = self.i2c.temperature(UNITS_Centigrade)
+            if not self.i2c.read():
+                print("[ERROR] Sensor read failed!")
             
-            self.data['serial_num'] = {
-                'time'        : time,
-                'pressure'    : pressure,
-                'temperature' : temperature
-            }
-            if USE_CSV:
-                path = f"csv/{current_date()}_{'ms5837'}"
-                data = [time, pressure, temperature]
-                save_as_csv(device=self.name, save_data=data, file_name=path)
+            else:
+                time        = current_time()
+                pressure    = self.i2c.pressure(UNITS_bar)
+                temperature = self.i2c.temperature(UNITS_Centigrade)
                 
-            if USE_DB:
-                self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
+                self.data['serial_num'] = {
+                    'time'        : time,
+                    'pressure'    : pressure,
+                    'temperature' : temperature
+                }
+                if USE_CSV:
+                    path = f"csv/{current_date()}_{'ms5837'}"
+                    data = [time, pressure, temperature]
+                    save_as_csv(device=self.name, save_data=data, file_name=path)
+                    
+                if USE_DB:
+                    self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
+                
+                print(f"[READ] I2C_0 - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
             
-            print(f"[READ] I2C_0 - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
             sleep(0.5)
                                        
     # def print_data(self):

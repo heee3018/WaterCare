@@ -26,6 +26,7 @@ class Setup:
                 self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
                 self.ser.open()
                 self.state = 'connected'
+                print(f"[LOG] {self.num} - Successfully opened the port")
                 
             except OSError as e:
                 error_message = str(e)
@@ -33,7 +34,7 @@ class Setup:
                 if error_message[:9] == '[Errno 2]':
                     print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
                 
-                self.state = 'disable'
+                self.state = 'disabled'
                 
             except serialutil.SerialException as e:
                 error_message = str(e)
@@ -41,13 +42,13 @@ class Setup:
                 if error_message[:9] == '[Errno 2]':
                     print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
                 
-                self.state = 'disable'
+                self.state = 'disabled' 
         
     def find_serial_num(self):
         find_count = FIND_COUNT
         while find_count > 0 and self.state == 'connected':
             find_count -= 1
-        
+            print(f"[LOG] {self.num} - Looking for Serial number.")
             for reversed_num in flip(SERIAL_NUMBER_LIST):
                 select_command = to_select_command(reversed_num)
                 self.ser.write(select_command)

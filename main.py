@@ -27,7 +27,7 @@ if __name__ == '__main__':
                 
         for thread in threads:
             thread.join()
-            
+        
         # Start threading
         for dev in device:
             dev.start_thread()
