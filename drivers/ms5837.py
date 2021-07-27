@@ -264,12 +264,10 @@ class Setup(MS5837):
             saltwaterDepth = self.i2c.depth() # No nead to read() again
             self.i2c.setFluidDensity(1000) # kg/m^3
             print("[LOG] Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
-
             # fluidDensity doesn't matter for altitude() (always MSL air density)
             print("[LOG] MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
-            print("\n")
 
-    def start_thread(self):
+    def start_read_thread(self):
         thread = Thread(target=self.read_data, daemon=True)
         thread.start()
 
