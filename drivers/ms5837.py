@@ -293,7 +293,7 @@ class Setup(MS5837):
                 self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
             
             print(f"[READ] I2C_0 - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
-            
+            sleep(0.5)
                                        
     # def print_data(self):
     #     if self.i2c.read():
