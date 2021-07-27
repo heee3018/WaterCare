@@ -1,8 +1,10 @@
 import smbus
-from time             import sleep
-from threading        import Thread
-from drivers.library  import current_time
-
+from time            import sleep
+from threading       import Thread
+from config          import USE_DB, USE_CSV
+from config          import HOST, USER, PASSWORD, DB, TABLE 
+from drivers         import database
+from drivers.library import current_time, current_date, save_as_csv
 # Models
 MODEL_02BA = 0
 MODEL_30BA = 1
@@ -33,7 +35,6 @@ UNITS_psi    = 0.014503773773022
 UNITS_Centigrade = 1
 UNITS_Farenheit  = 2
 UNITS_Kelvin     = 3
-
 
 class MS5837(object):
     # Registers
@@ -237,6 +238,7 @@ class Setup(MS5837):
     def __init__(self):
         self.name = 'ms5837'
         self.data = { }
+        self.db   = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
         
         self.i2c = MS5837_30BA() 
         
@@ -272,22 +274,37 @@ class Setup(MS5837):
         thread.start()
 
     def read_data(self):
-        self.data['serial_num'] = {
-            'time'        : current_time(),
-            'pressure'    : self.i2c.pressure(UNITS_bar),
-            'temperature' : self.i2c.temperature(UNITS_Centigrade)
-        }
-        
-    def print_data(self):
-        if self.i2c.read():
-            time        = current_time()
-            pressure    = self.i2c.pressure()
-            temperature = self.i2c.temperature()
-            print(f"[READ] I2C_0 - {time.strftime('%Y-%m-%d %H:%M:%S')} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
-            return {
-                "time"        : time,
-                "pressure"    : pressure,
-                "temperature" : temperature
+        while True:
+            time        = current_time(),
+            pressure    = self.i2c.pressure(UNITS_bar),
+            temperature = self.i2c.temperature(UNITS_Centigrade)
+            
+            self.data['serial_num'] = {
+                'time'        : time,
+                'pressure'    : pressure,
+                'temperature' : temperature
             }
-        else:
-            return False
+            if USE_CSV:
+                path = f"csv/{current_date()}_{'ms5837'}"
+                data = [time, pressure, temperature]
+                save_as_csv(device=self.name, save_data=data, file_name=path)
+                
+            if USE_DB:
+                self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
+            
+            print(f"[READ] I2C_0 - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
+            
+                                       
+    # def print_data(self):
+    #     if self.i2c.read():
+    #         time        = current_time()
+    #         pressure    = self.i2c.pressure()
+    #         temperature = self.i2c.temperature()
+    #         print(f"[READ] I2C_0 - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
+    #         return {
+    #             "time"        : time,
+    #             "pressure"    : pressure,
+    #             "temperature" : temperature
+    #         }
+    #     else:
+    #         return False

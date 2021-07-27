@@ -1,8 +1,6 @@
 import os
-from time      import sleep
 from threading import Thread
-from drivers   import database, ms5837, lxc 
-from config    import HOST, USER, PASSWORD, DB, TABLE 
+from drivers   import ms5837, lxc 
 
 os.system('sudo /etc/init.d/udev restart') # USB Restart
 os.system('sudo /usr/bin/rdate -s time.bora.net')   # Set to current time
@@ -34,8 +32,10 @@ if __name__ == '__main__':
         for dev in device:
             dev.start_thread()
 
+        while True:
+            pass
+
     except KeyboardInterrupt:
         print("[LOG] Keyboard Interrupt.")
-        break
-    
+
     print("[LOG] The Main loop is over.")
