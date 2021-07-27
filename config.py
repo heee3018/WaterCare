@@ -23,7 +23,6 @@ ADDRESS_LIST     = [
     '21060010'
 ]
 
-# =- DB Info -= #
 HOST      = 'smartwatercare.net'
 USER      = 'kwater01'
 PASSWORD  = '1234'
