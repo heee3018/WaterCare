@@ -28,8 +28,18 @@ class Setup:
                 self.state = 'connected'
                 print(f"[LOG] {self.num} - Successfully opened the port")
                 
+            except OSError as e:
+                error_message = str(e)
+                print(e)
+                error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
+                if error_message[:9] == '[Errno 2]':
+                    print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
+                
+                self.state = 'disabled'
+                
             except serialutil.SerialException as e:
                 error_message = str(e)
+                print(e)
                 error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
                 if error_message[:9] == '[Errno 2]':
                     print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
