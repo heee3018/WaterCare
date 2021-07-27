@@ -33,7 +33,7 @@ def save_as_csv(device, save_data, file_name):
         try:
             data.to_csv(file_name, index=False, mode='w', encoding='utf-8-sig')
         except FileNotFoundError as e:
-            print(f"[ERROR] File Not Found Error {str(e)[56:]")
+            print(f"[ERROR] File Not Found Error {str(e)[56:]}")
             os.system('sudo mkdir /home/pi/WaterCare/csv')
             pass
     else:
