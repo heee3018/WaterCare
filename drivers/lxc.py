@@ -17,7 +17,10 @@ class Setup:
         self.num         =  num
         self.serial_port =  port
         self.db          =  database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+    
+        self.connect_serial()
         
+    def connect_serial(self):
         connect_serial_count = 5
         while connect_serial_count > 0:
             connect_serial_count -= 1
@@ -46,12 +49,12 @@ class Setup:
                 self.state = 'disabled'
                 continue
             
-    def start_search(self):
-        thread = Thread(target=self.find_serial_num, daemon=True)
+    def start_search_thread(self):
+        thread = Thread(target=self.search_serial_num, daemon=True)
         thread.start()
         return thread
     
-    def find_serial_num(self):
+    def search_serial_num(self):
         find_count = FIND_COUNT
         while find_count > 0 and self.state == 'connected':
             find_count -= 1
@@ -96,7 +99,7 @@ class Setup:
                 self.state = 'not found'
                 pass
                 
-    def start_thread(self):
+    def start_read_thread(self):
         if self.state == 'running':
             thread = Thread(target=self.read_data, daemon=True)
             thread.start()

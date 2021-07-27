@@ -4,7 +4,7 @@ from drivers         import ms5837, lxc
 from drivers.library import count_down
 
 os.system('sudo /etc/init.d/udev restart') # USB Restart
-os.system('sudo /usr/bin/rdate -s time.bora.net')   # Set to current time
+os.system('sudo ntpdate -u 3.kr.pool.ntp.org')   # Set to current time
 
 if __name__ == '__main__':
     try:
@@ -22,7 +22,7 @@ if __name__ == '__main__':
         threads = [ ]
         for dev in device:
             if dev.name == 'lxc':
-                thread = dev.start_search()
+                thread = dev.start_search_thread()
                 threads.append(thread)
                 
         for thread in threads:
@@ -34,13 +34,12 @@ if __name__ == '__main__':
                     print(f"[LOG] {dev.num} - Enabled")
                 else:
                     print(f"[LOG] {dev.num} - Desabled")
-                    
 
         count_down(5)
             
         # Start threading
         for dev in device:
-            dev.start_thread()
+            dev.start_read_thread()
         
         while True:
             pass
