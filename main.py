@@ -30,9 +30,11 @@ if __name__ == '__main__':
         
         for dev in device:
             if dev.name == 'lxc':
-                print(f"[LOG] {dev.num} - {dev.state}")
-                
-        print(f"[LOG] All threads are ready.")
+                if dev.state == 'running': 
+                    print(f"[LOG] {dev.num} - Enabled")
+                else:
+                    print(f"[LOG] {dev.num} - Desabled")
+                    
 
         count_down(5)
             

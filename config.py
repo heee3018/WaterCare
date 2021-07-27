@@ -1,7 +1,7 @@
 DEVICE_MODE        = 'master'
 
-USE_DB             = False
-USE_CSV            = False
+USE_DB             = True
+USE_CSV            = True
 CHOOSE_ONE_USB     = True
 
 FIND_COUNT         = 5

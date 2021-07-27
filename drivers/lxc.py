@@ -33,7 +33,7 @@ class Setup:
             
             except serialutil.SerialException as e:
                 if str(e)[:9] == '[Errno 2]':
-                    print(f"[ERROR] {self.num} - {str(e)[9:]}")
+                    print(f"[ERROR] {self.num} - Could not open port {self.num}")
                     
                 elif str(e)[:10] == '[Errno 72]':
                     print(f"[ERROR] {self.num} - {str(e)[10:]}")
@@ -55,13 +55,13 @@ class Setup:
         find_count = FIND_COUNT
         while find_count > 0 and self.state == 'connected':
             find_count -= 1
-            print(f"[LOG] {self.num} - Looking for Serial number.")
+            print(f"[LOG] {self.num} - looking for Serial number that matches {self.num}...")
             for reversed_num in flip(SERIAL_NUMBER_LIST):
                 select_command = to_select_command(reversed_num)
                 self.ser.write(select_command)
                 
                 if self.ser.read(1) == b'\xE5':
-                    print(f"[LOG] {self.num} - {flip(reversed_num)} was successfully selected.")
+                    print(f"[LOG] {self.num} - {flip(reversed_num)} and {self.num} were successfully matched !")
                     self.data[flip(reversed_num)] = {
                         'state'          : 'detected',
                         'select'         :  select_command,
@@ -92,7 +92,7 @@ class Setup:
                 break 
             
             else:
-                print(f"[ERROR] {self.num} - couldn't find anything")
+                print(f"[LOG] {self.num} - Cannot find Serial Number for {self.num}")
                 self.state = 'not found'
                 pass
                 
