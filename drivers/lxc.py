@@ -30,10 +30,14 @@ class Setup:
                 self.state = 'connected'
                 print(f"[LOG] {self.num} - Successfully opened the port")
                 break
-                
+            
             except serialutil.SerialException as e:
-                print(f"error >{str(e)}<")
-                print(f"[ERROR] {self.num} - {e[9:]}")
+                if str(e)[:9] == '[Errno 2]':
+                    print(f"[ERROR] {self.num} - {str(e)[9:]}")
+                    
+                elif str(e)[:10] == '[Errno 72]':
+                    print(f"[ERROR] {self.num} - {str(e)[10:]}")
+                    
                 self.state = 'disabled' 
                 continue
             
