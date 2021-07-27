@@ -45,7 +45,7 @@ class Setup:
         
     def find_serial_num(self):
         find_count = FIND_COUNT
-        while find_count > 0:
+        while find_count > 0 and self.state == 'connected':
             find_count -= 1
         
             for reversed_num in flip(SERIAL_NUMBER_LIST):
