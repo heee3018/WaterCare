@@ -32,6 +32,7 @@ class Setup:
                 break
                 
             except serialutil.SerialException as e:
+                print(e[:9])
                 print(f"[ERROR] {self.num} - {e[9:]}")
                 self.state = 'disabled' 
                 continue
