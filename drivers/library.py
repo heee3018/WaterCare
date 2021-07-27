@@ -17,7 +17,7 @@ def current_time():
     return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]  # format : 2020-05-04 10:18:32.926
 
 def current_date():
-    return datetime.now().strftime('%Y-%m-%d')  # format : 2020-05-04
+    return datetime.now().strftime('%Y_%m_%d')  # format : 2020_05_04
     
 def save_as_csv(device, save_data, file_name):    
     if device == 'ms5837':
@@ -30,8 +30,12 @@ def save_as_csv(device, save_data, file_name):
         file_name += '.csv'
     
     if not os.path.exists(file_name):
-        data.to_csv(file_name, index=False, mode='w', encoding='utf-8-sig')
-        
+        try:
+            data.to_csv(file_name, index=False, mode='w', encoding='utf-8-sig')
+        except FileNotFoundError as e:
+            print(f"[ERROR] File Not Found Error {str(e)[56:]")
+            os.system('sudo mkdir /home/pi/WaterCare/csv')
+            pass
     else:
         data.to_csv(file_name, index=False, mode='a', encoding='utf-8-sig', header=False)
 
