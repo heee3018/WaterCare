@@ -44,6 +44,11 @@ class Setup:
                 
                 self.state = 'disabled' 
         
+    def start_search(self):
+        thread = Thread(target=self.find_serial_num, daemon=True)
+        thread.start()
+        return thread
+    
     def find_serial_num(self):
         find_count = FIND_COUNT
         while find_count > 0 and self.state == 'connected':
