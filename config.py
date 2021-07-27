@@ -1,10 +1,11 @@
-DEVICE_MODE      = 'master'
-FIND_COUNT       = 1
-DETECTED_ADDRESS = []
-CHOOSE_ONE_USB   = True
-USE_DB           = True
-SAVE_CSV         = False
-ADDRESS_LIST     = [
+DEVICE_MODE        = 'master'
+
+USE_DB             = False
+USE_CSV            = False
+CHOOSE_ONE_USB     = True
+
+FIND_COUNT         = 1
+SERIAL_NUMBER_LIST = [
     '20201307', 
     '20201312',
     '20201314',

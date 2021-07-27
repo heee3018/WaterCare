@@ -1,6 +1,7 @@
 import smbus
-from time     import sleep
-from datetime import datetime
+from time             import sleep
+from threading        import Thread
+from drivers.library  import current_time
 
 # Models
 MODEL_02BA = 0
@@ -234,6 +235,9 @@ class MS5837_02BA(MS5837):
 class Setup(MS5837):
     
     def __init__(self):
+        self.name = 'ms5837'
+        self.data = { }
+        
         self.i2c = MS5837_30BA() 
         
         if not self.i2c.init():
@@ -263,9 +267,20 @@ class Setup(MS5837):
             print("[LOG] MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
             print("\n")
 
+    def start_thread(self):
+        thread = Thread(target=self.read_data, daemon=True)
+        thread.start()
+
+    def read_data(self):
+        self.data['serial_num'] = {
+            'time'        : current_time(),
+            'pressure'    : self.i2c.pressure(UNITS_bar),
+            'temperature' : self.i2c.temperature(UNITS_Centigrade)
+        }
+        
     def print_data(self):
         if self.i2c.read():
-            time        = datetime.now()
+            time        = current_time()
             pressure    = self.i2c.pressure()
             temperature = self.i2c.temperature()
             print(f"[READ] I2C_0 - {time.strftime('%Y-%m-%d %H:%M:%S')} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
