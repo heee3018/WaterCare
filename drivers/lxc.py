@@ -22,12 +22,23 @@ class Setup:
         while find_count > 0:
             find_count -= 1
         
-            self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
-            if not self.ser.is_open:       
-                self.ser.open()
+            try:
+                self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
+                if not self.ser.is_open:       
+                    self.ser.open()
                 
-            self.state = 'connected'
-            print(f"[LOG] {self.num} - Successfully opened the port")
+                self.state = 'connected'
+                print(f"[LOG] {self.num} - Successfully opened the port")
+                    
+            except serialutil.SerialException as e:
+                error_message = str(e)
+                print(e)
+                error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
+                if error_message[:9] == '[Errno 2]':
+                    print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
+                
+                self.state = 'disabled' 
+            
             
             # except OSError as e:
             #     error_message = str(e)
@@ -38,14 +49,7 @@ class Setup:
                 
             #     self.state = 'disabled'
                 
-            # except serialutil.SerialException as e:
-            #     error_message = str(e)
-            #     print(e)
-            #     error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
-            #     if error_message[:9] == '[Errno 2]':
-            #         print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
-                
-            #     self.state = 'disabled' 
+
 
             
             print(f"[LOG] {self.num} - {self.state}")
