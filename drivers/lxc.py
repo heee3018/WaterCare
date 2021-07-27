@@ -18,9 +18,9 @@ class Setup:
         self.serial_port =  port
         self.db          =  database.Setup(HOST, USER, PASSWORD, DB, TABLE)
         
-        find_count = FIND_COUNT
-        while find_count > 0:
-            find_count -= 1
+        connect_serial_count = 5
+        while connect_serial_count > 0:
+            connect_serial_count -= 1
         
             try:
                 self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
@@ -29,14 +29,16 @@ class Setup:
                 
                 self.state = 'connected'
                 print(f"[LOG] {self.num} - Successfully opened the port")
-                    
+
             except serialutil.SerialException as e:
                 print(f"[ERROR] {self.num} - {e[9:]}")
                 self.state = 'disabled' 
-                
-            except OSError as e:
-                print(f"[ERROR] {self.num} - {e[10:]}")
+                continue
+            
+            except OSError:
+                print(f"[ERROR] {self.num} - Protocol error")
                 self.state = 'disabled'
+                continue
             
             finally:   
                 print(f"[LOG] {self.num} - {self.state}")

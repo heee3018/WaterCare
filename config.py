@@ -4,7 +4,7 @@ USE_DB             = False
 USE_CSV            = False
 CHOOSE_ONE_USB     = True
 
-FIND_COUNT         = 1
+FIND_COUNT         = 5
 SERIAL_NUMBER_LIST = [
     '20201307', 
     '20201312',
