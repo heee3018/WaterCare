@@ -31,21 +31,11 @@ class Setup:
                 print(f"[LOG] {self.num} - Successfully opened the port")
                     
             except serialutil.SerialException as e:
-                error_message = str(e)
-                print(e)
-                error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
-                if error_message[:9] == '[Errno 2]':
-                    print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
-                
+                print(f"[ERROR] {self.num} - {e[9:]}")
                 self.state = 'disabled' 
-
-            except OSError as e:
-                error_message = str(e)
-                print(e)
-                error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
-                if error_message[:10] == '[Errno 71]':
-                    print(f"[ERROR] {self.num} - {error_port} Protocol error {find_count+1}/{FIND_COUNT}")
                 
+            except OSError as e:
+                print(f"[ERROR] {self.num} - {e[10:]}")
                 self.state = 'disabled'
             
             finally:   
