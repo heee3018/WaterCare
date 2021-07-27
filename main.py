@@ -31,9 +31,9 @@ if __name__ == '__main__':
         for dev in device:
             if dev.name == 'lxc':
                 if dev.state == 'running': 
-                    print(f"[LOG] {dev.num} - Enabled")
+                    print(f"{'[LOG]':8} {dev.num} - Enabled")
                 else:
-                    print(f"[LOG] {dev.num} - Desabled")
+                    print(f"{'[LOG]':8} {dev.num} - Desabled")
 
         count_down(5)
             
@@ -45,6 +45,6 @@ if __name__ == '__main__':
             pass
 
     except KeyboardInterrupt:
-        print("[LOG] Keyboard Interrupt.")
+        print("{'[LOG]':8} Keyboard Interrupt.")
 
-    print("[LOG] The Main loop is over.")
+    print("{'[LOG]':8} The Main loop is over.")

@@ -10,7 +10,7 @@ READ_COMMAND = str2hex('107BFD7816')
 
 def count_down(num=5):
     for count_down in reversed(range(num)):
-        print(f"[LOG] {count_down + 1}")
+        print(f"{'[LOG]':8} {count_down + 1}")
         sleep(1)
         
 def current_time():
@@ -33,7 +33,7 @@ def save_as_csv(device, save_data, file_name):
         try:
             data.to_csv(file_name, index=False, mode='w', encoding='utf-8-sig')
         except FileNotFoundError:
-            print(f"[LOG] Create csv directory")
+            print(f"{'[LOG]':8} Create csv directory")
             os.system('sudo mkdir /home/pi/WaterCare/csv')
             pass
     else:
