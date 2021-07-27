@@ -38,21 +38,18 @@ class Setup:
                     print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
                 
                 self.state = 'disabled' 
-            
-            
-            # except OSError as e:
-            #     error_message = str(e)
-            #     print(e)
-            #     error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
-            #     if error_message[:9] == '[Errno 2]':
-            #         print(f"[ERROR] {self.num} - {error_port} Could not open port. {find_count+1}/{FIND_COUNT}")
-                
-            #     self.state = 'disabled'
-                
 
-
+            except OSError as e:
+                error_message = str(e)
+                print(e)
+                error_port    = error_message[error_message.find('/dev/ttyUSB'):error_message.find(':')]
+                if error_message[:10] == '[Errno 71]':
+                    print(f"[ERROR] {self.num} - {error_port} Protocol error {find_count+1}/{FIND_COUNT}")
+                
+                self.state = 'disabled'
             
-            print(f"[LOG] {self.num} - {self.state}")
+            finally:   
+                print(f"[LOG] {self.num} - {self.state}")
             
     def start_search(self):
         thread = Thread(target=self.find_serial_num, daemon=True)
