@@ -21,15 +21,14 @@ class Setup:
         find_count = FIND_COUNT
         while find_count > 0:
             find_count -= 1
-            
-            try: 
-                self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
-                if not self.ser.is_open:       
-                    self.ser.open()
-                    
-                self.state = 'connected'
-                print(f"[LOG] {self.num} - Successfully opened the port")
+        
+            self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
+            if not self.ser.is_open:       
+                self.ser.open()
                 
+            self.state = 'connected'
+            print(f"[LOG] {self.num} - Successfully opened the port")
+            
             # except OSError as e:
             #     error_message = str(e)
             #     print(e)
