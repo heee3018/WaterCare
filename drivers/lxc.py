@@ -32,7 +32,7 @@ class Setup:
                 break
                 
             except serialutil.SerialException as e:
-                print(f"error >{e}<")
+                print(f"error >{str(e)}<")
                 print(f"[ERROR] {self.num} - {e[9:]}")
                 self.state = 'disabled' 
                 continue
