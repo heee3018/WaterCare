@@ -18,33 +18,38 @@ if __name__ == '__main__':
         device.append(lxc.Setup2(tag='USB_5', port='/dev/ttyUSB5'))
         device.append(lxc.Setup2(tag='USB_6', port='/dev/ttyUSB6'))
         
+        
         # LXC Find Serial Number
         threads = [ ]
         for dev in device:
             if dev.name == 'lxc':
-                thread = dev.start_search_thread()
-                threads.append(thread)
+                if dev.connect_port():
+                    thread = dev.start_search_thread()
+                    threads.append(thread)
                 
         for thread in threads:
             thread.join()
         
         for dev in device:
             if dev.name == 'lxc':
-                if dev.state == 'running': 
-                    print(f"{'[LOG]':>8} {dev.tag} - Enabled")
+                if dev.state == 'enabled': 
+                    print(f"{'[LOG]':>10} {dev.tag} - Enabled")
                 else:
-                    print(f"{'[LOG]':>8} {dev.tag} - Desabled")
+                    print(f"{'[LOG]':>10} {dev.tag} - Desabled")
 
         count_down(5)
             
         # Start threading
         for dev in device:
+            if dev.name == 'lxc':
+                if dev.state == 'disabled':
+                    continue
             dev.start_read_thread()
         
         while True:
             pass
 
     except KeyboardInterrupt:
-        print(f"{'[LOG]':>8} Keyboard Interrupt.")
+        print(f"{'[LOG]':>10} Keyboard Interrupt.")
 
-    print(f"{'[LOG]':>8} The Main loop is over.")
+    print(f"{'[LOG]':>10} The Main loop is over.")

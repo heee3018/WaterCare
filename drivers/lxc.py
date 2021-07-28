@@ -32,10 +32,15 @@ class LXC(object):
         try:
             self.ser = Serial(port=self.port, baudrate=2400, parity='E', timeout=1)
         except serialutil.SerialException as e:
-            print(f"{'[ERROR]':>10} {self.tag} - {self.port} {e}")
+            if 'Could not configure port' in e:
+                print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not configure port")
+            elif 'could not open port' in e:
+                print(f"{'[ERROR]':>10} {self.tag} - {self.port} could not open port")
+            else:
+                print(f">>{e}<<")
             return False
         except OSError:
-            print(f"{'[ERROR]':>10} {self.tag} - Protocol error")
+            print(f"{'[ERROR]':>10} {self.tag} - {self.port} Protocol error")
             return False
         if not self.ser.is_open:
             try:
@@ -49,7 +54,7 @@ class LXC(object):
     def connect_db(self):
         if USE_DB and check_internet():
             self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
-            print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
+            # print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
         
         elif USE_DB and not check_internet():
             print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
