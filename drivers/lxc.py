@@ -148,9 +148,12 @@ class Setup2(LXC):
     def start_read_thread(self):
         thread = Thread(target=self.read_thread, daemon=True)
         thread.start()
+        print('start_read_thread')
     
     def read_thread(self):
+        print('read_thread')
         while True:
+            print('while')
             if not self.init(): 
                 print(f"{'[ERROR]':>10} {self.tag} - Initialization error occurred")
             if not self.read():
