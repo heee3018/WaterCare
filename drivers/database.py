@@ -1,5 +1,5 @@
 import pymysql
-from datetime  import datetim
+from datetime  import datetime
 from config    import USE_DB
 
 class Setup():
