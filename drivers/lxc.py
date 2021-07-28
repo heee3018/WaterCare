@@ -162,7 +162,7 @@ class Setup2(LXC):
                     self.db.send(sql)
                 
                 print(f"{'[READ]':>10} {self.tag} - {time} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ |")
-                             
+                              
                     
                     
                     
