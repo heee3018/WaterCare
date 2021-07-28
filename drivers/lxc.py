@@ -84,7 +84,27 @@ class LXC(object):
             else:
                 self.state = 'disabled'
                 continue
-                
+    def select_serial_num(self, serial_num):
+        try:
+            self.ser.write(to_select_command(flip(serial_num)))
+        except:
+            print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
+            self.state = 'error'
+            return False
+        try:
+            response = self.ser.read(1)
+        except:
+            print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
+            self.state = 'error'
+            return False
+        
+        if response == b'\xE5':
+            self.state = 'enabled'
+            return True
+        else:
+            self.state = 'disabled'
+            return False
+            
     def init(self):
         if not self.ser.is_open:
             print(f"{'[ERROR]':>10} {self.tag} - {self.port} The serial port is closed.")
@@ -102,7 +122,8 @@ class LXC(object):
         self.ser.write(self.select_cmd)
         if self.ser.read(1) != b'\xE5': 
             print(f"{'[ERROR]':>10} {self.tag} - Serial response is not E5.")
-            return False
+            if not self.select_serial_num(self.serial_num):
+                return False
         return True
     
     def read(self):
