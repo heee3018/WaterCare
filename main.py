@@ -44,7 +44,7 @@ if __name__ == '__main__':
             if dev.name == 'lxc':
                 if dev.state == 'enabled':
                     dev.start_read_thread()
-            if dev.name == 'ms5837'
+            if dev.name == 'ms5837':
                 dev.start_read_thread()
         
         while True:
