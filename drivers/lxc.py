@@ -215,12 +215,12 @@ class Setup2(LXC):
                 print(f"{'[READ]':>10} {self.tag} - {time} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ |")
                                            
         # 여기서 다시 초기화
-        while True:
-            if self.connect_port():
-                self.search_serial_num()
-                if self.state == 'enabled': 
-                    self.start_read_thread()
-                    break
+        # while True:
+        #     if self.connect_port():
+        #         self.search_serial_num()
+        #         if self.state == 'enabled': 
+        #             self.start_read_thread()
+        #             break
                     
                     
                     
