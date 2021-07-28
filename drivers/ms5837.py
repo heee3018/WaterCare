@@ -4,7 +4,7 @@ from threading       import Thread
 from config          import USE_DB, USE_CSV
 from config          import HOST, USER, PASSWORD, DB, TABLE 
 from drivers         import database
-from drivers.library import current_time, current_date, save_as_csv
+from drivers.library import current_time, current_date, save_as_csv, check_internet
 # Models
 MODEL_02BA = 0
 MODEL_30BA = 1
@@ -234,26 +234,27 @@ class MS5837_02BA(MS5837):
         MS5837.__init__(self, MODEL_02BA, bus)
 
 class Setup(MS5837):
-    def __init__(self, interval):
+    def __init__(self, tag, interval):
         self.name     = 'ms5837'
-        self.data     = { }
-        self.db       = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
-        self.i2c      = MS5837_30BA() 
-        self.interval = interval
+        self.tag      =  tag
+        self.data     =  { }
+        self.db       =  database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+        self.i2c      =  MS5837_30BA() 
+        self.interval =  interval
         
         if not self.i2c.init():
-            print(f"{'[ERROR]':>10} MS5837 Sensor could not be initialized")
+            print(f"{'[ERROR]':>10} {self.tag} - MS5837 Sensor could not be initialized")
     
         elif not self.i2c.read():
-            print(f"{'[ERROR]':>10} Sensor read failed!")
+            print(f"{'[ERROR]':>10} {self.tag} - Sensor read failed!")
             
         else:
-            print(f"{'[LOG]':>10} Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
+            print(f"{'[LOG]':>10} {self.tag} - Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
                 self.i2c.pressure(UNITS_atm),
                 self.i2c.pressure(UNITS_Torr),
                 self.i2c.pressure(UNITS_psi)))
 
-            print(f"{'[LOG]':>10} Temperature: %.2f C  %.2f F  %.2f K" % (
+            print(f"{'[LOG]':>10} {self.tag} - Temperature: %.2f C  %.2f F  %.2f K" % (
                 self.i2c.temperature(UNITS_Centigrade),
                 self.i2c.temperature(UNITS_Farenheit),
                 self.i2c.temperature(UNITS_Kelvin)))
@@ -262,9 +263,17 @@ class Setup(MS5837):
             self.i2c.setFluidDensity(DENSITY_SALTWATER)
             saltwaterDepth = self.i2c.depth() # No nead to read() again
             self.i2c.setFluidDensity(1000) # kg/m^3
-            print(f"{'[LOG]':>10} Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
+            print(f"{'[LOG]':>10} {self.tag} - Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
             # fluidDensity doesn't matter for altitude() (always MSL air density)
-            print(f"{'[LOG]':>10} MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
+            print(f"{'[LOG]':>10} {self.tag} - MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
+
+    def connect_db(self):
+        if USE_DB and check_internet():
+            self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+            # print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
+        
+        elif USE_DB and not check_internet():
+            print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
 
     def start_read_thread(self):
         thread = Thread(target=self.read_data, daemon=True)
@@ -298,10 +307,10 @@ class Setup(MS5837):
                     if USE_DB:
                         self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
                     
-                    print(f"{'[READ]':>10} I2C_0 - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
+                    print(f"{'[READ]':>10} {self.tag} - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
                 
             except OSError:
                 time = current_time()
-                print(f"{'[ERROR]':>10} I2C_0 - {time} | {'':48} |")
+                print(f"{'[ERROR]':>10} {self.tag} - {time} | {'':48} |")
                 # print(f"{'[ERROR]':>10} I2C_0 - {time} | {'':12} | {'':16} | {'':14} |")
                 # print(f"{'[ERROR]':>10} I2C_0 - {time} | {'MS5837 Sensor not found.':^48} |")

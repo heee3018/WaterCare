@@ -12,16 +12,16 @@ SERIAL_NUMBER_LIST = [
     '20201315',
     '20201316',
     '20201317',
-    '21060001',
-    '21060002',
-    '21060003',
-    '21060004',
-    '21060005',
-    '21060006',
-    '21060007',
-    '21060008',
-    '21060009',
-    '21060010'
+    '21060001', # Home Data Acquisition
+    '21060002', # Home Data Acquisition
+    '21060003', # Home Data Acquisition
+    '21060004', # Home Data Acquisition
+    '21060005', # Home Data Acquisition
+    '21060006', # Home Data Acquisition
+    '21060007', # Home Data Acquisition
+    '21060008', # Home Data Acquisition
+    '21060009', # Home Data Acquisition
+    '21060010'  # Home Data Acquisition
 ]
 
 HOST      = 'smartwatercare.net'

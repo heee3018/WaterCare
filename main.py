@@ -9,7 +9,7 @@ os.system('sudo ntpdate -u 3.kr.pool.ntp.org')   # Set to current time
 if __name__ == '__main__':
     try:
         device = list()
-        device.append(ms5837.Setup(interval=0.5))
+        device.append(ms5837.Setup(tag='I2C_0', interval=0.5))
         device.append(lxc.Setup2(tag='USB_0', port='/dev/ttyUSB0'))
         device.append(lxc.Setup2(tag='USB_1', port='/dev/ttyUSB1'))
         device.append(lxc.Setup2(tag='USB_2', port='/dev/ttyUSB2'))
@@ -17,8 +17,12 @@ if __name__ == '__main__':
         device.append(lxc.Setup2(tag='USB_4', port='/dev/ttyUSB4'))
         device.append(lxc.Setup2(tag='USB_5', port='/dev/ttyUSB5'))
         device.append(lxc.Setup2(tag='USB_6', port='/dev/ttyUSB6'))
-        
-        
+
+        # Connect Database
+        for dev in device:
+            if dev.name == 'lxc':
+                dev.connect_db()
+
         # LXC Find Serial Number
         threads = [ ]
         for dev in device:

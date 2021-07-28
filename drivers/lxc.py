@@ -85,7 +85,9 @@ class LXC(object):
                     self.select_cmd =  select_command
                     self.serial_num =  flip(fliped_serial_num)
                     break
-                
+                if response == b'':
+                    self.state = 'empty response'
+                    continue
                 else:
                     self.state = 'disabled'
                     continue
@@ -134,7 +136,12 @@ class LXC(object):
     
     def read(self):
         self.ser.write(READ_COMMAND)
-        read_data = self.ser.read(39) 
+        try:
+            read_data = self.ser.read(39) 
+        except serialutil.SerialException as e:
+            if 'read failed' in str(e):
+                print(f"{'[ERROR]':>10} {self.tag} - {self.port} Read failed : device reports readiness to read but returned no data")
+                pass
         # format : b"h!!h\x08\xffr\x15\x13  \x00\x00\x02\x16\x00\x00\x00\x00\x04\x13\x00\x00\x00\x00\x05>\x00\x00\x00\x00\x04m\x17+\xbc'\xe9\x16"
     
         if read_data[-1:] != b'\x16':
