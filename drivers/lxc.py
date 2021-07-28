@@ -68,13 +68,13 @@ class LXC(object):
                 try:
                     self.ser.write(select_command)
                 except:
-                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
+                    # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
                     self.state = 'select write error'
                     continue
                 try:
                     response = self.ser.read(1)
                 except:
-                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
+                    # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
                     self.state = 'select read error'
                     continue
                 
@@ -160,6 +160,7 @@ class LXC(object):
                 'total_volume' : get_total_volume(read_format(read_data, 21, 25))
             }
         except:
+            print(f"{'[ERROR]':>10} {self.tag} - Data get error.")
             return False
         
         return True
