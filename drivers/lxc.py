@@ -151,31 +151,33 @@ class Setup2(LXC):
             print('while')
             if not self.init(): 
                 print(f"{'[ERROR]':>10} {self.tag} - Initialization error occurred")
+                continue
             if not self.select():
                 print(f"{'[ERROR]':>10} {self.tag} - Select error occurred")
+                continue
             if not self.read():
-                print(f"{'[ERROR]':>10} {self.tag} - Read error occurred")
-                
+                print(f"{'[ERROR]':>10} {self.tag} - Read error occurred") 
+                continue
             else:
                 sleep(self.interval)            
-            
                 time         = self.data['time']
                 serial_num   = self.data['serial_num']
                 flow_rate    = self.data['flow_rate']
                 total_volume = self.data['total_volume']
 
+                if None in [time, serial_num, flow_rate, total_volume]:
+                    print(f"{'[ERROR]':>10} {self.tag} - Data contains the value none")
+                    continue
+                
                 if USE_CSV:
                     path = f"csv/{current_date()}_{self.serial_num}"
                     data = [time, serial_num, flow_rate, total_volume]
                     save_as_csv(device=self.name, data=data, path=path)
-
                 # If None is present, it will not be sent to the db.
+                
                 if USE_DB:
-                    if None in [time, serial_num, flow_rate, total_volume]:
-                        print(f"{'[ERROR]':>10} {self.tag} - Data contains the value none")
-                    else:
-                        sql = f"INSERT INTO {self.db.table} (time, serial_num, flow_rate, total_volume) VALUES ('{time}', '{serial_num}', '{flow_rate}', '{total_volume}')"
-                        self.db.send(sql)
+                    sql = f"INSERT INTO {self.db.table} (time, serial_num, flow_rate, total_volume) VALUES ('{time}', '{serial_num}', '{flow_rate}', '{total_volume}')"
+                    self.db.send(sql)
                 
                 print(f"{'[READ]':>10} {self.tag} - {time} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ |")
                                            
