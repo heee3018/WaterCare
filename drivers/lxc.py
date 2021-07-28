@@ -96,7 +96,6 @@ class LXC(object):
         elif self.state == 'enabled'  : pass
         elif self.state == 'disabled' : return False
         elif self.state == 'error' : return False
-        print('init true')
         return True
  
     def select(self):
@@ -104,38 +103,33 @@ class LXC(object):
         if self.ser.read(1) != b'\xE5': 
             print(f"{'[ERROR]':>10} {self.tag} - Serial response is not E5.")
             return False
-        
         return True
     
     def read(self):
-        repeat = 50
-        while repeat > 0:
-            repeat -= 1
-
-            self.ser.write(READ_COMMAND)
-            read_data = self.ser.read(39) 
-            # format : b"h!!h\x08\xffr\x15\x13  \x00\x00\x02\x16\x00\x00\x00\x00\x04\x13\x00\x00\x00\x00\x05>\x00\x00\x00\x00\x04m\x17+\xbc'\xe9\x16"
+        self.ser.write(READ_COMMAND)
+        read_data = self.ser.read(39) 
+        # format : b"h!!h\x08\xffr\x15\x13  \x00\x00\x02\x16\x00\x00\x00\x00\x04\x13\x00\x00\x00\x00\x05>\x00\x00\x00\x00\x04m\x17+\xbc'\xe9\x16"
+    
+        if read_data[-1:] != b'\x16':
+            print(f"{'[ERROR]':>10} {self.tag} - Invalid value.")
+            return False
+        if read_data == b'':
+            print(f"{'[ERROR]':>10} {self.tag} - Empty response.")
+            return False
+        if self.serial_num != get_return_serial_num(read_format(read_data, 7, 11)):
+            print(f"{'[ERROR]':>10} {self.tag} - 'serial_num' and 'return_serial_num' are different.")
+            return False
         
-            if read_data[-1:] != b'\x16':
-                print(f"{'[ERROR]':>10} {self.tag} - Invalid value.")
-                return False
-            if read_data == b'':
-                print(f"{'[ERROR]':>10} {self.tag} - Empty response.")
-                return False
-            if self.serial_num != get_return_serial_num(read_format(read_data, 7, 11)):
-                print(f"{'[ERROR]':>10} {self.tag} - 'serial_num' and 'return_serial_num' are different.")
-                return False
-            
-            try:
-                self.date = {
-                    'time'         : current_time(),
-                    'serial_num'   : get_return_serial_num(read_format(read_data, 7, 11)),
-                    'flow_rate'    : get_flow_rate(read_format(read_data, 27, 31)),
-                    'total_volume' : get_total_volume(read_format(read_data, 21, 25))
-                }
-            except:
-                return False
-            
+        try:
+            self.date = {
+                'time'         : current_time(),
+                'serial_num'   : get_return_serial_num(read_format(read_data, 7, 11)),
+                'flow_rate'    : get_flow_rate(read_format(read_data, 27, 31)),
+                'total_volume' : get_total_volume(read_format(read_data, 21, 25))
+            }
+        except:
+            return False
+        
         return True
     
 class Setup2(LXC):
