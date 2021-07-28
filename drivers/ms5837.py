@@ -242,18 +242,18 @@ class Setup(MS5837):
         self.interval = interval
         
         if not self.i2c.init():
-            print(f"{'[ERROR]':>8} MS5837 Sensor could not be initialized")
+            print(f"{'[ERROR]':>10} MS5837 Sensor could not be initialized")
     
         elif not self.i2c.read():
-            print(f"{'[ERROR]':>8} Sensor read failed!")
+            print(f"{'[ERROR]':>10} Sensor read failed!")
             
         else:
-            print(f"{'[LOG]':>8} Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
+            print(f"{'[LOG]':>10} Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
                 self.i2c.pressure(UNITS_atm),
                 self.i2c.pressure(UNITS_Torr),
                 self.i2c.pressure(UNITS_psi)))
 
-            print(f"{'[LOG]':>8} Temperature: %.2f C  %.2f F  %.2f K" % (
+            print(f"{'[LOG]':>10} Temperature: %.2f C  %.2f F  %.2f K" % (
                 self.i2c.temperature(UNITS_Centigrade),
                 self.i2c.temperature(UNITS_Farenheit),
                 self.i2c.temperature(UNITS_Kelvin)))
@@ -262,9 +262,9 @@ class Setup(MS5837):
             self.i2c.setFluidDensity(DENSITY_SALTWATER)
             saltwaterDepth = self.i2c.depth() # No nead to read() again
             self.i2c.setFluidDensity(1000) # kg/m^3
-            print(f"{'[LOG]':>8} Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
+            print(f"{'[LOG]':>10} Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
             # fluidDensity doesn't matter for altitude() (always MSL air density)
-            print(f"{'[LOG]':>8} MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
+            print(f"{'[LOG]':>10} MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
 
     def start_read_thread(self):
         thread = Thread(target=self.read_data, daemon=True)
@@ -293,15 +293,15 @@ class Setup(MS5837):
                     if USE_CSV:
                         path = f"csv/{current_date()}_{'ms5837'}"
                         data = [time, pressure, temperature]
-                        save_as_csv(device=self.name, save_data=data, file_name=path)
+                        save_as_csv(device=self.name, data=data, path=path)
                         
                     if USE_DB:
                         self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
                     
-                    print(f"{'[READ]':>8} I2C_0 - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
+                    print(f"{'[READ]':>10} I2C_0 - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
                 
             except OSError:
                 time = current_time()
-                print(f"{'[ERROR]':>8} I2C_0 - {time} | {'':48} |")
-                # print(f"{'[ERROR]':>8} I2C_0 - {time} | {'':12} | {'':16} | {'':14} |")
-                # print(f"{'[ERROR]':>8} I2C_0 - {time} | {'MS5837 Sensor not found.':^48} |")
+                print(f"{'[ERROR]':>10} I2C_0 - {time} | {'':48} |")
+                # print(f"{'[ERROR]':>10} I2C_0 - {time} | {'':12} | {'':16} | {'':14} |")
+                # print(f"{'[ERROR]':>10} I2C_0 - {time} | {'MS5837 Sensor not found.':^48} |")
