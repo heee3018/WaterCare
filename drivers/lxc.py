@@ -32,9 +32,9 @@ class LXC(object):
         try:
             self.ser = Serial(port=self.port, baudrate=2400, parity='E', timeout=1)
         except serialutil.SerialException as e:
-            if 'Could not configure port' in e:
+            if 'Could not configure port' in str(e):
                 print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not configure port")
-            elif 'could not open port' in e:
+            elif 'could not open port' in str(e):
                 print(f"{'[ERROR]':>10} {self.tag} - {self.port} could not open port")
             else:
                 print(f">>{e}<<")
