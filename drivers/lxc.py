@@ -179,10 +179,7 @@ class Setup2(LXC):
                 
                 print(f"{'[READ]':>10} {self.tag} - {time} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ |")
                                            
-                    
-                    Incorrect double value 'None' for column `kwaterdb`.`KWATERTABLE`.`flow_rate` at row 1
-                    
-                    
+
                     
                     
                     
