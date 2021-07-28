@@ -33,21 +33,23 @@ class LXC(object):
                 self.ser = Serial(port=self.port, baudrate=2400, parity='E', timeout=1)
             except serialutil.SerialException as e:
                 if 'Could not configure port' in str(e):
-                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not configure port")
+                    # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not configure port")
+                    pass
                 elif 'could not open port' in str(e):
-                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} could not open port")
+                    # print(f"{'[ERROR]':>10} {self.tag} - {self.port} could not open port")
+                    pass
                 else:
                     print(f">>{e}<<")
                 continue
             except OSError:
-                print(f"{'[ERROR]':>10} {self.tag} - {self.port} Protocol error")
+                # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Protocol error")
                 continue
             
             if not self.ser.is_open:
                 try:
                     self.ser.open()
                 except:
-                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not open serial port.")
+                    # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not open serial port.")
                     continue
             print(f"{'[LOG]':>10} {self.tag} - Successfully opened the port")   
             break
@@ -56,7 +58,7 @@ class LXC(object):
     def connect_db(self):
         if USE_DB and check_internet():
             self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
-            # print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
+            print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
         
         elif USE_DB and not check_internet():
             print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
@@ -68,13 +70,13 @@ class LXC(object):
                 try:
                     self.ser.write(select_command)
                 except:
-                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
+                    # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
                     self.state = 'error'
                     continue
                 try:
                     response = self.ser.read(1)
                 except:
-                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
+                    # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
                     self.state = 'error'
                     continue
                 
@@ -93,13 +95,13 @@ class LXC(object):
         try:
             self.ser.write(to_select_command(flip(serial_num)))
         except:
-            print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
+            # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
             self.state = 'error'
             return False
         try:
             response = self.ser.read(1)
         except:
-            print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
+            # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
             self.state = 'error'
             return False
         
