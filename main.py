@@ -32,10 +32,7 @@ if __name__ == '__main__':
         
         for dev in device:
             if dev.name == 'lxc':
-                if dev.state == 'enabled': 
-                    print(f"{'[LOG]':>10} {dev.tag} - Enabled")
-                else:
-                    print(f"{'[LOG]':>10} {dev.tag} - Desabled")
+                print(f"{'[LOG]':>10} {dev.tag} - {dev.state}")
 
         count_down(5)
             

@@ -58,7 +58,7 @@ class LXC(object):
     def connect_db(self):
         if USE_DB and check_internet():
             self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
-            print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
+            # print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
         
         elif USE_DB and not check_internet():
             print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
@@ -71,13 +71,13 @@ class LXC(object):
                     self.ser.write(select_command)
                 except:
                     # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
-                    self.state = 'error'
+                    self.state = 'select write error'
                     continue
                 try:
                     response = self.ser.read(1)
                 except:
                     # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
-                    self.state = 'error'
+                    self.state = 'select read error'
                     continue
                 
                 if response == b'\xE5':
