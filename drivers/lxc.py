@@ -51,7 +51,7 @@ class LXC(object):
                 except:
                     # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not open serial port.")
                     continue
-            print(f"{'[LOG]':>10} {self.tag} - Successfully opened the port")   
+            # print(f"{'[LOG]':>10} {self.tag} - Successfully opened the port")   
             break
         return True
     
@@ -70,13 +70,13 @@ class LXC(object):
                 try:
                     self.ser.write(select_command)
                 except:
-                    # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
+                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
                     self.state = 'select write error'
                     continue
                 try:
                     response = self.ser.read(1)
                 except:
-                    # print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
+                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
                     self.state = 'select read error'
                     continue
                 
@@ -130,8 +130,8 @@ class LXC(object):
         self.ser.write(self.select_cmd)
         if self.ser.read(1) != b'\xE5': 
             print(f"{'[ERROR]':>10} {self.tag} - Serial response is not E5.")
-            if not self.select_serial_num(self.serial_num):
-                return False
+            return False
+        
         return True
     
     def read(self):
