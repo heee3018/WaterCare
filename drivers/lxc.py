@@ -170,14 +170,17 @@ class Setup2(LXC):
                     save_as_csv(device=self.name, data=data, path=path)
 
                 # If None is present, it will not be sent to the db.
-                if USE_DB and None in [time, serial_num, flow_rate, total_volume]:
-                    sql = f"INSERT INTO {self.db.table} (time, serial_num, flow_rate, total_volume) VALUES ('{time}', '{serial_num}', '{flow_rate}', '{total_volume}')"
-                    self.db.send(sql)
+                if USE_DB:
+                    if None in [time, serial_num, flow_rate, total_volume]:
+                        print(f"{'[ERROR]':>10} {self.tag} - Data contains the value none")
+                    else:
+                        sql = f"INSERT INTO {self.db.table} (time, serial_num, flow_rate, total_volume) VALUES ('{time}', '{serial_num}', '{flow_rate}', '{total_volume}')"
+                        self.db.send(sql)
                 
                 print(f"{'[READ]':>10} {self.tag} - {time} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ |")
                                            
                     
-                    
+                    Incorrect double value 'None' for column `kwaterdb`.`KWATERTABLE`.`flow_rate` at row 1
                     
                     
                     
