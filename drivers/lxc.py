@@ -24,8 +24,6 @@ class LXC(object):
             'flow_rate'    :  None,
             'total_volume' :  None
         }
-        
-        self.connect_db()
             
     def connect_port(self):
         for _ in range(5):

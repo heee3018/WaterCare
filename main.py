@@ -18,10 +18,9 @@ if __name__ == '__main__':
         device.append(lxc.Setup2(tag='USB_5', port='/dev/ttyUSB5'))
         device.append(lxc.Setup2(tag='USB_6', port='/dev/ttyUSB6'))
 
-        # Connect Database
+        # Connect Database (lxc and ms5837)
         for dev in device:
-            if dev.name == 'lxc':
-                dev.connect_db()
+            dev.connect_db()
 
         # LXC Find Serial Number
         threads = [ ]
