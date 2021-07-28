@@ -275,10 +275,10 @@ class Setup(MS5837):
             sleep(self.interval)
             try:
                 if not self.i2c.init():
-                    print(f"{'[ERROR]':>8} MS5837 Sensor could not be initialized")
+                    pass
                     
                 if not self.i2c.read():
-                    print(f"{'[ERROR]':>8} Sensor read failed!")
+                    pass
                 
                 else:
                     time        = current_time()
