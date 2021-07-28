@@ -128,6 +128,7 @@ class LXC(object):
 
 class Setup2(LXC):
     def __init__(self, tag, port, interval=0):
+        LXC.__init__(self, tag, port, interval)
         self.name = 'lxc'
     
     def start_search_thread(self):
