@@ -25,7 +25,6 @@ class LXC(object):
             'total_volume' :  None
         }
         
-        self.connect_port()
         self.connect_db()
             
     def connect_port(self):
@@ -97,14 +96,18 @@ class LXC(object):
         elif self.state == 'enabled'  : pass
         elif self.state == 'disabled' : return False
         elif self.state == 'error' : return False
-
+        print('init true')
         return True
  
-    def read(self):
-        sleep(self.interval)
+    def select(self):
         self.ser.write(self.select_cmd)
-        if self.ser.read(1) != b'\xE5': return False
+        if self.ser.read(1) != b'\xE5': 
+            print(f"{'[ERROR]':>10} {self.tag} - Serial response is not E5.")
+            return False
         
+        return True
+    
+    def read(self):
         repeat = 50
         while repeat > 0:
             repeat -= 1
@@ -132,9 +135,9 @@ class LXC(object):
                 }
             except:
                 return False
+            
         return True
-       
-
+    
 class Setup2(LXC):
     def __init__(self, tag, port, interval=0):
         LXC.__init__(self, tag, port, interval)
@@ -148,18 +151,20 @@ class Setup2(LXC):
     def start_read_thread(self):
         thread = Thread(target=self.read_thread, daemon=True)
         thread.start()
-        print('start_read_thread')
     
     def read_thread(self):
-        print('read_thread')
         while True:
             print('while')
             if not self.init(): 
                 print(f"{'[ERROR]':>10} {self.tag} - Initialization error occurred")
+            if not self.select():
+                print(f"{'[ERROR]':>10} {self.tag} - Select error occurred")
             if not self.read():
                 print(f"{'[ERROR]':>10} {self.tag} - Read error occurred")
-            
+                
             else:
+                sleep(self.interval)            
+            
                 time         = self.data['time']
                 serial_num   = self.data['serial_num']
                 flow_rate    = self.data['flow_rate']
