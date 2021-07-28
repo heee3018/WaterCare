@@ -42,6 +42,7 @@ class LXC(object):
         except OSError:
             print(f"{'[ERROR]':>10} {self.tag} - {self.port} Protocol error")
             return False
+        
         if not self.ser.is_open:
             try:
                 self.ser.open()
@@ -66,11 +67,13 @@ class LXC(object):
                 self.ser.write(select_command)
             except:
                 print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
+                self.state = 'error'
                 return False
             try:
                 response = self.ser.read(1)
             except:
                 print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
+                self.state = 'error'
                 return False
             
             if response == b'\xE5':
@@ -93,6 +96,7 @@ class LXC(object):
         if   self.state == 'init'     : return False
         elif self.state == 'enabled'  : pass
         elif self.state == 'disabled' : return False
+        elif self.state == 'error' : return False
 
         return True
  
