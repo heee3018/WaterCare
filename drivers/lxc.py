@@ -121,7 +121,7 @@ class LXC(object):
             return False
         
         try:
-            self.date = {
+            self.data = {
                 'time'         : current_time(),
                 'serial_num'   : get_return_serial_num(read_format(read_data, 7, 11)),
                 'flow_rate'    : get_flow_rate(read_format(read_data, 27, 31)),
@@ -148,7 +148,6 @@ class Setup2(LXC):
     
     def read_thread(self):
         while True:
-            print('while')
             if not self.init(): 
                 print(f"{'[ERROR]':>10} {self.tag} - Initialization error occurred")
                 continue
