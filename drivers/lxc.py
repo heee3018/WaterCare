@@ -24,8 +24,6 @@ class LXC(object):
             'flow_rate'    :  None,
             'total_volume' :  None
         }
-            
-        self.error_count = 0
         
     def connect_port(self):
         for _ in range(5):
@@ -181,16 +179,13 @@ class Setup2(LXC):
         thread.start()
     
     def read_thread(self):
-        while self.error_count > 10:
+        while True:
             if not self.init(): 
                 print(f"{'[ERROR]':>10} {self.tag} - Initialization error occurred")
-                self.error_count += 1
             if not self.select():
                 print(f"{'[ERROR]':>10} {self.tag} - Select error occurred")
-                self.error_count += 1
             if not self.read():
                 print(f"{'[ERROR]':>10} {self.tag} - Read error occurred") 
-                self.error_count += 1
             else:
                 sleep(self.interval)            
                 time         = self.data['time']
@@ -200,7 +195,6 @@ class Setup2(LXC):
 
                 if None in [time, serial_num, flow_rate, total_volume]:
                     print(f"{'[ERROR]':>10} {self.tag} - Data contains the value none")
-                    self.error_count += 1
                 
                 if USE_CSV:
                     path = f"csv/{current_date()}_{self.serial_num}"
