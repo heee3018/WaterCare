@@ -24,7 +24,7 @@ def count_down(num=5):
         sleep(1)
         
 def current_time():
-    return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]  # format : 2020-05-04 10:18:32.926
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]  # format : 2020-05-04 10:18:32.926
 
 def current_date():
     return datetime.now().strftime('%Y_%m_%d')  # format : 2020_05_04
