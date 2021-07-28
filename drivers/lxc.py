@@ -28,27 +28,29 @@ class LXC(object):
         self.connect_db()
             
     def connect_port(self):
-        try:
-            self.ser = Serial(port=self.port, baudrate=2400, parity='E', timeout=1)
-        except serialutil.SerialException as e:
-            if 'Could not configure port' in str(e):
-                print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not configure port")
-            elif 'could not open port' in str(e):
-                print(f"{'[ERROR]':>10} {self.tag} - {self.port} could not open port")
-            else:
-                print(f">>{e}<<")
-            return False
-        except OSError:
-            print(f"{'[ERROR]':>10} {self.tag} - {self.port} Protocol error")
-            return False
-        
-        if not self.ser.is_open:
+        for _ in range(5):
             try:
-                self.ser.open()
-            except:
-                print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not open serial port.")
-                return False
-        print(f"{'[LOG]':>10} {self.tag} - Successfully opened the port")   
+                self.ser = Serial(port=self.port, baudrate=2400, parity='E', timeout=1)
+            except serialutil.SerialException as e:
+                if 'Could not configure port' in str(e):
+                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not configure port")
+                elif 'could not open port' in str(e):
+                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} could not open port")
+                else:
+                    print(f">>{e}<<")
+                continue
+            except OSError:
+                print(f"{'[ERROR]':>10} {self.tag} - {self.port} Protocol error")
+                continue
+            
+            if not self.ser.is_open:
+                try:
+                    self.ser.open()
+                except:
+                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Could not open serial port.")
+                    continue
+            print(f"{'[LOG]':>10} {self.tag} - Successfully opened the port")   
+            break
         return True
     
     def connect_db(self):
@@ -60,30 +62,33 @@ class LXC(object):
             print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
 
     def search_serial_num(self):
-        for fliped_serial_num in flip(SERIAL_NUMBER_LIST):
-            select_command = to_select_command(fliped_serial_num)
-            try:
-                self.ser.write(select_command)
-            except:
-                print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
-                self.state = 'error'
-                return False
-            try:
-                response = self.ser.read(1)
-            except:
-                print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
-                self.state = 'error'
-                return False
-            
-            if response == b'\xE5':
-                self.state      = 'enabled'
-                self.select_cmd =  select_command
-                self.serial_num =  flip(fliped_serial_num)
-                break
-            
-            else:
-                self.state = 'disabled'
-                continue
+        for _ in range(5):
+            for fliped_serial_num in flip(SERIAL_NUMBER_LIST):
+                select_command = to_select_command(fliped_serial_num)
+                try:
+                    self.ser.write(select_command)
+                except:
+                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to write Select command.")
+                    self.state = 'error'
+                    continue
+                try:
+                    response = self.ser.read(1)
+                except:
+                    print(f"{'[ERROR]':>10} {self.tag} - {self.port} Failed to read Select command.")
+                    self.state = 'error'
+                    continue
+                
+                if response == b'\xE5':
+                    self.state      = 'enabled'
+                    self.select_cmd =  select_command
+                    self.serial_num =  flip(fliped_serial_num)
+                    break
+                
+                else:
+                    self.state = 'disabled'
+                    continue
+            break
+        
     def select_serial_num(self, serial_num):
         try:
             self.ser.write(to_select_command(flip(serial_num)))
@@ -111,7 +116,6 @@ class LXC(object):
             return False
         
         if self.serial_num == None    : return False
-        
         if   self.state == 'init'     : return False
         elif self.state == 'enabled'  : pass
         elif self.state == 'disabled' : return False
