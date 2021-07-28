@@ -25,6 +25,8 @@ class LXC(object):
             'total_volume' :  None
         }
             
+        self.error_count = 0
+        
     def connect_port(self):
         for _ in range(5):
             try:
@@ -62,7 +64,7 @@ class LXC(object):
             print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
 
     def search_serial_num(self):
-        for _ in range(5):
+        for _ in range(10):
             for fliped_serial_num in flip(SERIAL_NUMBER_LIST):
                 select_command = to_select_command(fliped_serial_num)
                 try:
@@ -179,16 +181,16 @@ class Setup2(LXC):
         thread.start()
     
     def read_thread(self):
-        while True:
+        while self.error_count > 10:
             if not self.init(): 
                 print(f"{'[ERROR]':>10} {self.tag} - Initialization error occurred")
-                break
+                self.error_count += 1
             if not self.select():
                 print(f"{'[ERROR]':>10} {self.tag} - Select error occurred")
-                break
+                self.error_count += 1
             if not self.read():
                 print(f"{'[ERROR]':>10} {self.tag} - Read error occurred") 
-                break
+                self.error_count += 1
             else:
                 sleep(self.interval)            
                 time         = self.data['time']
@@ -198,7 +200,7 @@ class Setup2(LXC):
 
                 if None in [time, serial_num, flow_rate, total_volume]:
                     print(f"{'[ERROR]':>10} {self.tag} - Data contains the value none")
-                    continue
+                    self.error_count += 1
                 
                 if USE_CSV:
                     path = f"csv/{current_date()}_{self.serial_num}"
@@ -213,9 +215,12 @@ class Setup2(LXC):
                 print(f"{'[READ]':>10} {self.tag} - {time} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ |")
                                            
         # 여기서 다시 초기화
-        if self.connect_port():
-            self.state = 'enabled'
-            self.start_read_thread()
+        while True:
+            if self.connect_port():
+                self.search_serial_num()
+                if self.state == 'enabled': 
+                    self.start_read_thread()
+                    break
                     
                     
                     
