@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-import http.client as httplib
 from time      import sleep
 from datetime  import datetime
 from binascii  import hexlify   as hex2str
@@ -9,18 +8,9 @@ from struct    import unpack
 
 READ_COMMAND = str2hex('107BFD7816')
 
-def check_internet(url='www.google.com', timeout=3):
-    conn = httplib.HTTPConnection(url, timeout=timeout)
-    try:
-        conn.request('HEAD', '/')
-        conn.close()
-        return True
-    except:
-        return False
-    
 def count_down(num=5):
     for count_down in reversed(range(num)):
-        print(f"{'[LOG]':>10} {count_down + 1}")
+        print(f"{'[LOG]':>8} {count_down + 1}")
         sleep(1)
         
 def current_time():
@@ -29,25 +19,25 @@ def current_time():
 def current_date():
     return datetime.now().strftime('%Y_%m_%d')  # format : 2020_05_04
     
-def save_as_csv(device, data, path):    
+def save_as_csv(device, save_data, file_name):    
     if device == 'ms5837':
-        data = pd.DataFrame([data], columns=['time', 'pressure', 'temperature'])
+        data = pd.DataFrame([save_data], columns=['time', 'pressure', 'temperature'])
         
     elif device == 'lxc':
-        data = pd.DataFrame([data], columns=['time', 'serial_num', 'flow_rate', 'total_volume'])
+        data = pd.DataFrame([save_data], columns=['time', 'serial_num', 'flow_rate', 'total_volume'])
     
-    if path[-4:] != '.csv':
-        path += '.csv'
+    if file_name[-4:] != '.csv':
+        file_name += '.csv'
     
-    if not os.path.exists(path):
+    if not os.path.exists(file_name):
         try:
-            data.to_csv(path, index=False, mode='w', encoding='utf-8-sig')
+            data.to_csv(file_name, index=False, mode='w', encoding='utf-8-sig')
         except FileNotFoundError:
-            print(f"{'[LOG]':>10} Create csv directory")
+            print(f"{'[LOG]':>8} Create csv directory")
             os.system('sudo mkdir /home/pi/WaterCare/csv')
             pass
     else:
-        data.to_csv(path, index=False, mode='a', encoding='utf-8-sig', header=False)
+        data.to_csv(file_name, index=False, mode='a', encoding='utf-8-sig', header=False)
 
 def flip(address):
     if type(address) == list:
