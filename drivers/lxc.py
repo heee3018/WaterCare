@@ -169,7 +169,8 @@ class Setup2(LXC):
                     data = [time, serial_num, flow_rate, total_volume]
                     save_as_csv(device=self.name, data=data, path=path)
 
-                if USE_DB:
+                # If None is present, it will not be sent to the db.
+                if USE_DB and None in [time, serial_num, flow_rate, total_volume]:
                     sql = f"INSERT INTO {self.db.table} (time, serial_num, flow_rate, total_volume) VALUES ('{time}', '{serial_num}', '{flow_rate}', '{total_volume}')"
                     self.db.send(sql)
                 
