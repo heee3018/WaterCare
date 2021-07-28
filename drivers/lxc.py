@@ -182,13 +182,13 @@ class Setup2(LXC):
         while True:
             if not self.init(): 
                 print(f"{'[ERROR]':>10} {self.tag} - Initialization error occurred")
-                continue
+                break
             if not self.select():
                 print(f"{'[ERROR]':>10} {self.tag} - Select error occurred")
-                continue
+                break
             if not self.read():
                 print(f"{'[ERROR]':>10} {self.tag} - Read error occurred") 
-                continue
+                break
             else:
                 sleep(self.interval)            
                 time         = self.data['time']
@@ -212,8 +212,10 @@ class Setup2(LXC):
                 
                 print(f"{'[READ]':>10} {self.tag} - {time} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ |")
                                            
-
-                    
+        # 여기서 다시 초기화
+        if self.connect_port():
+            self.state = 'enabled'
+            self.start_read_thread()
                     
                     
                     
