@@ -10,13 +10,13 @@ if __name__ == '__main__':
     try:
         device = list()
         device.append(ms5837.Setup(interval=0.5))
-        device.append(lxc.Setup(num='USB_0', port='/dev/ttyUSB0'))
-        device.append(lxc.Setup(num='USB_1', port='/dev/ttyUSB1'))
-        device.append(lxc.Setup(num='USB_2', port='/dev/ttyUSB2'))
-        device.append(lxc.Setup(num='USB_3', port='/dev/ttyUSB3'))
-        device.append(lxc.Setup(num='USB_4', port='/dev/ttyUSB4'))
-        device.append(lxc.Setup(num='USB_5', port='/dev/ttyUSB5'))
-        device.append(lxc.Setup(num='USB_6', port='/dev/ttyUSB6'))
+        device.append(lxc.Setup2(tag='USB_0', port='/dev/ttyUSB0'))
+        device.append(lxc.Setup2(tag='USB_1', port='/dev/ttyUSB1'))
+        device.append(lxc.Setup2(tag='USB_2', port='/dev/ttyUSB2'))
+        device.append(lxc.Setup2(tag='USB_3', port='/dev/ttyUSB3'))
+        device.append(lxc.Setup2(tag='USB_4', port='/dev/ttyUSB4'))
+        device.append(lxc.Setup2(tag='USB_5', port='/dev/ttyUSB5'))
+        device.append(lxc.Setup2(tag='USB_6', port='/dev/ttyUSB6'))
         
         # LXC Find Serial Number
         threads = [ ]
@@ -31,9 +31,9 @@ if __name__ == '__main__':
         for dev in device:
             if dev.name == 'lxc':
                 if dev.state == 'running': 
-                    print(f"{'[LOG]':>8} {dev.num} - Enabled")
+                    print(f"{'[LOG]':>8} {dev.tag} - Enabled")
                 else:
-                    print(f"{'[LOG]':>8} {dev.num} - Desabled")
+                    print(f"{'[LOG]':>8} {dev.tag} - Desabled")
 
         count_down(5)
             
