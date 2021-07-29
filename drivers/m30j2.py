@@ -80,9 +80,9 @@ class M30J2(object):
         print(f"S {address_6_0} R A {pressure_13_8[:2]} {pressure_13_8[2:]} A {pressure_7_0} A {temperature_10_3} A {temperature_2_0} N P")
 
         if (read[0] & 0xc0) == 0x00:
-            d_pressure    = (unsigned((read[0] & 0x3f) << 8) + read[1])
-            d_temperature = (unsigned((read[2]) << 3) + read[3] >> 5)
-            self._pressure    = (d_pressure - self._P1) * (self._P_MAX - self._P_MIN) / self._P2 + self._P_MIN
+            d_pressure    = (unsigned((read[0] & 0x3f) << 8) | (read[1]))
+            d_temperature = (unsigned((read[2]) << 3) + (read[3] >> 5))
+            self._pressure    = (d_pressure - self._P1) | (self._P_MAX - self._P_MIN) / self._P2 + self._P_MIN
             self._temperature = (d_temperature * 200) / 2047 - 50
 
         return True
