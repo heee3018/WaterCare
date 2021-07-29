@@ -77,8 +77,7 @@ class M30J2(object):
         pressure_7_0     = str(bin(read[1] | 0x100))[3:]
         temperature_10_3 = str(bin(read[2] | 0x100))[3:]
         temperature_2_0  = str(bin(read[3] | 0x100))[3:]
-        
-        print(f"S   address_6_0} R A {pressure_13_8[:2]} {pressure_13_8[2:]} A {pressure_7_0} A {temperature_10_3} A {temperature_2_0} N P")
+        print(f"S {address_6_0} R A {pressure_13_8[:2]} {pressure_13_8[2:]} A {pressure_7_0} A {temperature_10_3} A {temperature_2_0} N P")
 
         
         if (read[0] & 0xc0) == 0x00:
