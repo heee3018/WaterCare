@@ -80,13 +80,13 @@ class M30J2(object):
         print(f"S {address_6_0} R A {pressure_13_8[:2]} {pressure_13_8[2:]} A {pressure_7_0} A {temperature_10_3} A {temperature_2_0} N P")
         
         print(read)
-        t_pressure_13_8    = bin(read[0])
-        t_pressure_7_0     = bin(read[1])
-        t_temperature_10_3 = bin(read[2])
-        t_temperature_2_0  = bin(read[3])
+        t_pressure_13_8    = read[0]
+        t_pressure_7_0     = read[1]
+        t_temperature_10_3 = read[2]
+        t_temperature_2_0  = read[3]
         
         # print(f"S {address_6_0} R A {pressure_13_8[:2]} {pressure_13_8[2:]} A {pressure_7_0} A {temperature_10_3} A {temperature_2_0} N P")
-        print(f"{t_pressure_13_8}  {t_pressure_7_0}  {t_temperature_10_3}  {t_temperature_2_0}")
+        print(f"{bin(t_pressure_13_8)}  {bin(t_pressure_7_0)}  {bin(t_temperature_10_3)}  {bin(t_temperature_2_0)}")
         # if (read[0] & 0xc0) == 0x00:
         #     d_pressure    = (unsigned((read[0] & 0x3f) << 8) | (read[1]))
         #     d_temperature = (unsigned(read[2] << 3) | (read[3] >> 5))
