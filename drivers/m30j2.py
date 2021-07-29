@@ -88,7 +88,7 @@ class M30J2(object):
         print(f"read: {read}   type: {read[0]}")
 
         for r in read:
-            print(bin(r))
+            print(bin(r)) 
   
         if (read[0] & 0xc0) == 0x00:
             d_pressure        = (((read[0] & 0x3f) << 8) | (read[1]))
