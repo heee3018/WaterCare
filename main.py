@@ -1,6 +1,6 @@
 import os
 from threading       import Thread
-from drivers         import ms5837, lxc 
+from drivers         import m30j2, ms5837, lxc 
 from drivers.library import count_down
 
 os.system('sudo /etc/init.d/udev restart') # USB Restart
@@ -10,6 +10,7 @@ if __name__ == '__main__':
     try:
         device = list()
         device.append(ms5837.Setup(tag='I2C_0', interval=0.5))
+        device.append(m30j2.Setup(tag='I2C_1', interval=0.5))
         device.append(lxc.Setup2(tag='USB_0', port='/dev/ttyUSB0'))
         device.append(lxc.Setup2(tag='USB_1', port='/dev/ttyUSB1'))
         device.append(lxc.Setup2(tag='USB_2', port='/dev/ttyUSB2'))
