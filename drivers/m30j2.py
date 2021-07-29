@@ -72,8 +72,14 @@ class M30J2(object):
         
         read = self.bus.read_i2c_block_data(self._ADDRESS, 0, 4)
         
-        # print(' S ' + str(bin(self._ADDRESS | 0x100))[4:] + 'R' + ' A ' + str(bin(read[0] | 0x100))[3:] + ' A ' + str(bin(read[1] | 0x100))[3:] + ' A ' 
-        #     + str(bin(read[2] | 0x100))[3:] + ' A ' + str(bin(read[3] | 0x100))[3:] + ' N P ' )
+        address_6_0      = str(bin(self._ADDRESS | 0x100))[4:]
+        pressure_13_8    = str(bin(read[0] | 0x100))[3:]
+        pressure_7_0     = str(bin(read[1] | 0x100))[3:]
+        temperature_10_3 = str(bin(read[2] | 0x100))[3:]
+        temperature_2_0  = str(bin(read[3] | 0x100))[3:]
+        
+        print(f"S   address_6_0} R A {pressure_13_8[:2]} {pressure_13_8[2:]} A {pressure_7_0} A {temperature_10_3} A {temperature_2_0} N P")
+
         
         if (read[0] & 0xc0) == 0x00:
             d_pressure    = (unsigned((read[0] & 0x3f) << 8) + read[1])
@@ -137,7 +143,7 @@ class Setup(M30J2):
                 else:
                 
                     time        = current_time()
-                    print(f"{'[READ]':>10} {self.tag} - {time} | {'':12} | {self._pressure:11.6f} bar  | {self._temperature:11.6f} C  |")
+                    print(f"{'[READ]':>10} {self.tag} - {time} | {self.name:^12} | {self._pressure:11.6f} bar  | {self._temperature:11.6f} C  |")
                     # pressure    = self._pressure
                     # temperature = self._temperature
     

@@ -300,14 +300,14 @@ class Setup(MS5837):
                         'temperature' : temperature
                     }
                     if USE_CSV:
-                        path = f"csv/{current_date()}_{'ms5837'}"
+                        path = f"csv/{current_date()}_{self.name}"
                         data = [time, pressure, temperature]
                         save_as_csv(device=self.name, data=data, path=path)
                         
                     if USE_DB:
                         self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
                     
-                    print(f"{'[READ]':>10} {self.tag} - {time} | {'':12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
+                    print(f"{'[READ]':>10} {self.tag} - {time} | {self.name:^12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
                 
             except OSError:
                 time = current_time()
