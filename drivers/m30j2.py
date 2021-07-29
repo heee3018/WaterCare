@@ -85,7 +85,7 @@ class M30J2(object):
         #     self._pressure    = (d_pressure - self._P1) * (self._P_MAX - self._P_MIN) / self._P2 + self._P_MIN
         #     self._temperature = (d_temperature * 200) / 2047 - 50
         
-        print(f"read: {read}   type: {read[0]}")
+        print(f"read: {read}   type: {type(read[0])}")
 
         for r in read:
             print(bin(r)) 
