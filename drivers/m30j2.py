@@ -1,4 +1,4 @@
-from smbus2     import SMBus
+from smbus      import SMBus
 from time       import sleep
 from datetime   import datetime
 from ctypes     import c_uint
@@ -10,7 +10,7 @@ from drivers         import database
 from drivers.library import current_time, current_date, save_as_csv, check_internet
 
 # Conversion factors (from native unit, mbar)
-UNITS_Pa     = 100.0
+UNITS_Pa     = 100.0 
 UNITS_hPa    = 1.0
 UNITS_kPa    = 0.1
 UNITS_mbar   = 1.0
