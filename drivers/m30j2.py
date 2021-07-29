@@ -79,23 +79,20 @@ class M30J2(object):
         temperature_2_0  = str(bin(read[3] | 0x100))[3:]
         print(f"S {address_6_0} R A {pressure_13_8[:2]} {pressure_13_8[2:]} A {pressure_7_0} A {temperature_10_3} A {temperature_2_0} N P")
         
-        print(read)
-        t_pressure_13_8    = read[0]
-        t_pressure_7_0     = read[1]
-        t_temperature_10_3 = read[2]
-        t_temperature_2_0  = read[3]
-        
-        # print(f"S {address_6_0} R A {pressure_13_8[:2]} {pressure_13_8[2:]} A {pressure_7_0} A {temperature_10_3} A {temperature_2_0} N P")
-        print(f"{bin(t_pressure_13_8)}  {bin(t_pressure_7_0)}  {bin(t_temperature_10_3)}  {bin(t_temperature_2_0)}")
         # if (read[0] & 0xc0) == 0x00:
         #     d_pressure    = (unsigned((read[0] & 0x3f) << 8) | (read[1]))
         #     d_temperature = (unsigned(read[2] << 3) | (read[3] >> 5))
         #     self._pressure    = (d_pressure - self._P1) * (self._P_MAX - self._P_MIN) / self._P2 + self._P_MIN
         #     self._temperature = (d_temperature * 200) / 2047 - 50
+        
+        print(f"read: {read}   type: {read[0]}")
 
+        for r in read:
+            print(bin(r))
+  
         if (read[0] & 0xc0) == 0x00:
-            d_pressure    = (unsigned((t_pressure_13_8 & 0x3f) << 8) | (t_pressure_7_0))
-            d_temperature = (unsigned((t_temperature_10_3 << 3) | (t_temperature_2_0 >> 5)))
+            d_pressure        = (((read[0] & 0x3f) << 8) | (read[1]))
+            d_temperature     = ((read[2] << 3) | (read[3] >> 5))
             self._pressure    = (d_pressure - self._P1) * (self._P_MAX - self._P_MIN) / self._P2 + self._P_MIN
             self._temperature = (d_temperature * 200) / 2047 - 50
 
