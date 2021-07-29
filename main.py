@@ -47,6 +47,8 @@ if __name__ == '__main__':
                     dev.start_read_thread()
             if dev.name == 'ms5837':
                 dev.start_read_thread()
+            if dev.name == 'm30j2':
+                dev.start_read_thread()
         
         while True:
             pass

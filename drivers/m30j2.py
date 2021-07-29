@@ -106,7 +106,7 @@ class Setup(M30J2):
         self.tag      =  tag
         self.data     =  { }
         self.interval = interval
-        # self.db   =  database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+        
         if not self.init():
             print(f"{'[ERROR]':>10} {self.tag} - M30J2 Sensor could not be initialized")
         if not self.read():
