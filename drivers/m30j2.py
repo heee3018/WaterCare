@@ -49,8 +49,8 @@ class M30J2(object):
     _P_MAX   = 15.0
     _P_MIN   = 0.0
     
-    def __init__(self, tag, bus):
-        self.bus = SMBus(bus)
+    def __init__(self, tag):
+        self.bus = SMBus(1)
     
     def init(self):
         if self.bus is None:
@@ -101,7 +101,7 @@ class M30J2(object):
     
 class Setup(M30J2):
     def __init__(self, tag, interval):
-        M30J2.__init__(self, tag, bus=1)
+        M30J2.__init__(self, tag)
         self.name     = 'm30j2'
         self.tag      =  tag
         self.data     =  { }
