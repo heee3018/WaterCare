@@ -1,4 +1,4 @@
-from smbus     import SMBus
+from smbus2     import SMBus
 from time       import sleep
 from datetime   import datetime
 from ctypes     import c_uint
@@ -72,8 +72,8 @@ class M30J2(object):
         
         read = self.bus.read_i2c_block_data(self._ADDRESS, 0, 4)
         
-        print(' S ' + str(bin(self._ADDRESS | 0x100))[4:] + 'R' + ' A ' + str(bin(read[0] | 0x100))[3:] + ' A ' + str(bin(read[1] | 0x100))[3:] + ' A ' 
-            + str(bin(read[2] | 0x100))[3:] + ' A ' + str(bin(read[3] | 0x100))[3:] + ' N P ' )
+        # print(' S ' + str(bin(self._ADDRESS | 0x100))[4:] + 'R' + ' A ' + str(bin(read[0] | 0x100))[3:] + ' A ' + str(bin(read[1] | 0x100))[3:] + ' A ' 
+        #     + str(bin(read[2] | 0x100))[3:] + ' A ' + str(bin(read[3] | 0x100))[3:] + ' N P ' )
         
         if (read[0] & 0xc0) == 0x00:
             d_pressure    = (unsigned((read[0] & 0x3f) << 8) + read[1])
