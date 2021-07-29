@@ -101,7 +101,7 @@ class M30J2(object):
     
 class Setup(M30J2):
     def __init__(self, tag, interval):
-        M30J2.__init__(self, tag, interval, bus=1)
+        M30J2.__init__(self, tag, bus=1)
         self.name     = 'm30j2'
         self.tag      =  tag
         self.data     =  { }
