@@ -44,7 +44,7 @@ def save_as_csv(device, data, columns, path):
             data.to_csv(path, index=False, mode='w', encoding='utf-8-sig')
         except FileNotFoundError:
             print(f"{'[LOG]':>10} Create csv directory")
-            os.system('sudo mkdir /home/pi/WaterCare/csv')
+            os.system('sudo mkdir /home/pi/WaterCare/csv_files')
             pass
     else:
         data.to_csv(path, index=False, mode='a', encoding='utf-8-sig', header=False)
