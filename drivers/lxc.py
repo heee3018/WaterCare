@@ -14,7 +14,7 @@ class LXC(object):
         self.tag        = tag
         self.port       = port
         self.interval   = interval
-        
+         
         self.state      = 'init'
         self.serial_num =  None
         self.select_cmd =  None
@@ -53,14 +53,6 @@ class LXC(object):
             break
         return True
     
-    def connect_db(self):
-        if USE_DB and check_internet():
-            self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
-            # print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
-        
-        elif USE_DB and not check_internet():
-            print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
-
     def search_serial_num(self):
         for _ in range(10):
             for fliped_serial_num in flip(SERIAL_NUMBER_LIST):
@@ -165,11 +157,19 @@ class LXC(object):
         
         return True
     
-class Setup2(LXC):
+class Setup(LXC):
     def __init__(self, tag, port, interval=0):
         LXC.__init__(self, tag, port, interval)
         self.name = 'lxc'
-    
+        
+    def connect_db(self):
+        if USE_DB and check_internet():
+            self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+            # print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
+        
+        elif USE_DB and not check_internet():
+            print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
+
     def start_search_thread(self):
         thread = Thread(target=self.search_serial_num, daemon=True)
         thread.start()
@@ -198,9 +198,10 @@ class Setup2(LXC):
                     print(f"{'[ERROR]':>10} {self.tag} - Data contains the value none")
                 
                 if USE_CSV:
-                    path = f"csv/{current_date()}_{self.serial_num}"
-                    data = [time, serial_num, flow_rate, total_volume]
-                    save_as_csv(device=self.name, data=data, path=path)
+                    path    = f"csv/{current_date()}_{self.serial_num}"
+                    data    = [ time,   serial_num,   flow_rate,   total_volume ]
+                    columns = ['time', 'serial_num', 'flow_rate', 'total_volume']
+                    save_as_csv(device=self.name, data=data, columns=columns, path=path)
                 # If None is present, it will not be sent to the db.
                 
                 if USE_DB:
@@ -225,166 +226,167 @@ class Setup2(LXC):
                     
                     
 
-class Setup():
-    def __init__(self, tag, port):
-        self.name             = 'lxc'
-        self.state            = 'init'
-        self.data             =  { }
-        self.tag              =  tag
-        self.serial_port      =  port
-        self.db               =  database.Setup(HOST, USER, PASSWORD, DB, TABLE)
-        self.error_cumulative = 0
+# class Setup():
+#     def __init__(self, tag, port):
+#         self.name             = 'lxc'
+#         self.state            = 'init'
+#         self.data             =  { }
+#         self.tag              =  tag
+#         self.serial_port      =  port
+#         self.db               =  database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+#         self.error_cumulative = 0
         
-        self.connect_serial()
+#         self.connect_serial()
 
-    def connect_serial(self):
-        connect_serial_count = 5
-        while connect_serial_count > 0:
-            connect_serial_count -= 1
+#     def connect_serial(self):
+#         connect_serial_count = 5
+#         while connect_serial_count > 0:
+#             connect_serial_count -= 1
         
-            try:
-                self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
-                if not self.ser.is_open:       
-                    self.ser.open()
+#             try:
+#                 self.ser = Serial(port=self.serial_port, baudrate=2400, parity='E', timeout=1)
+#                 if not self.ser.is_open:       
+#                     self.ser.open()
                 
-                self.state = 'connected'
-                print(f"{'[LOG]':>10} {self.tag} - Successfully opened the port")
-                break
+#                 self.state = 'connected'
+#                 print(f"{'[LOG]':>10} {self.tag} - Successfully opened the port")
+#                 break
             
-            except serialutil.SerialException as e:
-                if str(e)[:9] == '[Errno 2]':
-                    print(f"{'[ERROR]':>10} {self.tag} - Could not open port {self.tag}")
+#             except serialutil.SerialException as e:
+#                 if str(e)[:9] == '[Errno 2]':
+#                     print(f"{'[ERROR]':>10} {self.tag} - Could not open port {self.tag}")
                     
-                elif str(e)[:10] == '[Errno 72]':
-                    print(f"{'[ERROR]':>10} {self.tag} - {str(e)[10:]}")
+#                 elif str(e)[:10] == '[Errno 72]':
+#                     print(f"{'[ERROR]':>10} {self.tag} - {str(e)[10:]}")
                     
-                self.state = 'disabled' 
-                continue
+#                 self.state = 'disabled' 
+#                 continue
             
-            except OSError:
-                print(f"{'[ERROR]':>10} {self.tag} - Protocol error")
-                self.state = 'disabled'
-                continue
+#             except OSError:
+#                 print(f"{'[ERROR]':>10} {self.tag} - Protocol error")
+#                 self.state = 'disabled'
+#                 continue
             
-    def start_search_thread(self):
-        thread = Thread(target=self.search_serial_num, daemon=True)
-        thread.start()
-        return thread
+#     def start_search_thread(self):
+#         thread = Thread(target=self.search_serial_num, daemon=True)
+#         thread.start()
+#         return thread
     
-    def search_serial_num(self): 
-        find_count = FIND_COUNT
-        while find_count > 0 and self.state == 'connected':
-            find_count -= 1
-            print(f"{'[LOG]':>10} {self.tag} - looking for Serial number that matches {self.tag}...")
-            for reversed_num in flip(SERIAL_NUMBER_LIST):
-                select_command = to_select_command(reversed_num)
-                self.ser.write(select_command)
+#     def search_serial_num(self): 
+#         find_count = FIND_COUNT
+#         while find_count > 0 and self.state == 'connected':
+#             find_count -= 1
+#             print(f"{'[LOG]':>10} {self.tag} - looking for Serial number that matches {self.tag}...")
+#             for reversed_num in flip(SERIAL_NUMBER_LIST):
+#                 select_command = to_select_command(reversed_num)
+#                 self.ser.write(select_command)
                 
-                try:
-                    response = self.ser.read(1)
-                except:
-                    continue
+#                 try:
+#                     response = self.ser.read(1)
+#                 except:
+#                     continue
 
-                if response == b'\xE5':
-                    print(f"{'[LOG]':>10} {self.tag} - {flip(reversed_num)} and {self.tag} were successfully matched !")
-                    self.data[flip(reversed_num)] = {
-                        'state'          : 'detected',
-                        'select'         :  select_command,
-                        'time'           :  current_time(),
-                        'serial_num'     :  None,
-                        'flow_rate'      :  None,
-                        'total_volume'   :  None
-                    }
+#                 if response == b'\xE5':
+#                     print(f"{'[LOG]':>10} {self.tag} - {flip(reversed_num)} and {self.tag} were successfully matched !")
+#                     self.data[flip(reversed_num)] = {
+#                         'state'          : 'detected',
+#                         'select'         :  select_command,
+#                         'time'           :  current_time(),
+#                         'serial_num'     :  None,
+#                         'flow_rate'      :  None,
+#                         'total_volume'   :  None
+#                     }
                     
-                    if CHOOSE_ONE_USB:
-                        # If you are looking for only one
-                        self.data = {flip(reversed_num) : self.data[flip(reversed_num)]}
-                        break 
+#                     if CHOOSE_ONE_USB:
+#                         # If you are looking for only one
+#                         self.data = {flip(reversed_num) : self.data[flip(reversed_num)]}
+#                         break 
                 
-                else:
-                    self.data[flip(reversed_num)] = {
-                        'state'          : 'not detected',
-                        'select'         :  select_command,
-                        'time'           :  current_time(),
-                        'serial_num'     :  None,
-                        'flow_rate'      :  None,
-                        'total_volume'   :  None
-                    }
+#                 else:
+#                     self.data[flip(reversed_num)] = {
+#                         'state'          : 'not detected',
+#                         'select'         :  select_command,
+#                         'time'           :  current_time(),
+#                         'serial_num'     :  None,
+#                         'flow_rate'      :  None,
+#                         'total_volume'   :  None
+#                     }
 
-            # If at least one 'state' in self.data is 'detected'
-            if 'detected' in [self.data[key]['state'] for key in list(self.data.keys())]:
-                self.state = 'running'
-                break 
+#             # If at least one 'state' in self.data is 'detected'
+#             if 'detected' in [self.data[key]['state'] for key in list(self.data.keys())]:
+#                 self.state = 'running'
+#                 break 
             
-            else:
-                print(f"{'[LOG]':>10} {self.tag} - Cannot find Serial Number for {self.tag}")
-                self.state = 'not found'
-                pass
+#             else:
+#                 print(f"{'[LOG]':>10} {self.tag} - Cannot find Serial Number for {self.tag}")
+#                 self.state = 'not found'
+#                 pass
                 
-    def start_read_thread(self):
-        if self.state == 'running':
-            thread = Thread(target=self.read_data, daemon=True)
-            thread.start()
+#     def start_read_thread(self):
+#         if self.state == 'running':
+#             thread = Thread(target=self.read_data, daemon=True)
+#             thread.start()
     
-    def read_data(self):
-        while True:
-            for key in list(self.data.keys()):
-                select_command = self.data[key]['select']
-                self.ser.write(select_command)
+#     def read_data(self):
+#         while True:
+#             for key in list(self.data.keys()):
+#                 select_command = self.data[key]['select']
+#                 self.ser.write(select_command)
                 
-                if self.ser.read(1) == b'\xE5':
-                    repeat = 10
-                    while repeat > 0:
-                        repeat -= 1
+#                 if self.ser.read(1) == b'\xE5':
+#                     repeat = 10
+#                     while repeat > 0:
+#                         repeat -= 1
                         
-                        self.ser.write(READ_COMMAND)
-                        read_data = self.ser.read(39)
+#                         self.ser.write(READ_COMMAND)
+#                         read_data = self.ser.read(39)
                         
-                        if read_data == b'':
-                            print(f"{'[ERROR]':>10} {self.tag} - Eempty response")
-                            self.error_cumulative += 1
-                            break
+#                         if read_data == b'':
+#                             print(f"{'[ERROR]':>10} {self.tag} - Eempty response")
+#                             self.error_cumulative += 1
+#                             break
                         
-                        try:
-                            time         = current_time()
-                            serial_num   = get_return_serial_num(read_format(read_data, 7, 11))
-                            flow_rate    = get_flow_rate(read_format(read_data, 27, 31))
-                            total_volume = get_total_volume(read_format(read_data, 21, 25))
-                        except:
-                            print(f"{'[ERROR]':>10} {self.tag} - Eempty response")
-                            self.error_cumulative += 1
-                            break
+#                         try:
+#                             time         = current_time()
+#                             serial_num   = get_return_serial_num(read_format(read_data, 7, 11))
+#                             flow_rate    = get_flow_rate(read_format(read_data, 27, 31))
+#                             total_volume = get_total_volume(read_format(read_data, 21, 25))
+#                         except:
+#                             print(f"{'[ERROR]':>10} {self.tag} - Eempty response")
+#                             self.error_cumulative += 1
+#                             break
                         
-                        # Update self.data
-                        if key == serial_num:
-                            self.data[key] = {
-                                'state'          : 'runnuing',
-                                'select'         :  select_command,
-                                'time'           :  current_time(),
-                                'serial_num'     :  key,
-                                'flow_rate'      :  flow_rate,
-                                'total_volume'   :  total_volume
-                            }
+#                         # Update self.data
+#                         if key == serial_num:
+#                             self.data[key] = {
+#                                 'state'          : 'runnuing',
+#                                 'select'         :  select_command,
+#                                 'time'           :  current_time(),
+#                                 'serial_num'     :  key,
+#                                 'flow_rate'      :  flow_rate,
+#                                 'total_volume'   :  total_volume
+#                             }
                         
-                        # Save as csv
-                        if USE_CSV:
-                            path = f"csv/{current_date()}_{key}"
-                            data = [time, serial_num, flow_rate, total_volume]
-                            save_as_csv(device=self.name, data=data, path=path)
+#                         # Save as csv
+#                         if USE_CSV:
+#                             path = f"csv/{current_date()}_{key}"
+#                             data = [time, serial_num, flow_rate, total_volume]
+#                             columns = ['time', 'serial_num', 'flow_rate', 'total_volume']
+#                             save_as_csv(device=self.name, data=data, columns=columnspath=path)
                         
-                        # Send to db
-                        if USE_DB:
-                            self.db.send(f"INSERT INTO {self.db.table} (time, serial_num, flow_rate, total_volume) VALUES ('{time}', '{serial_num}', '{flow_rate}', '{total_volume}')")
+#                         # Send to db
+#                         if USE_DB:
+#                             self.db.send(f"INSERT INTO {self.db.table} (time, serial_num, flow_rate, total_volume) VALUES ('{time}', '{serial_num}', '{flow_rate}', '{total_volume}')")
                         
-                        print(f"{'[READ]':>10} {self.tag} - {time} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ |")
+#                         print(f"{'[READ]':>10} {self.tag} - {time} | {serial_num:^12} | {flow_rate:11.6f} ㎥/h | {total_volume:11.6f} ㎥ |")
                                    
-                else:
-                    self.error_cumulative += 1
+#                 else:
+#                     self.error_cumulative += 1
                 
-            if self.error_cumulative >= 10:
-                print(f"{'[ERROR]':>10} {self.tag} - Error accumulates and restarts..")
-                self.connect_serial()
-                search_thread = self.start_search_thread()
-                search_thread.join()
-                self.start_read_thread()
-                break
+#             if self.error_cumulative >= 10:
+#                 print(f"{'[ERROR]':>10} {self.tag} - Error accumulates and restarts..")
+#                 self.connect_serial()
+#                 search_thread = self.start_search_thread()
+#                 search_thread.join()
+#                 self.start_read_thread()
+#                 break

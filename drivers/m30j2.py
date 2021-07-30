@@ -1,7 +1,6 @@
 from smbus      import SMBus
 from time       import sleep
 from datetime   import datetime
-from ctypes     import c_uint
 
 from threading       import Thread
 from config          import USE_DB, USE_CSV
@@ -32,16 +31,6 @@ OSR_2048 = 3
 OSR_4096 = 4
 OSR_8192 = 5
 
-def unsigned(n):
-    return c_uint(n).value
-
-def toHex(read):
-    res = [None] * len(read)
-    
-    for i in range(len(read)):
-        res[i] = hex(read[i])
-    return res    
-
 class M30J2(object):
     _ADDRESS = 0x28
     _P1      = 1638.3   # 10% * 16383 -A Type # 2^14
@@ -71,26 +60,13 @@ class M30J2(object):
         sleep(2.5e-6 * 2**(8+oversampling)) # 0.02048
         
         read = self.bus.read_i2c_block_data(self._ADDRESS, 0, 4)
-        
-        # address_6_0      = str(bin(self._ADDRESS | 0x100))[4:]
-        # pressure_13_8    = str(bin(read[0] | 0x100))[3:]
-        # pressure_7_0     = str(bin(read[1] | 0x100))[3:]
-        # temperature_10_3 = str(bin(read[2] | 0x100))[3:]
-        # temperature_2_0  = str(bin(read[3] | 0x100))[3:]
-        # print(f"S {address_6_0} R A {pressure_13_8[:2]} {pressure_13_8[2:]} A {pressure_7_0} A {temperature_10_3} A {temperature_2_0} N P")
-        
-        # if (read[0] & 0xc0) == 0x00:
-        #     d_pressure    = (unsigned((read[0] & 0x3f) << 8) | (read[1]))
-        #     d_temperature = (unsigned(read[2] << 3) | (read[3] >> 5))
-        #     self._pressure    = (d_pressure - self._P1) * (self._P_MAX - self._P_MIN) / self._P2 + self._P_MIN
-        #     self._temperature = (d_temperature * 200) / 2047 - 50
-        
+
         if (read[0] & 0xc0) == 0x00:
             d_pressure        = (((read[0] & 0x3f) << 8) | (read[1]))
             d_temperature     = ((read[2] << 3) | (read[3] >> 5))
             self._pressure    = (d_pressure - self._P1) * (self._P_MAX - self._P_MIN) / self._P2 + self._P_MIN
             self._temperature = (d_temperature * 200) / 2047 - 50
-
+        
         return True
     
     def pressure(self, conversion=UNITS_bar):
@@ -116,13 +92,22 @@ class Setup(M30J2):
         self.data     =  { }
         self.interval = interval
         
+        if USE_DB:
+            if USE_DB and check_internet():
+                self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+                # print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
+            
+            elif USE_DB and not check_internet():
+                print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
+    
+        
         if not self.init():
             print(f"{'[ERROR]':>10} {self.tag} - M30J2 Sensor could not be initialized")
         if not self.read():
             print(f"{'[ERROR]':>10} {self.tag} - Sensor read failed!")
         else:
             print(f"{'[LOG]':>10} {self.tag} - Pressure: {self._pressure:.2f} bar  Temperature:  {self._temperature:.2f} C")
-    
+   
     def connect_db(self):
         if USE_DB and check_internet():
             self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
@@ -130,12 +115,12 @@ class Setup(M30J2):
         
         elif USE_DB and not check_internet():
             print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
-    
+
     def start_read_thread(self):
-        thread = Thread(target=self.read_data, daemon=True)
+        thread = Thread(target=self.read_thread, daemon=True)
         thread.start()
     
-    def read_data(self):
+    def read_thread(self):
         while True:
             sleep(self.interval)
             try:
@@ -144,24 +129,20 @@ class Setup(M30J2):
                 if not self.read():
                     print(f"{'[ERROR]':>10} {self.tag} - Sensor read failed!")
                 else:
-                
                     time        = current_time()
-                    print(f"{'[READ]':>10} {self.tag} - {time} | {self.name:^12} | {self._pressure:11.6f} bar  | {self._temperature:11.6f} C  |")
-                    # pressure    = self._pressure
-                    # temperature = self._temperature
-    
-                    # self.data['serial_num'] = {
-                    #     'time'        : time,
-                    #     'pressure'    : pressure,
-                    #     'temperature' : temperature
-                    # }
-                    # if USE_CSV:
-                    #     path = f"csv/{current_date()}_{'ms5837'}"
-                    #     data = [time, pressure, temperature]
-                    #     save_as_csv(device=self.name, data=data, path=path)
+                    pressure    = self._pressure
+                    temperature = self._temperature
+                    
+                    print(f"{'[READ]':>10} {self.tag} - {time} | {self.name:^12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
+                    
+                    if USE_CSV:
+                        path    = f"csv/{current_date()}_{'ms5837'}"
+                        data    = [ time, pressure, temperature]
+                        columns = ['time', 'pressure', 'temperature']
+                        save_as_csv(device=self.name, data=data, columns=columns, path=path)
                         
-                    # if USE_DB:
-                    #     self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
+                    if USE_DB:
+                        self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
                     
                     
             except OSError:

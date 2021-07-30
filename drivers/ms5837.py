@@ -5,6 +5,7 @@ from config          import USE_DB, USE_CSV
 from config          import HOST, USER, PASSWORD, DB, TABLE 
 from drivers         import database
 from drivers.library import current_time, current_date, save_as_csv, check_internet
+
 # Models
 MODEL_02BA = 0
 MODEL_30BA = 1
@@ -238,35 +239,34 @@ class Setup(MS5837):
         self.name     = 'ms5837'
         self.tag      =  tag
         self.data     =  { }
-        self.db       =  database.Setup(HOST, USER, PASSWORD, DB, TABLE)
-        self.i2c      =  MS5837_30BA() 
         self.interval =  interval
-        
-        if not self.i2c.init():
-            print(f"{'[ERROR]':>10} {self.tag} - MS5837 Sensor could not be initialized")
-    
-        elif not self.i2c.read():
-            print(f"{'[ERROR]':>10} {self.tag} - Sensor read failed!")
+        self.i2c      =  MS5837_30BA() 
             
-        else:
-            print(f"{'[LOG]':>10} {self.tag} - Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
-                self.i2c.pressure(UNITS_atm),
-                self.i2c.pressure(UNITS_Torr),
-                self.i2c.pressure(UNITS_psi)))
+        # if not self.i2c.init():
+        #     print(f"{'[ERROR]':>10} {self.tag} - MS5837 Sensor could not be initialized")
+    
+        # elif not self.i2c.read():
+        #     print(f"{'[ERROR]':>10} {self.tag} - Sensor read failed!")
+            
+        # else:
+        #     print(f"{'[LOG]':>10} {self.tag} - Pressure: %.2f atm  %.2f Torr  %.2f psi" % (
+        #         self.i2c.pressure(UNITS_atm),
+        #         self.i2c.pressure(UNITS_Torr),
+        #         self.i2c.pressure(UNITS_psi)))
 
-            print(f"{'[LOG]':>10} {self.tag} - Temperature: %.2f C  %.2f F  %.2f K" % (
-                self.i2c.temperature(UNITS_Centigrade),
-                self.i2c.temperature(UNITS_Farenheit),
-                self.i2c.temperature(UNITS_Kelvin)))
+        #     print(f"{'[LOG]':>10} {self.tag} - Temperature: %.2f C  %.2f F  %.2f K" % (
+        #         self.i2c.temperature(UNITS_Centigrade),
+        #         self.i2c.temperature(UNITS_Farenheit),
+        #         self.i2c.temperature(UNITS_Kelvin)))
 
-            freshwaterDepth = self.i2c.depth() # default is freshwater
-            self.i2c.setFluidDensity(DENSITY_SALTWATER)
-            saltwaterDepth = self.i2c.depth() # No nead to read() again
-            self.i2c.setFluidDensity(1000) # kg/m^3
-            print(f"{'[LOG]':>10} {self.tag} - Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
-            # fluidDensity doesn't matter for altitude() (always MSL air density)
-            print(f"{'[LOG]':>10} {self.tag} - MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
-
+        #     freshwaterDepth = self.i2c.depth() # default is freshwater
+        #     self.i2c.setFluidDensity(DENSITY_SALTWATER)
+        #     saltwaterDepth = self.i2c.depth() # No nead to read() again
+        #     self.i2c.setFluidDensity(1000) # kg/m^3
+        #     print(f"{'[LOG]':>10} {self.tag} - Depth: %.3f m (freshwater)  %.3f m (saltwater)" % (freshwaterDepth, saltwaterDepth))
+        #     # fluidDensity doesn't matter for altitude() (always MSL air density)
+        #     print(f"{'[LOG]':>10} {self.tag} - MSL Relative Altitude: %.2f m" % self.i2c.altitude()) # relative to Mean Sea Level pressure in air
+    
     def connect_db(self):
         if USE_DB and check_internet():
             self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
@@ -276,10 +276,10 @@ class Setup(MS5837):
             print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
 
     def start_read_thread(self):
-        thread = Thread(target=self.read_data, daemon=True)
+        thread = Thread(target=self.read_thread, daemon=True)
         thread.start()
 
-    def read_data(self):
+    def read_thread(self):
         while True:
             sleep(self.interval)
             try:
@@ -302,7 +302,7 @@ class Setup(MS5837):
                     if USE_CSV:
                         path = f"csv/{current_date()}_{self.name}"
                         data = [time, pressure, temperature]
-                        save_as_csv(device=self.name, data=data, path=path)
+                        save_as_csv(device=self.name, data=data, columns=columns, path=path)
                         
                     if USE_DB:
                         self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")

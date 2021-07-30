@@ -29,12 +29,12 @@ def current_time():
 def current_date():
     return datetime.now().strftime('%Y_%m_%d')  # format : 2020_05_04
     
-def save_as_csv(device, data, path):    
+def save_as_csv(device, data, columns, path):    
     if device == 'ms5837':
-        data = pd.DataFrame([data], columns=['time', 'pressure', 'temperature'])
+        data = pd.DataFrame([data], columns=columns)
         
     elif device == 'lxc':
-        data = pd.DataFrame([data], columns=['time', 'serial_num', 'flow_rate', 'total_volume'])
+        data = pd.DataFrame([data], columns=columns)
     
     if path[-4:] != '.csv':
         path += '.csv'
