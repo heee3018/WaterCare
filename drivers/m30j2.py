@@ -146,8 +146,8 @@ class Setup(M30J2):
                     
                     if USE_CSV:
                         path    = f"csv/{current_date()}_{'ms5837'}"
-                        data    = [ time, pressure, temperature]
-                        columns = ['time', 'pressure', 'temperature']
+                        data    = [ time,   self.name,   pressure,   temperature]
+                        columns = ['time', 'serialnum', 'pressure', 'temperature']
                         save_as_csv(device=self.name, data=data, columns=columns, path=path)
                         
                     if USE_DB:

@@ -307,8 +307,9 @@ class Setup(MS5837):
                         'temperature' : temperature
                     }
                     if USE_CSV:
-                        path = f"csv/{current_date()}_{self.name}"
-                        data = [time, pressure, temperature]
+                        path    = f"csv/{current_date()}_{self.name}"
+                        data    = [ time,   self.name,   pressure,   temperature]
+                        columns = ['time', 'serialnum', 'pressure', 'temperature']
                         save_as_csv(device=self.name, data=data, columns=columns, path=path)
                         
                     if USE_DB:
