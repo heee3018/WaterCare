@@ -34,7 +34,8 @@ if __name__ == '__main__':
             thread.join()
         
         for dev in device:
-            print(f"{'[LOG]':>10} {dev.tag} - {dev.state}")
+            if dev.name == 'lxc':
+                print(f"{'[LOG]':>10} {dev.tag} - {dev.state}")
 
         count_down(5)
             
