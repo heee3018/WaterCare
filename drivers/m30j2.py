@@ -41,11 +41,6 @@ class M30J2(object):
     def __init__(self, tag):
         self.bus = SMBus(1)
         
-        self.state = 'enabled'
-        if not self.init():
-            self.state = 'disabled'
-        if not self.read():
-            self.state = 'disabled'
     
     def init(self):
         if self.bus is None:
@@ -100,6 +95,12 @@ class Setup(M30J2):
         self.data     =  { }
         self.interval = interval
         
+        self.state = 'enabled'
+        if not self.init():
+            self.state = 'disabled'
+        if not self.read():
+            self.state = 'disabled'
+            
         if USE_DB:
             if USE_DB and check_internet():
                 self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)

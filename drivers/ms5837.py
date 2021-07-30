@@ -62,12 +62,6 @@ class MS5837(object):
         self._D1 = 0
         self._D2 = 0
         
-        self.state = 'enabled'
-        if not self.init():
-            self.state = 'disabled'
-        if not self.read():
-            self.state = 'disabled'
-        
     def init(self):
         if self._bus is None:
             print("No bus!")
@@ -248,6 +242,12 @@ class Setup(MS5837):
         self.interval =  interval
         self.i2c      =  MS5837_30BA() 
             
+        self.state = 'enabled'
+        if not self.init():
+            self.state = 'disabled'
+        if not self.read():
+            self.state = 'disabled'
+        
         # if not self.i2c.init():
         #     print(f"{'[ERROR]':>10} {self.tag} - MS5837 Sensor could not be initialized")
     
