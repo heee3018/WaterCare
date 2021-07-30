@@ -151,7 +151,7 @@ class Setup(M30J2):
                         save_as_csv(device=self.name, data=data, columns=columns, path=path)
                         
                     if USE_DB:
-                        self.db.send(f"INSERT INTO {self.db.table} (time, serial_num, pressure, temperature) VALUES ('{time}', '{self.name}' '{pressure}', '{temperature}')")
+                        self.db.send(f"INSERT INTO {self.db.table} (time, serial_num, pressure, temperature) VALUES ('{time}', '{self.name}', '{pressure}', '{temperature}')")
                     
                     
             except OSError:

@@ -313,7 +313,7 @@ class Setup(MS5837):
                         save_as_csv(device=self.name, data=data, columns=columns, path=path)
                         
                     if USE_DB:
-                        self.db.send(f"INSERT INTO {self.db.table} (time, serial_num, pressure, temperature) VALUES ('{time}', '{self.name}' '{pressure}', '{temperature}')")
+                        self.db.send(f"INSERT INTO {self.db.table} (time, serial_num, pressure, temperature) VALUES ('{time}', '{self.name}', '{pressure}', '{temperature}')")
                     
                     print(f"{'[READ]':>10} {self.tag} - {time} | {self.name:^12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
                 
