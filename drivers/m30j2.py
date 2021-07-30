@@ -58,9 +58,11 @@ class M30J2(object):
             return False
         
         sleep(2.5e-6 * 2**(8+oversampling)) # 0.02048
+        try:
+            read = self.bus.read_i2c_block_data(self._ADDRESS, 0, 4)
+        except:
+            return False
         
-        read = self.bus.read_i2c_block_data(self._ADDRESS, 0, 4)
-
         if (read[0] & 0xc0) == 0x00:
             d_pressure        = (((read[0] & 0x3f) << 8) | (read[1]))
             d_temperature     = ((read[2] << 3) | (read[3] >> 5))
