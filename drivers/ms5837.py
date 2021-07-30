@@ -62,6 +62,12 @@ class MS5837(object):
         self._D1 = 0
         self._D2 = 0
         
+        self.state = 'enabled'
+        if not self.init():
+            self.state = 'disabled'
+        if not self.read():
+            self.state = 'disabled'
+        
     def init(self):
         if self._bus is None:
             print("No bus!")

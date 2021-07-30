@@ -41,12 +41,7 @@ if __name__ == '__main__':
             
         # Start threading
         for dev in device:
-            if dev.name == 'ms5837':
-                dev.start_read_thread()
-            if dev.name == 'm30j2':
-                dev.start_read_thread()
-            if dev.name == 'lxc':
-                if dev.state == 'enabled': 
+            if dev.state == 'enabled': 
                     dev.start_read_thread()
         
         while True:
