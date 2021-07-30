@@ -198,7 +198,7 @@ class Setup(LXC):
                     print(f"{'[ERROR]':>10} {self.tag} - Data contains the value none")
                 
                 if USE_CSV:
-                    path    = f"csv/{current_date()}_{self.serial_num}"
+                    path    = f"csv_files/{current_date()}_{self.serial_num}"
                     data    = [ time,   serial_num,   flow_rate,   total_volume ]
                     columns = ['time', 'serial_num', 'flow_rate', 'total_volume']
                     save_as_csv(device=self.name, data=data, columns=columns, path=path)
