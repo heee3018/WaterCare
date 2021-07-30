@@ -1,11 +1,14 @@
 import os
 from threading       import Thread
 from drivers         import m30j2, ms5837, lxc 
-from drivers.library import count_down
+from drivers.library import count_down, check_internet
 
 os.system('sudo /etc/init.d/udev restart')      # USB Restart
-os.system('sudo ntpdate -u 3.kr.pool.ntp.org')  # Set to current time
-
+if check_internet():
+    os.system('sudo ntpdate -u 3.kr.pool.ntp.org')  # Set to current time
+else:
+    print(f"{'[LOG]':>10} Internet connection required.")
+    
 if __name__ == '__main__':
     try:
         device = list()
