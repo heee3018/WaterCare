@@ -308,12 +308,12 @@ class Setup(MS5837):
                     }
                     if USE_CSV:
                         path    = f"csv/{current_date()}_{self.name}"
-                        data    = [ time,   self.name,   pressure,   temperature]
-                        columns = ['time', 'serialnum', 'pressure', 'temperature']
+                        data    = [ time,   self.name,    pressure,   temperature]
+                        columns = ['time', 'serial_num', 'pressure', 'temperature']
                         save_as_csv(device=self.name, data=data, columns=columns, path=path)
                         
                     if USE_DB:
-                        self.db.send(f"INSERT INTO {self.db.table} (time, pressure, temperature) VALUES ('{time}', '{pressure}', '{temperature}')")
+                        self.db.send(f"INSERT INTO {self.db.table} (time, serial_num, pressure, temperature) VALUES ('{time}', '{self.name}' '{pressure}', '{temperature}')")
                     
                     print(f"{'[READ]':>10} {self.tag} - {time} | {self.name:^12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")
                 
