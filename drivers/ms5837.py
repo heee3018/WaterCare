@@ -281,11 +281,13 @@ class Setup(MS5837):
     def connect_db(self):
         if USE_DB and check_internet():
             self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+            self.use_db = True
             # print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
-        
         elif USE_DB and not check_internet():
+            self.use_db = False
             print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
-
+        else:
+            self.use_db = False
     def start_read_thread(self):
         thread = Thread(target=self.read_thread, daemon=True)
         thread.start()
@@ -310,13 +312,14 @@ class Setup(MS5837):
                         'pressure'    : pressure,
                         'temperature' : temperature
                     }
+                    
                     if USE_CSV:
                         path    = f"csv_files/{current_date()}_{self.name}"
                         data    = [ time,   self.name,    pressure,   temperature]
                         columns = ['time', 'serial_num', 'pressure', 'temperature']
                         save_as_csv(device=self.name, data=data, columns=columns, path=path)
                         
-                    if USE_DB:
+                    if self.use_db:
                         self.db.send(f"INSERT INTO {self.db.table} (time, serial_num, pressure, temperature) VALUES ('{time}', '{self.name}', '{pressure}', '{temperature}')")
                     
                     print(f"{'[READ]':>10} {self.tag} - {time} | {self.name:^12} | {pressure:11.6f} bar  | {temperature:11.6f} C  |")

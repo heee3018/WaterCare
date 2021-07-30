@@ -165,11 +165,14 @@ class Setup(LXC):
     def connect_db(self):
         if USE_DB and check_internet():
             self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
+            self.use_db = True
             # print(f"{'[LOG]':>10} {self.tag} - You have successfully connected to the db!")
-        
         elif USE_DB and not check_internet():
+            self.use_db = False
             print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
-
+        else:
+            self.use_db = False
+            
     def start_search_thread(self):
         thread = Thread(target=self.search_serial_num, daemon=True)
         thread.start()
@@ -204,7 +207,7 @@ class Setup(LXC):
                     save_as_csv(device=self.name, data=data, columns=columns, path=path)
                 # If None is present, it will not be sent to the db.
                 
-                if USE_DB:
+                if self.use_db:
                     sql = f"INSERT INTO {self.db.table} (time, serial_num, flow_rate, total_volume) VALUES ('{time}', '{serial_num}', '{flow_rate}', '{total_volume}')"
                     self.db.send(sql)
                 
