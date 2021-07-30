@@ -95,12 +95,7 @@ class Setup(M30J2):
         self.data     =  { }
         self.interval = interval
         
-        self.state = 'enabled'
-        if not self.init():
-            self.state = 'disabled'
-        if not self.read():
-            self.state = 'disabled'
-            
+        
         if USE_DB:
             if USE_DB and check_internet():
                 self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)
@@ -109,14 +104,17 @@ class Setup(M30J2):
             elif USE_DB and not check_internet():
                 print(f"{'[WARNING]':>10} {self.tag} - You must be connected to the internet to connect to the db.")
     
-        
+        self.state = 'enabled'
         if not self.init():
             print(f"{'[ERROR]':>10} {self.tag} - M30J2 Sensor could not be initialized")
+            self.state = 'disabled'
         if not self.read():
             print(f"{'[ERROR]':>10} {self.tag} - Sensor read failed!")
+            self.state = 'disabled'
         else:
             print(f"{'[LOG]':>10} {self.tag} - Pressure: {self._pressure:.2f} bar  Temperature:  {self._temperature:.2f} C")
-   
+       
+       
     def connect_db(self):
         if USE_DB and check_internet():
             self.db = database.Setup(HOST, USER, PASSWORD, DB, TABLE)

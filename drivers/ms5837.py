@@ -245,10 +245,14 @@ class Setup(MS5837):
             
         self.state = 'enabled'
         if not self.init():
+            print(f"{'[ERROR]':>10} {self.tag} - M30J2 Sensor could not be initialized")
             self.state = 'disabled'
         if not self.read():
+            print(f"{'[ERROR]':>10} {self.tag} - Sensor read failed!")
             self.state = 'disabled'
-        
+        else:
+            print(f"{'[LOG]':>10} {self.tag} - Pressure: {self._pressure:.2f} bar  Temperature:  {self._temperature:.2f} C")
+       
         # if not self.i2c.init():
         #     print(f"{'[ERROR]':>10} {self.tag} - MS5837 Sensor could not be initialized")
     

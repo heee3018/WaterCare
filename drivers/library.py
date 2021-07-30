@@ -30,24 +30,21 @@ def current_date():
     return datetime.now().strftime('%Y_%m_%d')  # format : 2020_05_04
     
 def save_as_csv(device, data, columns, path):    
-    if device == 'ms5837':
-        data = pd.DataFrame([data], columns=columns)
-        
-    elif device == 'lxc':
-        data = pd.DataFrame([data], columns=columns)
+    
+    data_frame = pd.DataFrame([data], columns=columns)
     
     if path[-4:] != '.csv':
         path += '.csv'
     
     if not os.path.exists(path):
         try:
-            data.to_csv(path, index=False, mode='w', encoding='utf-8-sig')
+            data_frame.to_csv(path, index=False, mode='w', encoding='utf-8-sig')
         except FileNotFoundError:
             print(f"{'[LOG]':>10} Create csv directory")
             os.system('sudo mkdir /home/pi/WaterCare/csv_files')
             pass
     else:
-        data.to_csv(path, index=False, mode='a', encoding='utf-8-sig', header=False)
+        data_frame.to_csv(path, index=False, mode='a', encoding='utf-8-sig', header=False)
 
 def flip(address):
     if type(address) == list:
