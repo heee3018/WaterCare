@@ -21,7 +21,9 @@ SERIAL_NUMBER_LIST = [
     '21060007', # Home Data Acquisition
     '21060008', # Home Data Acquisition
     '21060009', # Home Data Acquisition
-    '21060010'  # Home Data Acquisition
+    '21060010', # Home Data Acquisition
+    '21070109', # RS-485 Improving
+    '21070110', # RS-485 Improving
 ]
 
 HOST      = 'smartwatercare.net'
